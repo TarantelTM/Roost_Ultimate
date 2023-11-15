@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_bone", "required": false },
+    { "id":"chicken_roost:c_bonemeal", "required": false },
+    { "id":"chicken_roost:c_sweetberries", "required": false },
+    { "id":"chicken_roost:c_sugar", "required": false },
+    { "id":"chicken_roost:c_sprucewood", "required": false },
+    { "id":"chicken_roost:c_oakwood", "required": false },
+    { "id":"chicken_roost:c_melon", "required": false },
+    { "id":"chicken_roost:c_junglewood", "required": false },
+    { "id":"chicken_roost:c_glowberries", "required": false }
+  ]
+}

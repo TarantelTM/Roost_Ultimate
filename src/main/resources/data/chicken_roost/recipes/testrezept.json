@@ -1,0 +1,12 @@
+{
+  "type": "chicken_roost:roost_output",
+  "ingredient0": {
+    "item": "chicken_roost:chicken_food_tier_1"
+  },
+  "ingredient1": {
+    "item": "chicken_roost:c_iron"
+  },
+  "output": {
+    "item": "minecraft:andesite"
+  }
+}

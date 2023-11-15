@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "ae2:silicon"
+    }
+  ],
+  "result": {
+    "item": "refinedstorage:silicon",
+    "count": 1
+  }
+}

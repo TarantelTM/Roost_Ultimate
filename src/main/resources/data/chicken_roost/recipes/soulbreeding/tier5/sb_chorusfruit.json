@@ -1,0 +1,12 @@
+{
+  "type": "chicken_roost:soul_breeding",
+  "soul": { 
+    "tag": "forge:souls/tier5andup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_chorusfruit"
+  },
+  "output": {
+    "item": "chicken_roost:c_chorusfruit"
+  }
+}

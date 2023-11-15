@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "resourcechickens:duck",
+    "resourcechickens:duck_mallard",
+    "resourcechickens:chicken"
+  ]
+}

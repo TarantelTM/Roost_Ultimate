@@ -1,0 +1,26 @@
+{
+  "type": "neoforge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "silentgems"
+        }
+      ],
+      "recipe": {
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "forge:seeds/tier6orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_ruby"
+          },
+        "output": {
+          "item": "silentgems:ruby"
+        }
+
+      }
+    }
+  ]
+}

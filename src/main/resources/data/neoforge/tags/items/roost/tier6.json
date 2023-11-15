@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    "chicken_roost:c_certusquartz",
+    "chicken_roost:c_rosegold",
+    "chicken_roost:c_steel",
+    "chicken_roost:c_tungsten",
+    "chicken_roost:c_pigiron",
+    "chicken_roost:c_sapphire",
+    "chicken_roost:c_ruby",
+    "chicken_roost:c_uranium",
+    "chicken_roost:c_endereye",
+    "chicken_roost:c_knightslime",
+    "chicken_roost:c_biofuel",
+    "chicken_roost:c_yellorium",
+    "chicken_roost:c_slimesteel",
+    "chicken_roost:c_bronze",
+    "chicken_roost:c_osmium",
+    "chicken_roost:c_emerald",
+    "chicken_roost:c_ghasttear",
+    "chicken_roost:c_amethystbronze",
+    "chicken_roost:c_hepatizon",
+    "chicken_roost:c_brass"
+  ]
+}

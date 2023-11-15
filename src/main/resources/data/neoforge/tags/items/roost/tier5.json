@@ -1,0 +1,26 @@
+{
+  "replace": false,
+  "values": [
+    "chicken_roost:c_silicon",
+    "chicken_roost:c_chorusfruit",
+    "chicken_roost:c_chrome",
+    "chicken_roost:c_glowstone",
+    "chicken_roost:c_silver",
+    "chicken_roost:c_refinediron",
+    "chicken_roost:c_quartzenrichediron",
+    "chicken_roost:c_manasteel",
+    "chicken_roost:c_endstone",
+    "chicken_roost:c_enderium",
+    "chicken_roost:c_constantan",
+    "chicken_roost:c_enderpearl",
+    "chicken_roost:c_blitz",
+    "chicken_roost:c_lumium",
+    "chicken_roost:c_gold",
+    "chicken_roost:c_blazepowder",
+    "chicken_roost:c_quartz",
+    "chicken_roost:c_blizz",
+    "chicken_roost:c_signalum",
+    "chicken_roost:c_tnt",
+    "chicken_roost:c_blazerod"
+  ]
+}

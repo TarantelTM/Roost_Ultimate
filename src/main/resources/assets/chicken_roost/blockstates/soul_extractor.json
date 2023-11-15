@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "chicken_roost:block/soul_extractor_render"
+    },
+    "facing=east": {
+      "model": "chicken_roost:block/soul_extractor_render",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "chicken_roost:block/soul_extractor_render",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "chicken_roost:block/soul_extractor_render",
+      "y": 270
+    }
+  }
+}

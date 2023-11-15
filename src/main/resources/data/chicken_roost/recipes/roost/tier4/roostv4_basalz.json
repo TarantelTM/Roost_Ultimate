@@ -1,0 +1,26 @@
+{
+  "type": "neoforge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "thermal"
+        }
+      ],
+      "recipe": {
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "forge:seeds/tier4orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_basalz"
+          },
+        "output": {
+          "item": "thermal:basalz_powder"
+        }
+
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "thermal:insolator",
+  "ingredient": {
+    "item": "chicken_roost:chicken_food_tier_2"
+  },
+  "result": [
+    {
+      "item": "chicken_roost:chicken_food_tier_2",
+      "chance": 1.0
+    },
+    {
+      "item": "chicken_roost:chicken_essence_tier_2",
+      "chance": 0.5
+    }
+  ],
+  "energy_mod": 3.0,
+  "water_mod": 3.0
+}

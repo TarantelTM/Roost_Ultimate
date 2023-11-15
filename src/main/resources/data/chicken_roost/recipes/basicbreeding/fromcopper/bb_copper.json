@@ -1,0 +1,12 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": { 
+    "tag": "forge:seeds/tier3orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_copper"
+  },
+  "output": {
+    "item": "chicken_roost:c_copper"
+  }
+}

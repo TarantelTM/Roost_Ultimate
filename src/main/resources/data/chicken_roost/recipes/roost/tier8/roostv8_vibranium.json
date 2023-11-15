@@ -1,0 +1,26 @@
+{
+  "type": "neoforge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "allthemodium"
+        }
+      ],
+      "recipe": {
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "forge:seeds/tier8orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_vibranium"
+          },
+        "output": {
+          "item": "allthemodium:vibranium_ingot"
+        }
+
+      }
+    }
+  ]
+}

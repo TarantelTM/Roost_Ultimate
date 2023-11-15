@@ -1,0 +1,9 @@
+{
+  "type": "chicken_roost:soul_extraction",
+  "chicken": { 
+      "tag": "forge:roost/tier7"
+    },
+  "output": {
+    "item": "chicken_roost:chicken_essence_tier_7"
+  }
+}
