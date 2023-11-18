@@ -1,159 +1,145 @@
 package net.tarantel.chickenroost.handler;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
+import net.tarantel.chickenroost.util.TagManager;
 
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-
-import net.minecraft.tags.ItemTags;
-import net.minecraft.resources.ResourceLocation;
-import net.tarantel.chickenroost.block.tile.Roost_Tile;
-
-import java.util.HashMap;
-import java.util.Map;
-
-public class Roost_Handler extends AbstractContainerMenu {
-    public final static HashMap<String, Object> guistate = new HashMap<>();
-
-    public final Roost_Tile blockEntity;
-    public final Level level;
-    private final ContainerData data;
-
-    //public final Player entity;
-    public int x, y, z;
-    private final Map<Integer, Slot> customSlots = new HashMap<>();
-    private boolean bound = false;
+public class roost_handler extends ScreenHandler {
+    private final Inventory inventory;
+    private final PropertyDelegate propertyDelegate;
 
 
-    public Roost_Handler(int id, Inventory inv, FriendlyByteBuf extraData) {
-        this(id, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
-        //this.entity = inv.player;
-
+    public roost_handler(int syncId, PlayerInventory inventory) {
+        this(syncId, inventory, new SimpleInventory(3), new ArrayPropertyDelegate(2));
     }
 
-    public Roost_Handler(int id, Inventory inv, BlockEntity entity, ContainerData data) {
-        super(ModHandlers.ROOST_MENU_V1.get(), id);
-        checkContainerSize(inv, 3);
-        blockEntity = (Roost_Tile) entity;
-        this.level = inv.player.level();
-        this.data = data;
-
-        addPlayerInventory(inv);
-        addPlayerHotbar(inv);
 
 
-
-        this.blockEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
-            this.addSlot(new SlotItemHandler(handler, 0, 11, 15){
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:seeds/tiered"))));
+    public roost_handler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+        super(ModScreenHandlers.ROOST, syncId);
+        checkSize(inventory, 3);
+        this.inventory = inventory;
+        inventory.onOpen(playerInventory.player);
+        this.propertyDelegate = propertyDelegate;
+        this.addSlot(new Slot(inventory, 1, 29, 38){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                if(stack.isIn(TagManager.Items.CHICKEN)){
+                    return true;
+                }
+                return false;
+            }
+            @Override
+            public int getMaxItemCount() {
+                return 1;
+            }
+            /*@Override
+            public void onQuickTransfer(ItemStack newItem, ItemStack original) {
+                int i = original.getCount() - newItem.getCount();
+                if (i > 0) {
+                    this.onCrafted(original, 1);
                 }
 
-            });
-
-            this.addSlot(new SlotItemHandler(handler, 1, 29, 38){
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
-                }
-            });
-
-            this.addSlot(new SlotItemHandler(handler, 2, 111, 38){
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-
+            }*/
         });
-        /*for (int si = 0; si < 3; ++si){
-			for (int sj = 0; sj < 9; ++sj){
-				this.addSlot(new Slot(inv, sj + (si + 1) * 9, 0 + 8 + sj * 18, 0 + 84 + si * 18));}
-				}
-		for (int si = 0; si < 9; ++si){
-			this.addSlot(new Slot(inv, si, 0 + 8 + si * 18, 0 + 142));
-        }*/
-        addDataSlots(data);
+        this.addSlot(new Slot(inventory, 0, 11, 15){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                if(stack.isIn(TagManager.Items.SEEDS)){
+                    return true;
+                }
+                return false;
+            }
+        });
+        this.addSlot(new Slot(inventory, 2, 111, 38){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return false;
+            }
+        });
+
+        addPlayerInventory(playerInventory);
+        addPlayerHotbar(playerInventory);
+
+        addProperties(propertyDelegate);
     }
 
     public boolean isCrafting() {
-        return data.get(0) > 0;
+        return propertyDelegate.get(0) > 0;
     }
 
     public int getScaledProgress() {
-        int progress = this.data.get(0);
-        int maxProgress = this.data.get(1);  // Max Progress
-        int progressArrowSize = 40; // This is the height in pixels of your arrow
+        int progress = this.propertyDelegate.get(0);
+        int maxProgress = this.propertyDelegate.get(1);  // Max Progress
+        int progressArrowSize = 39;
 
         return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
     }
 
-    // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons
-    // must assign a slot number to each of the slots used by the GUI.
-    // For this container, we can see both the tile inventory's slots as well as the player inventory slots and the hotbar.
-    // Each time we add a Slot to the container, it automatically increases the slotIndex, which means
-    //  0 - 8 = hotbar slots (which will map to the InventoryPlayer slot numbers 0 - 8)
-    //  9 - 35 = player inventory slots (which map to the InventoryPlayer slot numbers 9 - 35)
-    //  36 - 44 = TileInventory slots, which map to our TileEntity slot numbers 0 - 8)
-    private static final int HOTBAR_SLOT_COUNT = 9;
-    private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
-    private static final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
-    private static final int PLAYER_INVENTORY_SLOT_COUNT = PLAYER_INVENTORY_COLUMN_COUNT * PLAYER_INVENTORY_ROW_COUNT;
-    private static final int VANILLA_SLOT_COUNT = HOTBAR_SLOT_COUNT + PLAYER_INVENTORY_SLOT_COUNT;
-    private static final int VANILLA_FIRST_SLOT_INDEX = 0;
-    private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
-    // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 3;  // must be the number of slots you have!
+    public ItemStack quickMove(PlayerEntity player, int slot) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot sslot = (Slot)this.slots.get(slot);
+        if (sslot != null && sslot.hasStack()) {
+            ItemStack itemStack2 = sslot.getStack();
+            itemStack = itemStack2.copy();
+            if (slot == 0) {
+                if (!this.insertItem(itemStack2, 2, 38, true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (slot == 1) {
+                if (!this.insertItem(itemStack2, 2, 38, true)) {
+                    return ItemStack.EMPTY;
+                }
+            }else if (slot == 2) {
+                if (!this.insertItem(itemStack2, 3, 38, true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (itemStack2.isIn(TagManager.Items.SEEDS)) {
+                if (!this.insertItem(itemStack2, 1, 2, true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else {
+                if (((Slot)this.slots.get(0)).hasStack() || !((Slot)this.slots.get(0)).canInsert(itemStack2)) {
+                    return ItemStack.EMPTY;
+                }
 
-    @Override
-    public ItemStack quickMoveStack(Player playerIn, int index) {
-        Slot sourceSlot = slots.get(index);
-        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
-        ItemStack sourceStack = sourceSlot.getItem();
-        ItemStack copyOfSourceStack = sourceStack.copy();
-
-        // Check if the slot clicked is one of the vanilla container slots
-        if (index < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
-            // This is a vanilla container slot so merge the stack into the tile inventory
-            if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
-                    + TE_INVENTORY_SLOT_COUNT, false)) {
-                return ItemStack.EMPTY;  // EMPTY_ITEM
+                ItemStack itemStack3 = itemStack2.copy();
+                itemStack3.setCount(1);
+                itemStack2.decrement(1);
+                ((Slot)this.slots.get(0)).setStack(itemStack3);
             }
-        } else if (index < TE_INVENTORY_FIRST_SLOT_INDEX + TE_INVENTORY_SLOT_COUNT) {
-            // This is a TE slot so merge the stack into the players inventory
-            if (!moveItemStackTo(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
+
+            if (itemStack2.isEmpty()) {
+                sslot.setStack(ItemStack.EMPTY);
+            } else {
+                sslot.markDirty();
+            }
+
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-        } else {
-            System.out.println("Invalid slotIndex:" + index);
-            return ItemStack.EMPTY;
+
+            sslot.onTakeItem(player, itemStack2);
         }
-        // If stack size == 0 (the entire stack was moved) set slot contents to null
-        if (sourceStack.getCount() == 0) {
-            sourceSlot.set(ItemStack.EMPTY);
-        } else {
-            sourceSlot.setChanged();
-        }
-        sourceSlot.onTake(playerIn, sourceStack);
-        return copyOfSourceStack;
+
+        return itemStack;
     }
+
+
 
     @Override
-    public boolean stillValid(Player player) {
-        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
-                player, ModBlocks.ROOST.get());
+    public boolean canUse(PlayerEntity player) {
+        return this.inventory.canPlayerUse(player);
     }
-
-    private void addPlayerInventory(Inventory playerInventory) {
+    private void addPlayerInventory(PlayerInventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int l = 0; l < 9; ++l) {
                 this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
@@ -161,9 +147,13 @@ public class Roost_Handler extends AbstractContainerMenu {
         }
     }
 
-    private void addPlayerHotbar(Inventory playerInventory) {
+    private void addPlayerHotbar(PlayerInventory playerInventory) {
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
+    }
+    @Override
+    public void onContentChanged(Inventory inventory) {
+        this.sendContentUpdates();
     }
 }

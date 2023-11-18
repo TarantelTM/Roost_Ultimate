@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "fabric:roost/items_tier_4"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_3"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_3"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_3"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_3"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_3"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_3"
+    }
+  ],
+  "result": {
+    "item": "chicken_roost:chicken_food_tier_4",
+    "count": 1
+  }
+}

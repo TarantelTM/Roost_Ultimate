@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "chicken_roost:c_netherwart",
+    "chicken_roost:c_redstone",
+    "chicken_roost:c_lapis",
+    "chicken_roost:c_obsidian",
+    "chicken_roost:c_magmacream",
+    "chicken_roost:c_iron",
+    "chicken_roost:c_rotten",
+    "chicken_roost:c_slime"
+  ]
+}

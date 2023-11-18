@@ -2,6 +2,7 @@
   "variants": {
     "facing=north": {
       "model": "chicken_roost:block/chicken_trainer"
+	  "y": 0
     },
     "facing=east": {
       "model": "chicken_roost:block/chicken_trainer",

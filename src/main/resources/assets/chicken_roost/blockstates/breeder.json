@@ -1,7 +1,8 @@
 {
   "variants": {
     "facing=north,mynewstate=1": {
-      "model": "chicken_roost:block/breeder_mynewstate"
+      "model": "chicken_roost:block/breeder_mynewstate",
+      "y": 0
     },
     "facing=east,mynewstate=1": {
       "model": "chicken_roost:block/breeder_mynewstate",
@@ -16,7 +17,8 @@
       "y": 270
     },
     "facing=north,mynewstate=2": {
-      "model": "chicken_roost:block/breederclosed_mynewstate"
+      "model": "chicken_roost:block/breederclosed_mynewstate",
+      "y": 0
     },
     "facing=east,mynewstate=2": {
       "model": "chicken_roost:block/breederclosed_mynewstate",

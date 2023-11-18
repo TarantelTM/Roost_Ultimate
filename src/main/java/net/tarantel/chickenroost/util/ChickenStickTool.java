@@ -1,65 +1,50 @@
 package net.tarantel.chickenroost.util;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+
 
 public class ChickenStickTool {
-    public static void execute(LevelAccessor world, double x, double y, double z, Entity entity) {
+    public static void execute(WorldAccess world, double x, double y, double z, Entity entity) {
         if (entity == null)
             return;
 
         ItemStack itemchicken = ItemStack.EMPTY;
-        if (entity.getType().is(EntityTagManager.ROOSTCHICKENS)) {
-            String newentity = entity.getEncodeId().toLowerCase();
-            ResourceLocation myEntity = ResourceLocation.tryParse(newentity.toString());
+        if (entity.getType().isIn(EntityTagManager.ROOSTCHICKENS)) {
+            String newentity = ("chicken_roost:" + entity.getType().getUntranslatedName());
+            Identifier myEntity = Identifier.tryParse(newentity.toString());
 
-            itemchicken = new ItemStack(BuiltInRegistries.ITEM.get(myEntity));
+            itemchicken = new ItemStack(Registries.ITEM.get(myEntity));
             System.out.println(newentity);
-            //System.out.println(itemchicken);
-            if (world instanceof Level _level && !_level.isClientSide()) {
+            if (world instanceof World _level && !_level.isClient()) {
                 ItemEntity entityToSpawn = new ItemEntity(_level, x, y, z, itemchicken);
-                entityToSpawn.setPickUpDelay(10);
-                _level.addFreshEntity(entityToSpawn);
+                entityToSpawn.setPickupDelay(10);
+                _level.spawnEntity(entityToSpawn);
             }
 
-            if (!entity.level().isClientSide())
+            if (!entity.getWorld().isClient())
                 entity.discard();
         }
-        if (entity.getType().is(EntityTagManager.VANILLA)) {
+        if (entity.getType().isIn(EntityTagManager.VANILLA)) {
             String newentity = ("chicken_roost:c_vanilla");
-            ResourceLocation myEntity = ResourceLocation.tryParse(newentity.toString());
+            Identifier myEntity = Identifier.tryParse(newentity.toString());
 
-            itemchicken = new ItemStack(BuiltInRegistries.ITEM.get(myEntity));
+            itemchicken = new ItemStack(Registries.ITEM.get(myEntity));
             System.out.println(newentity);
-            if (world instanceof Level _level && !_level.isClientSide()) {
+            if (world instanceof World _level && !_level.isClient()) {
                 ItemEntity entityToSpawn = new ItemEntity(_level, x, y, z, itemchicken);
-                entityToSpawn.setPickUpDelay(10);
-                _level.addFreshEntity(entityToSpawn);
+                entityToSpawn.setPickupDelay(10);
+                _level.spawnEntity(entityToSpawn);
             }
 
-            if (!entity.level().isClientSide())
+            if (!entity.getWorld().isClient())
                 entity.discard();
         }
-
-        /*if (entity.getType().is(EntityTagManager.VANILLAEXTRA)) {
-            String newentity = ("chicken_roost:c_vanillaextra");
-            ResourceLocation myEntity = ResourceLocation.tryParse(newentity.toString());
-
-            itemchicken = new ItemStack(BuiltInRegistries.ITEM.get(myEntity));
-            System.out.println(newentity);
-            if (world instanceof Level _level && !_level.isClientSide()) {
-                ItemEntity entityToSpawn = new ItemEntity(_level, x, y, z, itemchicken);
-                entityToSpawn.setPickUpDelay(10);
-                _level.addFreshEntity(entityToSpawn);
-            }
-
-            if (!entity.level().isClientSide())
-                entity.discard();
-        }*/
     }
 }
+

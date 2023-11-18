@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "fabric:roost/items_tier_8"
+    },
+    {
+      "tag": "fabric:roost/items_tier_8"
+    },
+    {
+      "tag": "fabric:roost/items_tier_8"
+    },
+    {
+      "tag": "fabric:roost/items_tier_8"
+    },
+    {
+      "item": "minecraft:diamond_block"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_7"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_7"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_7"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_7"
+    }
+  ],
+  "result": {
+    "item": "chicken_roost:chicken_food_tier_8",
+    "count": 1
+  }
+}

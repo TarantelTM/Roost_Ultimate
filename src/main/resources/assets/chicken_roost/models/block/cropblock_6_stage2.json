@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "chicken_roost:block/cropblock_6_2"
+  }
+}

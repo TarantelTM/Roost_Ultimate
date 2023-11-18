@@ -1,20 +1,15 @@
 package net.tarantel.chickenroost.client.model;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.util.Mth;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.CubeDeformation;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.EntityModel;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.model.*;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 // Made with Blockbench 4.2.4
 // Exported for Minecraft version 1.17 - 1.18 with Mojang mappings
@@ -22,7 +17,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 public class Modelchicken<T extends Entity> extends EntityModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in
 	// the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("chicken_roost", "modelchicken"), "main");
+	public static final EntityModelLayer LAYER_LOCATION = new EntityModelLayer(new Identifier("chicken_roost", "modelchicken"), "modelchicken");
 	public final ModelPart body;
 	public final ModelPart head;
 	public final ModelPart leg0;
@@ -39,54 +34,57 @@ public class Modelchicken<T extends Entity> extends EntityModel<T> {
 		this.wing1 = root.getChild("wing1");
 	}
 
-	public static LayerDefinition createBodyLayer() {
-		MeshDefinition meshdefinition = new MeshDefinition();
-		PartDefinition partdefinition = meshdefinition.getRoot();
-		PartDefinition body = partdefinition.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.offset(0.0F, 16.0F, 0.0F));
-		PartDefinition body_r1 = body.addOrReplaceChild("body_r1",
-				CubeListBuilder.create().texOffs(0, 9).addBox(-3.0F, -4.0F, -3.0F, 6.0F, 8.0F, 6.0F, new CubeDeformation(0.0F)),
-				PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 1.5708F, 0.0F, 0.0F));
-		PartDefinition head = partdefinition.addOrReplaceChild("head",
-				CubeListBuilder.create().texOffs(0, 0).addBox(-2.0F, -6.0F, -2.0F, 4.0F, 6.0F, 3.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(0.0F, 15.0F, -4.0F));
-		PartDefinition comb = head.addOrReplaceChild("comb",
-				CubeListBuilder.create().texOffs(14, 4).addBox(-1.0F, -2.0F, -3.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(0.0F, 0.0F, 0.0F));
-		PartDefinition beak = head.addOrReplaceChild("beak",
-				CubeListBuilder.create().texOffs(14, 0).addBox(-2.0F, -4.0F, -4.0F, 4.0F, 2.0F, 2.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(0.0F, 0.0F, 0.0F));
-		PartDefinition leg0 = partdefinition.addOrReplaceChild("leg0",
-				CubeListBuilder.create().texOffs(26, 0).addBox(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(-2.0F, 19.0F, 1.0F));
-		PartDefinition leg1 = partdefinition.addOrReplaceChild("leg1",
-				CubeListBuilder.create().texOffs(26, 0).addBox(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(1.0F, 19.0F, 1.0F));
-		PartDefinition wing0 = partdefinition.addOrReplaceChild("wing0",
-				CubeListBuilder.create().texOffs(24, 13).addBox(-1.0F, 0.0F, -3.0F, 1.0F, 4.0F, 6.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(-3.0F, 13.0F, 0.0F));
-		PartDefinition wing1 = partdefinition.addOrReplaceChild("wing1",
-				CubeListBuilder.create().texOffs(24, 13).addBox(0.0F, 0.0F, -3.0F, 1.0F, 4.0F, 6.0F, new CubeDeformation(0.0F)),
-				PartPose.offset(3.0F, 13.0F, 0.0F));
-		return LayerDefinition.create(meshdefinition, 64, 32);
+	public static TexturedModelData createBodyLayer() {
+		ModelData meshdefinition = new ModelData();
+		ModelPartData partdefinition = meshdefinition.getRoot();
+		ModelPartData body = partdefinition.addChild("body", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 16.0F, 0.0F));
+		ModelPartData body_r1 = body.addChild("body_r1",
+				ModelPartBuilder.create().uv(0, 9).cuboid(-3.0F, -4.0F, -3.0F, 6.0F, 8.0F, 6.0F, new Dilation(0.0F)),
+				ModelTransform.of(0.0F, 0.0F, 0.0F, 1.5708F, 0.0F, 0.0F));
+		ModelPartData head = partdefinition.addChild("head",
+				ModelPartBuilder.create().uv(0, 0).cuboid(-2.0F, -6.0F, -2.0F, 4.0F, 6.0F, 3.0F, new Dilation(0.0F)),
+				ModelTransform.pivot(0.0F, 15.0F, -4.0F));
+		ModelPartData comb = head.addChild("comb",
+				ModelPartBuilder.create().uv(14, 4).cuboid(-1.0F, -2.0F, -3.0F, 2.0F, 2.0F, 2.0F, new Dilation(0.0F)),
+				ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData beak = head.addChild("beak",
+				ModelPartBuilder.create().uv(14, 0).cuboid(-2.0F, -4.0F, -4.0F, 4.0F, 2.0F, 2.0F, new Dilation(0.0F)),
+				ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData leg0 = partdefinition.addChild("leg0",
+				ModelPartBuilder.create().uv(26, 0).cuboid(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F, new Dilation(0.0F)),
+				ModelTransform.pivot(-2.0F, 19.0F, 1.0F));
+		ModelPartData leg1 = partdefinition.addChild("leg1",
+				ModelPartBuilder.create().uv(26, 0).cuboid(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F, new Dilation(0.0F)),
+				ModelTransform.pivot(1.0F, 19.0F, 1.0F));
+		ModelPartData wing0 = partdefinition.addChild("wing0",
+				ModelPartBuilder.create().uv(24, 13).cuboid(-1.0F, 0.0F, -3.0F, 1.0F, 4.0F, 6.0F, new Dilation(0.0F)),
+				ModelTransform.pivot(-3.0F, 13.0F, 0.0F));
+		ModelPartData wing1 = partdefinition.addChild("wing1",
+				ModelPartBuilder.create().uv(24, 13).cuboid(0.0F, 0.0F, -3.0F, 1.0F, 4.0F, 6.0F, new Dilation(0.0F)),
+				ModelTransform.pivot(3.0F, 13.0F, 0.0F));
+		return TexturedModelData.of(meshdefinition, 64, 32);
+	}
+
+
+	@Override
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+
+		this.head.yaw = headYaw / (180F / (float) Math.PI);
+		this.head.pitch = headPitch / (180F / (float) Math.PI);
+		this.leg0.pitch = MathHelper.cos(limbAngle * 1.0F) * 1.0F * limbDistance;
+		this.leg1.pitch = MathHelper.cos(limbAngle * 1.0F) * -1.0F * limbDistance;
+		this.wing1.roll = MathHelper.cos(limbAngle * 0.6662F) * limbDistance;
+		this.wing0.roll = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * limbDistance;
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green,
-			float blue, float alpha) {
-		body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		leg0.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		leg1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		wing0.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		wing1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-	}
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
 
-	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.head.yRot = netHeadYaw / (180F / (float) Math.PI);
-		this.head.xRot = headPitch / (180F / (float) Math.PI);
-		this.leg0.xRot = Mth.cos(limbSwing * 1.0F) * 1.0F * limbSwingAmount;
-		this.leg1.xRot = Mth.cos(limbSwing * 1.0F) * -1.0F * limbSwingAmount;
-		this.wing1.zRot = Mth.cos(limbSwing * 0.6662F) * limbSwingAmount;
-		this.wing0.zRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * limbSwingAmount;
+		body.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		leg0.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		leg1.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		wing0.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		wing1.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 	}
 }

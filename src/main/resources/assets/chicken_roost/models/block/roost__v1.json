@@ -1,0 +1,13 @@
+{
+  "parent": "chicken_roost:custom/roostboxandchicken",
+  "render_type": "cutout",
+  "textures": {
+    "all": "chicken_roost:block/roost",
+    "particle": "chicken_roost:block/plain_face_1",
+    "hay": "chicken_roost:block/hay_floor",
+    "chicken": "chicken_roost:block/vanishchicken",
+    "hay_side": "chicken_roost:block/hay_side",
+    "wood": "chicken_roost:block/plain_face_1",
+    "front": "chicken_roost:block/plain_face_1"
+  }
+}

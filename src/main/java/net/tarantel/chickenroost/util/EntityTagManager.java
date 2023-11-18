@@ -1,21 +1,22 @@
 package net.tarantel.chickenroost.util;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityType;
+
+import net.minecraft.entity.EntityType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
+
 
 public class EntityTagManager {
+
     public static final TagKey<EntityType<?>> ROOSTCHICKENS = of("roostultimate");
     public static final TagKey<EntityType<?>> VANILLA = of("vanilla");
-    public static final TagKey<EntityType<?>> VANILLAEXTRA = of("vanillaextra");
 
     private EntityTagManager() {
-
 
     }
 
     private static TagKey<EntityType<?>> of(String id) {
-        return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge",id));
+        return TagKey.of(Registries.ENTITY_TYPE.getKey(), new Identifier("fabric",id));
     }
 }

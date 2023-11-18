@@ -1,0 +1,14 @@
+{
+  "type": "chicken_roost:roost",
+  "ingredients": [
+    {
+      "item": "chicken_roost:chicken_food_tier_1"
+    },
+    {
+      "item": "chicken_roost:c_tnt"
+    }
+  ],
+  "output": {
+    "item": "minecraft:gunpowder"
+  }
+}

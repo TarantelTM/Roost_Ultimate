@@ -1,0 +1,6 @@
+{
+  "parent": "chicken_roost:custom/renderchicken",
+  "textures": {
+    "chicken": "chicken_roost:block/quartzchicken"
+  }
+}

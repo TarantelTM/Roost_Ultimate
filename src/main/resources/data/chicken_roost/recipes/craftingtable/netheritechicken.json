@@ -1,37 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "012",
-    "345",
-    "678"
+    "000",
+    "010",
+    "000"
   ],
   "key": {
     "0": {
       "item": "minecraft:netherite_block"
     },
     "1": {
-      "item": "minecraft:netherite_block"
-    },
-    "2": {
-      "item": "minecraft:netherite_block"
-    },
-    "3": {
-      "item": "minecraft:netherite_block"
-    },
-    "4": {
       "item": "chicken_roost:chicken_essence_tier_7"
-    },
-    "5": {
-      "item": "minecraft:netherite_block"
-    },
-    "6": {
-      "item": "minecraft:netherite_block"
-    },
-    "7": {
-      "item": "minecraft:netherite_block"
-    },
-    "8": {
-      "item": "minecraft:netherite_block"
     }
   },
   "result": {

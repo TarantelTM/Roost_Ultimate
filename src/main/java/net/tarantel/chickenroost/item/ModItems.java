@@ -1,268 +1,319 @@
 package net.tarantel.chickenroost.item;
 
-
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.*;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.item.AliasedBlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.tarantel.chickenroost.ChickenRoostMod;
-import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.block.ModBlocks;
 
 public class ModItems {
 
-	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ChickenRoostMod.MODID);
-	public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ChickenRoostMod.MODID);
+    public static final Item CHICKEN_STICK = registerItem("chicken_stick", new ChickenStickItem(new FabricItemSettings()));
 
-	public static final RegistryObject<Item> INGOT_ELECTRUM = ITEMS.register("ingot_electrum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_electrum"));
-	public static final RegistryObject<Item> CHICKEN_BOOK = ITEMS.register("book", () -> new ChickenBook(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
-	public static final RegistryObject<Item> INGOT_SILVER = ITEMS.register("ingot_silver", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_silver"));
-	public static final RegistryObject<Item> INGOT_ZINC = ITEMS.register("ingot_zinc", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_zinc"));
-
-	public static final RegistryObject<Item> INGOT_BRONZE = ITEMS.register("ingot_bronze", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_bronze"));
-	public static final RegistryObject<Item> INGOT_LEAD = ITEMS.register("ingot_lead", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_lead"));
-	public static final RegistryObject<Item> INGOT_STEEL = ITEMS.register("ingot_steel", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_steel"));
-	public static final RegistryObject<Item> INGOT_TIN = ITEMS.register("ingot_tin", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_tin"));
-	public static final RegistryObject<Item> INGOT_URANIUM = ITEMS.register("ingot_uranium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_uranium"));
+    //public static final Item CHICKEN_SCANNER = registerItem("chicken_scanner", new ChickenScannerItem(new FabricItemSettings()));
 
 
-	public static final RegistryObject<Item> INGOT_ALUMINUM = ITEMS.register("ingot_aluminum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_aluminum"));
-	public static final RegistryObject<Item> INGOT_CHROME = ITEMS.register("ingot_chrome", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_chrome"));
-
-	public static final RegistryObject<Item> INGOT_INVAR = ITEMS.register("ingot_invar", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_invar"));
-	public static final RegistryObject<Item> INGOT_IRIDIUM = ITEMS.register("ingot_iridium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_iridium"));
-
-	public static final RegistryObject<Item> INGOT_NICKEL = ITEMS.register("ingot_nickel", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_nickel"));
-	public static final RegistryObject<Item> INGOT_PLATINUM = ITEMS.register("ingot_platinum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_platinum"));
-
-	public static final RegistryObject<Item> INGOT_TITANUM = ITEMS.register("ingot_titanum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_titanum"));
-	public static final RegistryObject<Item> INGOT_TUNGSTEN = ITEMS.register("ingot_tungsten", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_tungsten"));
-	public static final RegistryObject<Item> INGOT_TUNGSTENSTEEL = ITEMS.register("ingot_tungstensteel", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_tungstensteel"));
 
 
-	public static final RegistryObject<Item> INGOT_ENDERIUM = ITEMS.register("ingot_enderium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_enderium"));
-	public static final RegistryObject<Item> INGOT_ADAMANTIUM = ITEMS.register("ingot_adamantium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_adamantium"));
-	public static final RegistryObject<Item> INGOT_LUMIUM = ITEMS.register("ingot_lumium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_lumium"));
-	public static final RegistryObject<Item> INGOT_SIGNALUM = ITEMS.register("ingot_signalum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_signalum"));
-
-	//region Chicken - Tier 1
-	public static final RegistryObject<Item> E_CHICKEN_COBBLE = ITEMS.register("c_cobble", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "graychicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SAND = ITEMS.register("c_sand", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "sandchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_GRAVEL = ITEMS.register("c_gravel", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "graychicken"));
-	public static final RegistryObject<Item> E_CHICKEN_GRANIT = ITEMS.register("c_granit", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "garnetchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ANDESITE = ITEMS.register("c_andesite", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blackchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BIRCHWOOD = ITEMS.register("c_birchwood", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "whitechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_OAKWOOD = ITEMS.register("c_oakwood", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brownchicken"));
-	public static final RegistryObject<Item> ECHICKENQUEENSLIME = ITEMS.register("c_queenslime", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "yellowgarnetchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_TINTEDGLASS = ITEMS.register("c_tintedglass", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "glasschicken"));
-	public static final RegistryObject<Item> ECHICKENFEATHER = ITEMS.register("c_feather", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ghastchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_PRISMARINE_SHARD = ITEMS.register("c_prismarineshard", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "saltchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_NETHER_BRICK = ITEMS.register("c_netherbrick", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brownchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_DARK_OAK = ITEMS.register("c_darkoak", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brownchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ACACIAWOOD = ITEMS.register("c_acaciawood", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brownchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_JUNGLEWOOD = ITEMS.register("c_junglewood", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "pulsatingironchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_NAUTILUS_SHELL = ITEMS.register("c_nautilusshell", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "conductiveironchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_HONEYCOMB = ITEMS.register("c_honeycomb", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "yellowchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_DIORITE = ITEMS.register("c_diorite", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "iridiumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_STONE = ITEMS.register("c_stone", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "stoneburntchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_AMETHYST_SHARD = ITEMS.register("c_amethystshard", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "amethystchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_WOOL = ITEMS.register("c_wool", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "enoricrystalchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SPRUCEWOOD = ITEMS.register("c_sprucewood", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brownchicken"));
-	public static final RegistryObject<Item> CHICKENCHICKEN = ITEMS.register("c_vanilla", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "saltchicken"));
-	//endregion
-
-	//region Chicken - Tier 2
-	public static final RegistryObject<Item> E_CHICKEN_FLINT = ITEMS.register("c_flint", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "flintchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_CRIMSTON_STEM = ITEMS.register("c_crimstonstem", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brownchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_WARPED_STEM = ITEMS.register("c_warpedstem", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brownchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_GLASS = ITEMS.register("c_glass", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "glasschicken"));
-	public static final RegistryObject<Item> E_CHICKEN_NETHERRACK = ITEMS.register("c_netherrack", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "netherwartchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_INK = ITEMS.register("c_ink", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blackchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_PAPER = ITEMS.register("c_paper", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "platinumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SUGAR = ITEMS.register("c_sugar", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "enoricrystalchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BONE_MEAL = ITEMS.register("c_bonemeal", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "whitechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BONE = ITEMS.register("c_bone", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "whitechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_COAL = ITEMS.register("c_coal", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "coalchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_CHAR_COAL = ITEMS.register("c_charcoal", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "coalchicken"));
-	public static final RegistryObject<Item> ECHICKENSNOW = ITEMS.register("c_snow", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "snowballchicken"));
-	public static final RegistryObject<Item> ECHICKENAPPLE = ITEMS.register("c_apple", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "restoniacrystalchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_MELON = ITEMS.register("c_melon", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "greenchicken"));
-	public static final RegistryObject<Item> E_CHICKENGLOWBERRIES = ITEMS.register("c_glowberries", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "glowstonechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SWEETBERRIES = ITEMS.register("c_sweetberries", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "redstonecrystalchicken"));
-	public static final RegistryObject<Item> E_CHICKENBEETROOT = ITEMS.register("c_beetroot", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "redstonealloychicken"));
-	public static final RegistryObject<Item> E_CHICKENCARROT = ITEMS.register("c_carrot", () -> new AnimatedChicken_2(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "energeticalloychicken"));
-	//endregion
-
-	//region Chicken - Tier 3
-
-	public static final RegistryObject<Item> E_CHICKEN_COPPER = ITEMS.register("c_copper", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "copperchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BOTANIA_LIVINGROCK = ITEMS.register("c_livingrock", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "moonstonechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BOTANIA_LIVINGWOOD = ITEMS.register("c_livingwood", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "magicalwoodchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SOUL_SAND = ITEMS.register("c_soulsand", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "soulsandchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SOUL_SOIL = ITEMS.register("c_soulsoil", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "soulariumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BASALT = ITEMS.register("c_basalt", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "basalzrodchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_CLAY = ITEMS.register("c_clay", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "claychicken"));
-	public static final RegistryObject<Item> E_CHICKEN_RABBIT_HIDE = ITEMS.register("c_rabbithide", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "bronzechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_LEATHER = ITEMS.register("c_leather", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "bronzechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_STRING = ITEMS.register("c_string", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "destructioncorechicken"));
-	public static final RegistryObject<Item> ECHICKENSPONGE = ITEMS.register("c_sponge", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brasschicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SPIDEREYE = ITEMS.register("c_spidereye", () -> new AnimatedChicken_3(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "redstonealloychicken"));
-	//endregion
-
-	//region Chicken - Tier 4
-	public static final RegistryObject<Item> E_CHICKEN_IRON = ITEMS.register("c_iron", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ironchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_REDSTONE = ITEMS.register("c_redstone", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "redchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_LAPIS = ITEMS.register("c_lapis", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "lightbluechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_OBSIDIAN = ITEMS.register("c_obsidian", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "obsidianchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SLIME = ITEMS.register("c_slime", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "slimechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_MEKANISM_TIN = ITEMS.register("c_tin", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "quartzenrichedironchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_MEKANISM_LEAD = ITEMS.register("c_lead", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "leadchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_NETHER_WART = ITEMS.register("c_netherwart", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "netherwartchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_MAGMACREAM = ITEMS.register("c_magmacream", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "magmachicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ROTTEN = ITEMS.register("c_rotten", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "richslagchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ZINC = ITEMS.register("c_zinc", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "zincchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ALUMINIUM = ITEMS.register("c_aluminium", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "aluminumchicken"));
-	public static final RegistryObject<Item> ECHICKENNITER = ITEMS.register("c_niter", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "vinteumchicken"));
-	public static final RegistryObject<Item> ECHICKENCINNABAR = ITEMS.register("c_cinnabar", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "cinnabarchicken"));
-	public static final RegistryObject<Item> ECHICKENCOKE = ITEMS.register("c_coke", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "coalchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_TAR = ITEMS.register("c_tar", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blackquartzchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SULFUR = ITEMS.register("c_sulfur", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "sulfurchicken"));
-	public static final RegistryObject<Item> ECHICKENAPATITE = ITEMS.register("c_apatite", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "sapphirechicken"));
-	public static final RegistryObject<Item> ECHICKENBASALZ = ITEMS.register("c_basalz", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "basalzrodchicken"));
-	public static final RegistryObject<Item> ECHICKENBITUMEN = ITEMS.register("c_bitumen", () -> new AnimatedChicken_4(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "coalchicken"));
-	//endregion
-
-	//region Chicken - Tier 5
-	public static final RegistryObject<Item> E_CHICKEN_GOLD = ITEMS.register("c_gold", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "goldchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_AE_SILICON = ITEMS.register("c_silicon", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "siliconchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BOTANIA_MANASTEEL = ITEMS.register("c_manasteel", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "manasteelchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_QUARTZ = ITEMS.register("c_quartz", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "quartzchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_TNT = ITEMS.register("c_tnt", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "gunpowderchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_GLOWSTONE = ITEMS.register("c_glowstone", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "glowstonechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BLAZE_ROD = ITEMS.register("c_blazerod", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blazechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ENDER_PEARL = ITEMS.register("c_enderpearl", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "enderchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_CHORUS_FRUIT = ITEMS.register("c_chorusfruit", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "magentachicken"));
-	public static final RegistryObject<Item> E_CHICKENBLAZEPOWDER = ITEMS.register("c_blazepowder", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blazechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SILVER = ITEMS.register("c_silver", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "silverorechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_CHROME = ITEMS.register("c_chrome", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "chromechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_REFINED_IRON = ITEMS.register("c_refinediron", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "refinedironchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ENDSTONE = ITEMS.register("c_endstone", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "bulletchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_SIGNALUM = ITEMS.register("c_signalum", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "signalumchicken"));
-	public static final RegistryObject<Item> ECHICKENLUMIUM = ITEMS.register("c_lumium", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "lumiumchicken"));
-	public static final RegistryObject<Item> ECHICKENCONSTANTAN = ITEMS.register("c_constantan", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "constantanchicken"));
-	public static final RegistryObject<Item> ECHICKENENDERIUM = ITEMS.register("c_enderium", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "enderiumchicken"));
-	public static final RegistryObject<Item> ECHICKENQUARTZENRICHEDIRON = ITEMS.register("c_quartzenrichediron", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "quartzenrichedironchicken"));
-	public static final RegistryObject<Item> ECHICKENBLITZ = ITEMS.register("c_blitz", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blitzrodchicken"));
-	public static final RegistryObject<Item> ECHICKENBLIZZ = ITEMS.register("c_blizz", () -> new AnimatedChicken_5(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blizzrodchicken"));
-	//endregion
-
-	//region Chicken - Tier 6
-	public static final RegistryObject<Item> E_OSMIUM_CHICKEN = ITEMS.register("c_osmium", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "osmiumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_CERTUSQ = ITEMS.register("c_certusquartz", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "quartzenrichedironchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_MEKANISM_BRONZE = ITEMS.register("c_bronze", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "bronzechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_MEKANISM_STEEL = ITEMS.register("c_steel", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "steelchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_MEKANISM_URANIUM = ITEMS.register("c_uranium", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "uraniumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_MEKANISM_BIO_FUEL = ITEMS.register("c_biofuel", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "enderiumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_EMERALD = ITEMS.register("c_emerald", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "emeradiccrystalchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ENDER_EYE = ITEMS.register("c_endereye", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "enderchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_GHASTTEAR = ITEMS.register("c_ghasttear", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ghastchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BRASS = ITEMS.register("c_brass", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "brasschicken"));
-	public static final RegistryObject<Item> ECHICKENAMETHYSTBRONZE = ITEMS.register("c_amethystbronze", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "purplechicken"));
-	public static final RegistryObject<Item> ECHICKENSLIMESTEEL = ITEMS.register("c_slimesteel", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "sapphirechicken"));
-	public static final RegistryObject<Item> ECHICKENROSEGOLD = ITEMS.register("c_rosegold", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "pinkslimechicken"));
-	public static final RegistryObject<Item> ECHICKENHEPATIZON = ITEMS.register("c_hepatizon", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "tanzanitechicken"));
-	public static final RegistryObject<Item> ECHICKENKNIGHTSLIME = ITEMS.register("c_knightslime", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "knightslimechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_TUNGSTEN = ITEMS.register("c_tungsten", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "tungstenchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_YELLORIUM = ITEMS.register("c_yellorium", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "yelloriumchicken"));
-	public static final RegistryObject<Item> ECHICKENPIGIRON = ITEMS.register("c_pigiron", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "pigironchicken"));
-	public static final RegistryObject<Item> ECHICKENRUBY = ITEMS.register("c_ruby", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "rubychicken"));
-	public static final RegistryObject<Item> ECHICKENSAPPHIRE = ITEMS.register("c_sapphire", () -> new AnimatedChicken_6(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "sapphirechicken"));
-	//endregion
-
-	//region Chicken - Tier 7
-	public static final RegistryObject<Item> E_CHICKEN_DIAMOND = ITEMS.register("c_diamond", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "diamondchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_AE_FLUIX_CRYSTAL = ITEMS.register("c_fluixcrystal", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "lunarreactivedustchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_AE_CHARGED_CERTUS = ITEMS.register("c_chargedcertus", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "quartzchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BOTANIA_TERRASTEEL = ITEMS.register("c_terrasteel", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "terrasteelchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BOTANIA_ELEMENTIUM = ITEMS.register("c_elementium", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "elementiumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_NETHER_STAR = ITEMS.register("c_netherstar", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blitzrodchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_NETHERITE = ITEMS.register("c_netherite", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "netherwartchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_NICKEL = ITEMS.register("c_nickel", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "nickelchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ELECTRUM = ITEMS.register("c_electrum", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "electrumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_HOT_TUNGSTEN_STEEL = ITEMS.register("c_hottungstensteel", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "silverorechicken"));
-	public static final RegistryObject<Item> E_CHICKEN_INVAR = ITEMS.register("c_invar", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "invarchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_BLUTONIUM = ITEMS.register("c_blutonium", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "blutoniumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_ALLTHEMODIUM = ITEMS.register("c_allthemodium", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "energeticalloychicken"));
-	public static final RegistryObject<Item> E_CHICKEN_TUNGSTENSTEEL = ITEMS.register("c_tungstensteel", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "tungstensteelchicken"));
-	public static final RegistryObject<Item> ECHICKENCOBALD = ITEMS.register("c_cobald", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "cobaltchicken"));
-	public static final RegistryObject<Item> ECHICKENMANYULLYN = ITEMS.register("c_manyullyn", () -> new AnimatedChicken_7(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "manyullynchicken"));
-	//endregion
-
-	//region Chicken - Tier 8
-	public static final RegistryObject<Item> E_CHICKEN_ADAMANTIUM = ITEMS.register("c_adamantium", () -> new AnimatedChicken_8(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "emeradiccrystalchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_IRIDIUM = ITEMS.register("c_iridium", () -> new AnimatedChicken_8(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "iridiumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_PLATINUM = ITEMS.register("c_platinum", () -> new AnimatedChicken_8(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "platinumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_VIBRANIUM = ITEMS.register("c_vibranium", () -> new AnimatedChicken_8(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "vibrantalloychicken"));
-	//endregion
-
-	//region Chicken - Tier 9
-	public static final RegistryObject<Item> E_CHICKEN_TITANIUM = ITEMS.register("c_titanium", () -> new AnimatedChicken_9(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "titaniumchicken"));
-	public static final RegistryObject<Item> E_CHICKEN_UNOBTAINIUM = ITEMS.register("c_unobtainium", () -> new AnimatedChicken_9(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "vinteumchicken"));
-	//endregion
-
-	//region Tools
-	public static final RegistryObject<Item> CHICKEN_SCANNER = ITEMS.register("chicken_scanner", () -> new ChickenScannerItem());
-	public static final RegistryObject<Item> CHICKEN_STICK = ITEMS.register("chicken_stick", () -> new AnimatedChickenStick(new Item.Properties()));
-	//endregion
-
-	//region Essence
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_1 = ITEMS.register("chicken_essence_tier_1", () -> new Essence_Soul());
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_2 = ITEMS.register("chicken_essence_tier_2", () -> new Essence_Soul());
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_3 = ITEMS.register("chicken_essence_tier_3", () -> new Essence_Soul());
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_4 = ITEMS.register("chicken_essence_tier_4", () -> new Essence_Soul());
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_5 = ITEMS.register("chicken_essence_tier_5", () -> new Essence_Soul());
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_6 = ITEMS.register("chicken_essence_tier_6", () -> new Essence_Soul());
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_7 = ITEMS.register("chicken_essence_tier_7", () -> new Essence_Soul());
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_8 = ITEMS.register("chicken_essence_tier_8", () -> new Essence_Soul());
-	public static final RegistryObject<Item> CHICKEN_ESSENCE_TIER_9 = ITEMS.register("chicken_essence_tier_9", () -> new Essence_Soul());
-	//endregion
+    /////SEEDS
 
 
-	//region SEEDS
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_1 = ITEMS.register("chicken_food_tier_1", () -> new ModItemNameBlockItem_1(ModBlocks.SEED_CROP_1.get(), new Item.Properties()));
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_2 = ITEMS.register("chicken_food_tier_2", () -> new ModItemNameBlockItem_2(ModBlocks.SEED_CROP_2.get(), new Item.Properties()));
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_3 = ITEMS.register("chicken_food_tier_3", () -> new ModItemNameBlockItem_3(ModBlocks.SEED_CROP_3.get(), new Item.Properties()));
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_4 = ITEMS.register("chicken_food_tier_4", () -> new ModItemNameBlockItem_4(ModBlocks.SEED_CROP_4.get(), new Item.Properties()));
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_5 = ITEMS.register("chicken_food_tier_5", () -> new ModItemNameBlockItem_5(ModBlocks.SEED_CROP_5.get(), new Item.Properties()));
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_6 = ITEMS.register("chicken_food_tier_6", () -> new ModItemNameBlockItem_6(ModBlocks.SEED_CROP_6.get(), new Item.Properties()));
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_7 = ITEMS.register("chicken_food_tier_7", () -> new ModItemNameBlockItem_7(ModBlocks.SEED_CROP_7.get(), new Item.Properties()));
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_8 = ITEMS.register("chicken_food_tier_8", () -> new ModItemNameBlockItem_8(ModBlocks.SEED_CROP_8.get(), new Item.Properties()));
-	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_9 = ITEMS.register("chicken_food_tier_9", () -> new ModItemNameBlockItem_9(ModBlocks.SEED_CROP_9.get(), new Item.Properties()));
-	//endregion
+    /////TIER 1
+    public static final Item C_COBBLE = registerItem("c_cobble", new chicken_tier_1(new FabricItemSettings())); //O
+    //public static final Item EGG_C_COBBLE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
 
-	//public static final RegistryObject<BlockItem> SOUL_BREEDER = ITEMS.register("soul_breeder",
-	//		() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(),
-	//				new Item.Properties()));
-	/*public static final RegistryObject<Item> ANIMATED_BLOCK_ITEM = ITEMS.register("soul_breeder",
-			() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(), new Item.Properties()));*/
-	/*public static final RegistryObject<BlockItem> ANIMATED_BLOCK_ITEM = ITEMS.register("soul_breeder",
-			() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(),
-					new Item.Properties()));*/
+    public static final Item C_OAKWOOD = registerItem("c_oakwood", new chicken_tier_1(new FabricItemSettings()));//O
+    //////public static final Item EGG_C_OAKWOOD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_ANDESITE = registerItem("c_andesite", new chicken_tier_1(new FabricItemSettings()));//X
+    //////public static final Item EGG_C_ANDESITE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_SAND = registerItem("c_sand", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_SAND = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_VANILLA = registerItem("c_vanilla", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_VANILLA = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_GRAVEL = registerItem("c_gravel", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_GRAVEL = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_DARKOAKWOOD = registerItem("c_darkoakwood", new chicken_tier_1(new FabricItemSettings()));//O
+    /////public static final Item EGG_C_DARKOAKWOOD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_GRANIT = registerItem("c_granit", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_GRANIT = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_BIRCHWOOD = registerItem("c_birchwood", new chicken_tier_1(new FabricItemSettings()));//O
+    /////public static final Item EGG_C_BIRCHWOOD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_SPRUCEWOOD = registerItem("c_sprucewood", new chicken_tier_1(new FabricItemSettings()));//O
+    /////public static final Item EGG_C_SPRUCEWOOD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_HONEYCOMB = registerItem("c_honeycomb", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_HONEYCOMB = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_FEATHER = registerItem("c_feather", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_FEATHER = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_WOOL = registerItem("c_wool", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_WOOL = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_ACACIAWOOD = registerItem("c_acaciawood", new chicken_tier_1(new FabricItemSettings()));//X
+    /////public static final Item EGG_C_ACACIAWOOD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_STONE = registerItem("c_stone", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_STONE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_DIORITE = registerItem("c_diorite", new chicken_tier_1(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_DIORITE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_JUNGLEWOOD = registerItem("c_junglewood", new chicken_tier_1(new FabricItemSettings()));//O
+    /////public static final Item EGG_C_JUNGLEWOOD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
 
-	/*private static RegistryObject<Item> block(RegistryObject<Block> block, CreativeModeTab tab) {
-		return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
-	}*/
 
-	public static final RegistryObject<BlockItem> SOUL_BREEDER = ITEMS.register("soul_breeder",
-			() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(),
-					new Item.Properties()));
-	public static final RegistryObject<BlockItem> TRAINER = ITEMS.register("trainer",
-			() -> new AnimatedTrainerBlockItem(ModBlocks.TRAINER.get(),
-					new Item.Properties()));
+    /////TIER 2
 
-	public static void register(IEventBus eventBus) {
-		ITEMS.register(eventBus);
-	}
+    public static final Item C_MELON = registerItem("c_melon", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_MELON = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_WARPEDSTEM = registerItem("c_warpedstem", new chicken_tier_2(new FabricItemSettings()));//O
+    /////public static final Item EGG_C_WARPEDSTEM = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_NETHERRACK = registerItem("c_netherrack", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_NETHERRACK = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_SNOW = registerItem("c_snow", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_SNOW = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_GLASS = registerItem("c_glass", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_GLASS = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_SUGAR = registerItem("c_sugar", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_SUGAR = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_CRIMSONSTEM = registerItem("c_crimsonstem", new chicken_tier_2(new FabricItemSettings()));//O
+    /////public static final Item EGG_C_CRIMSONSTEM = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_FLINT = registerItem("c_flint", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_FLINT = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_APPLE = registerItem("c_apple", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_APPLE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_BONE = registerItem("c_bone", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_BONE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_COAL = registerItem("c_coal", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_COAL = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_CARROT = registerItem("c_carrot", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_CARROT = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_INK = registerItem("c_ink", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_INK = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_BEETROOT = registerItem("c_beetroot", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_BEETROOT = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_SWEETBERRIES = registerItem("c_sweetberries", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_SWEETBERRIES = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_GLOWBERRIES = registerItem("c_glowberries", new chicken_tier_2(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_GLOWBERRIES = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    /////TIER 3
+    public static final Item C_SOULSOIL = registerItem("c_soulsoil", new chicken_tier_3(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_SOULSOIL = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+    public static final Item C_STRING = registerItem("c_string", new chicken_tier_3(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_STRING = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_BASALT = registerItem("c_basalt", new chicken_tier_3(new FabricItemSettings()));//X
+    ///public static final Item EGG_C_BASALT = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_COPPER = registerItem("c_copper", new chicken_tier_3(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_COPPER = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_CLAY = registerItem("c_clay", new chicken_tier_3(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_CLAY = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_SOULSAND = registerItem("c_soulsand", new chicken_tier_3(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_SOULSAND = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_SPONGE = registerItem("c_sponge", new chicken_tier_3(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_SPONGE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_LEATHER = registerItem("c_leather", new chicken_tier_3(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_LEATHER = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    /////TIER 4
+    public static final Item C_NETHERWART = registerItem("c_netherwart", new chicken_tier_4(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_NETHERWART = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_REDSTONE = registerItem("c_redstone", new chicken_tier_4(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_REDSTONE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_LAPIS = registerItem("c_lapis", new chicken_tier_4(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_LAPIS = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_OBSIDIAN = registerItem("c_obsidian", new chicken_tier_4(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_OBSIDIAN = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_MAGMACREAM = registerItem("c_magmacream", new chicken_tier_4(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_MAGMACREAM = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_IRON = registerItem("c_iron", new chicken_tier_4(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_IRON = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_ROTTEN = registerItem("c_rotten", new chicken_tier_4(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_ROTTEN = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_SLIME = registerItem("c_slime", new chicken_tier_4(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_SLIME = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    /////TIER 5
+    public static final Item C_CHORUSFRUIT = registerItem("c_chorusfruit", new chicken_tier_5(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_CHORUSFRUIT = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_GLOWSTONE = registerItem("c_glowstone", new chicken_tier_5(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_GLOWSTONE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_ENDSTONE = registerItem("c_endstone", new chicken_tier_5(new FabricItemSettings()));//X
+    ///public static final Item EGG_C_ENDSTONE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_GOLD = registerItem("c_gold", new chicken_tier_5(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_GOLD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_BLAZEROD = registerItem("c_blazerod", new chicken_tier_5(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_BLAZEROD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_NETHERQUARTZ = registerItem("c_netherquartz", new chicken_tier_5(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_NETHERQUARTZ = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_TNT = registerItem("c_tnt", new chicken_tier_5(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_TNT = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_ENDERPEARL = registerItem("c_enderpearl", new chicken_tier_5(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_ENDERPEARL = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+
+    /////TIER 6
+    public static final Item C_EMERALD = registerItem("c_emerald", new chicken_tier_6(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_EMERALD = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_GHASTTEAR = registerItem("c_ghasttear", new chicken_tier_6(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_GHASTTEAR = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    /////TIER 7
+    public static final Item C_DIAMOND = registerItem("c_diamond", new chicken_tier_7(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_DIAMOND = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_NETHERITE = registerItem("c_netherite", new chicken_tier_7(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_NETHERITE = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+    public static final Item C_NETHERSTAR = registerItem("c_netherstar", new chicken_tier_7(new FabricItemSettings()));//O
+    ///public static final Item EGG_C_NETHERSTAR = new SpawnEggItem(ModEntities.C_COBBLE, 0xc4c4c4, 0xadadad, new FabricItemSettings().group(ModItemGroup.EGGS));
+
+
+
+    public static final Item CHICKEN_ESSENCE_TIER_1 = registerItem("chicken_essence_tier_1",
+            new Chickenessence1Item(new FabricItemSettings()));
+    public static final Item CHICKEN_ESSENCE_TIER_2 = registerItem("chicken_essence_tier_2",
+            new ChickenEssenceTier2Item(new FabricItemSettings()));
+    public static final Item CHICKEN_ESSENCE_TIER_3 = registerItem("chicken_essence_tier_3",
+            new ChickenEssenceTier3Item(new FabricItemSettings()));
+    public static final Item CHICKEN_ESSENCE_TIER_4 = registerItem("chicken_essence_tier_4",
+            new ChickenEssenceTier4Item(new FabricItemSettings()));
+    public static final Item CHICKEN_ESSENCE_TIER_5 = registerItem("chicken_essence_tier_5",
+            new ChickenEssenceTier5Item(new FabricItemSettings()));
+    public static final Item CHICKEN_ESSENCE_TIER_6 = registerItem("chicken_essence_tier_6",
+            new ChickenEssenceTier6Item(new FabricItemSettings()));
+    public static final Item CHICKEN_ESSENCE_TIER_7 = registerItem("chicken_essence_tier_7",
+            new ChickenEssenceTier7Item(new FabricItemSettings()));
+    public static final Item CHICKEN_ESSENCE_TIER_8 = registerItem("chicken_essence_tier_8",
+            new ChickenEssenceTier8Item(new FabricItemSettings()));
+    public static final Item CHICKEN_ESSENCE_TIER_9 = registerItem("chicken_essence_tier_9",
+            new ChickenEssenceTier9Item(new FabricItemSettings()));
+
+    /////SEEDS
+    public static final Item CHICKEN_FOOD_TIER_1 = registerItem("chicken_food_tier_1", new AliasedBlockItem(ModBlocks.CROPBLOCK_1,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+    public static final Item CHICKEN_FOOD_TIER_2 = registerItem("chicken_food_tier_2", new AliasedBlockItem(ModBlocks.CROPBLOCK_2,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+    public static final Item CHICKEN_FOOD_TIER_3 = registerItem("chicken_food_tier_3", new AliasedBlockItem(ModBlocks.CROPBLOCK_3,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+    public static final Item CHICKEN_FOOD_TIER_4 = registerItem("chicken_food_tier_4", new AliasedBlockItem(ModBlocks.CROPBLOCK_4,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+    public static final Item CHICKEN_FOOD_TIER_5 = registerItem("chicken_food_tier_5", new AliasedBlockItem(ModBlocks.CROPBLOCK_5,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+    public static final Item CHICKEN_FOOD_TIER_6 = registerItem("chicken_food_tier_6", new AliasedBlockItem(ModBlocks.CROPBLOCK_6,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+    public static final Item CHICKEN_FOOD_TIER_7 = registerItem("chicken_food_tier_7", new AliasedBlockItem(ModBlocks.CROPBLOCK_7,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+    public static final Item CHICKEN_FOOD_TIER_8 = registerItem("chicken_food_tier_8", new AliasedBlockItem(ModBlocks.CROPBLOCK_8,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+    public static final Item CHICKEN_FOOD_TIER_9 = registerItem("chicken_food_tier_9", new AliasedBlockItem(ModBlocks.CROPBLOCK_9,new FabricItemSettings().maxCount(64).rarity(Rarity.COMMON)));
+
+    private static Item registerItem(String name, Item item) {
+        return Registry.register(Registries.ITEM, new Identifier(ChickenRoostMod.MODID, name), item);
+    }
+
+
+    /*public static void addItemsToItemGroups() {
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_STICK);
+        addToItemGroup(ModItemGroup.BLOCKS, C_COBBLE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_OAKWOOD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_ANDESITE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SAND);
+        addToItemGroup(ModItemGroup.BLOCKS, C_VANILLA);
+        addToItemGroup(ModItemGroup.BLOCKS, C_GRAVEL);
+        addToItemGroup(ModItemGroup.BLOCKS, C_DARKOAKWOOD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_GRANIT);
+        addToItemGroup(ModItemGroup.BLOCKS, C_BIRCHWOOD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SPRUCEWOOD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_HONEYCOMB);
+        addToItemGroup(ModItemGroup.BLOCKS, C_FEATHER);
+        addToItemGroup(ModItemGroup.BLOCKS, C_WOOL);
+        addToItemGroup(ModItemGroup.BLOCKS, C_ACACIAWOOD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_STONE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_DIORITE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_JUNGLEWOOD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_MELON);
+        addToItemGroup(ModItemGroup.BLOCKS, C_WARPEDSTEM);
+        addToItemGroup(ModItemGroup.BLOCKS, C_NETHERRACK);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SNOW);
+        addToItemGroup(ModItemGroup.BLOCKS, C_GLASS);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SUGAR);
+        addToItemGroup(ModItemGroup.BLOCKS, C_CRIMSONSTEM);
+        addToItemGroup(ModItemGroup.BLOCKS, C_FLINT);
+        addToItemGroup(ModItemGroup.BLOCKS, C_APPLE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_BONE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_COAL);
+        addToItemGroup(ModItemGroup.BLOCKS, C_CARROT);
+        addToItemGroup(ModItemGroup.BLOCKS, C_INK);
+        addToItemGroup(ModItemGroup.BLOCKS, C_BEETROOT);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SWEETBERRIES);
+        addToItemGroup(ModItemGroup.BLOCKS, C_GLOWBERRIES);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SOULSOIL);
+        addToItemGroup(ModItemGroup.BLOCKS, C_STRING);
+        addToItemGroup(ModItemGroup.BLOCKS, C_BASALT);
+        addToItemGroup(ModItemGroup.BLOCKS, C_COPPER);
+        addToItemGroup(ModItemGroup.BLOCKS, C_CLAY);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SOULSAND);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SPONGE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_LEATHER);
+        addToItemGroup(ModItemGroup.BLOCKS, C_NETHERWART);
+        addToItemGroup(ModItemGroup.BLOCKS, C_REDSTONE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_LAPIS);
+        addToItemGroup(ModItemGroup.BLOCKS, C_OBSIDIAN);
+        addToItemGroup(ModItemGroup.BLOCKS, C_MAGMACREAM);
+        addToItemGroup(ModItemGroup.BLOCKS, C_IRON);
+        addToItemGroup(ModItemGroup.BLOCKS, C_ROTTEN);
+        addToItemGroup(ModItemGroup.BLOCKS, C_SLIME);
+        addToItemGroup(ModItemGroup.BLOCKS, C_CHORUSFRUIT);
+        addToItemGroup(ModItemGroup.BLOCKS, C_GLOWSTONE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_ENDSTONE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_GOLD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_BLAZEROD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_NETHERQUARTZ);
+        addToItemGroup(ModItemGroup.BLOCKS, C_TNT);
+        addToItemGroup(ModItemGroup.BLOCKS, C_ENDERPEARL);
+        addToItemGroup(ModItemGroup.BLOCKS, C_EMERALD);
+        addToItemGroup(ModItemGroup.BLOCKS, C_GHASTTEAR);
+        addToItemGroup(ModItemGroup.BLOCKS, C_DIAMOND);
+        addToItemGroup(ModItemGroup.BLOCKS, C_NETHERITE);
+        addToItemGroup(ModItemGroup.BLOCKS, C_NETHERSTAR);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_1);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_2);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_3);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_4);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_5);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_6);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_7);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_8);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_ESSENCE_TIER_9);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_1);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_2);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_3);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_4);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_5);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_6);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_7);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_8);
+        addToItemGroup(ModItemGroup.BLOCKS, CHICKEN_FOOD_TIER_9);
+
+    }*/
+
+   /* public static void addToItemGroup(ItemGroup group, Item item) {
+        ItemGroupEvents.modifyEntriesEvent(group).register(entries ->
+                entries.add(item));
+    }*/
+
+    public static void registerModItems() {
+        ChickenRoostMod.LOGGER.debug("Registering Mod Items for " + ChickenRoostMod.MODID);
+    }
 }

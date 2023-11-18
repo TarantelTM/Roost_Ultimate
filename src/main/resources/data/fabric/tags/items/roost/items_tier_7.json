@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "chicken_roost:c_netherite",
+    "chicken_roost:c_diamond",
+    "chicken_roost:c_netherstar",
+    "chicken_roost:chicken_essence_tier_7"
+  ]
+}

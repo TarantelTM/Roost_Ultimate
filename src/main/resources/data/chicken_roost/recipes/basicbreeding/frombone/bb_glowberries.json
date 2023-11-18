@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": { 
-    "tag": "forge:seeds/tier2orup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "item": "chicken_roost:chicken_food_tier_2"
+    },
+    {
       "item": "chicken_roost:c_bone"
-  },
+    }
+  ],
   "output": {
     "item": "chicken_roost:c_glowberries"
   }

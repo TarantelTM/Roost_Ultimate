@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "chicken_roost",
+  "version": "${version}",
+
+  "name": "Roost Ultimate",
+  "description": "",
+  "authors": [
+    "Tarantel"
+  ],
+  "contact": {
+    "homepage": "https://tarantel.yt",
+    "sources": "https://tarantel.yt"
+  },
+
+  "license": "All Rights Reserved",
+  "icon": "assets/chicken_roost/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.tarantel.chickenroost.ChickenRoostMod"
+    ],
+    "client": [
+      "net.tarantel.chickenroost.ChickenRoostModClient"
+    ],
+    "rei_client": [
+      "net.tarantel.chickenroost.api.rei.REIPlugin"
+    ]
+  },
+  "mixins": [
+    "chickenroost.mixins.json"
+  ],
+
+
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "fabric": "*",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "forgeconfigapiport": ">=8.0.0"
+  },
+  "suggests": {
+    "roughlyenoughitems": ">=12.0.626"
+  }
+}

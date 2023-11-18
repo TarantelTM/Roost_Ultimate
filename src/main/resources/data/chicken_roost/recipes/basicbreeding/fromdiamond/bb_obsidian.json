@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": { 
-    "tag": "forge:seeds/tier7orup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "item": "chicken_roost:chicken_food_tier_7"
+    },
+    {
       "item": "chicken_roost:c_diamond"
-  },
+    }
+  ],
   "output": {
     "item": "chicken_roost:c_obsidian"
   }

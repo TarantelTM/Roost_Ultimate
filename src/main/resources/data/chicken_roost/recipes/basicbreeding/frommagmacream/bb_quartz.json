@@ -1,12 +1,14 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": { 
-    "tag": "forge:seeds/tier4orup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "item": "chicken_roost:chicken_food_tier_4"
+    },
+    {
       "item": "chicken_roost:c_magmacream"
-  },
+    }
+  ],
   "output": {
-    "item": "chicken_roost:c_quartz"
+    "item": "chicken_roost:c_netherquartz"
   }
 }

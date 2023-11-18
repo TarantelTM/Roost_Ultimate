@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "chicken_roost:c_chorusfruit",
+    "chicken_roost:c_glowstone",
+    "chicken_roost:c_endstone",
+    "chicken_roost:c_enderpearl",
+    "chicken_roost:c_gold",
+    "chicken_roost:c_netherquartz",
+    "chicken_roost:c_tnt",
+    "chicken_roost:c_blazerod"
+  ]
+}

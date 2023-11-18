@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "tag": "fabric:roost/items_tier_9"
+    },
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "tag": "fabric:roost/items_tier_9"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_8"
+    },
+    {
+      "tag": "fabric:roost/items_tier_9"
+    },
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "tag": "fabric:roost/items_tier_9"
+    },
+    {
+      "item": "minecraft:nether_star"
+    }
+  ],
+  "result": {
+    "item": "chicken_roost:chicken_food_tier_9",
+    "count": 1
+  }
+}

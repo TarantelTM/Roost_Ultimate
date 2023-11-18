@@ -1,12 +1,14 @@
 {
-  "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "forge:seeds/tier5orup" 
-  },
-  "chicken": {
+  "type": "chicken_roost:roost",
+  "ingredients": [
+    {
+      "item": "chicken_roost:chicken_food_tier_5"
+    },
+    {
       "item": "chicken_roost:c_gold"
-  },
+    }
+  ],
   "output": {
-    "item": "minecraft:gold_ingot"
+    "item": "minecraft:gold_nugget"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "parent": "chicken_roost:custom/roost_box",
+  "textures": {
+    "all": "chicken_roost:block/neneneroostempty",
+    "particle": "chicken_roost:block/neneneroostempty",
+    "hay": "chicken_roost:block/plain_face",
+    "hay_side": "chicken_roost:block/plain_face",
+    "wood": "chicken_roost:block/plain_face",
+    "front": "chicken_roost:block/plain_face"
+  },
+  "render_type": "solid"
+}
