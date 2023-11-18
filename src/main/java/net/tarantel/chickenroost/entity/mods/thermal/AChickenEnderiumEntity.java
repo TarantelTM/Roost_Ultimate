@@ -1,9 +1,9 @@
 
 package net.tarantel.chickenroost.entity.mods.thermal;
 
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.network.PlayMessages;
-import net.neoforged.neoforge.network.NetworkHooks;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;

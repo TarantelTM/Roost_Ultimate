@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:soul_breeding",
-  "soul": { 
-    "tag": "forge:souls/tier5andup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:souls/tier5andup"
+    },
+    {
       "item": "chicken_roost:c_blazerod"
-  },
+    }
+  ],
   "output": {
     "item": "chicken_roost:c_blazerod"
   }

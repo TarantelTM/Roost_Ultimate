@@ -26,29 +26,25 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.network.PlayMessages;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.tarantel.chickenroost.entity.ModEntities;
 
-
+@Mod.EventBusSubscriber
 public class AChickenAcaciaWoodEntity extends Chicken {
 	public int eggTime = this.random.nextInt(6000) + 6000;
 
 	public AChickenAcaciaWoodEntity(PlayMessages.SpawnEntity packet, Level world) {
 		this(ModEntities.A_CHICKEN_ACACIA_WOOD.get(), world);
-
 	}
 
 	public AChickenAcaciaWoodEntity(EntityType<AChickenAcaciaWoodEntity> type, Level world) {
 		super(type, world);
 		xpReward = 0;
 		setNoAi(false);
-
 	}
-
-
 
 	@Override
 	public Packet<ClientGamePacketListener> getAddEntityPacket() {

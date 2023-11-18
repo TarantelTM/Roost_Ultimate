@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:soul_breeding",
-  "soul": { 
-    "tag": "forge:souls/tier1andup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:souls/tier1andup"
+    },
+    {
       "item": "chicken_roost:c_diorite"
-  },
+    }
+  ],
   "output": {
     "item": "chicken_roost:c_diorite"
   }

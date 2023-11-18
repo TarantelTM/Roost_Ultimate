@@ -1,12 +1,5 @@
 package net.tarantel.chickenroost.item.base;
 
-import mod.azure.azurelib.animatable.GeoItem;
-import mod.azure.azurelib.animatable.client.RenderProvider;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.*;
-import mod.azure.azurelib.core.object.PlayState;
-import mod.azure.azurelib.util.AzureLibUtil;
-import mod.azure.azurelib.util.RenderUtils;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -14,19 +7,24 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.tarantel.chickenroost.item.renderer.AnimatedChickenRenderer_9;
 import net.tarantel.chickenroost.util.Config;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.util.RenderUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class AnimatedChicken_9 extends Item implements GeoItem {
 
     private String localpath;
-    private final Supplier<Object> renderProvider = GeoItem.makeRenderer(this);
-    private AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+
+    private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public AnimatedChicken_9(Properties properties, String path) {
         super(properties);
@@ -89,24 +87,5 @@ public class AnimatedChicken_9 extends Item implements GeoItem {
         return 0F;
     }
 
-    @Override
-    public void createRenderer(Consumer<Object> consumer) {
-        consumer.accept(new RenderProvider() {
-            private AnimatedChickenRenderer_9 renderer;
 
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if(this.renderer == null) {
-                    renderer = new AnimatedChickenRenderer_9();
-                }
-
-                return this.renderer;
-            }
-        });
-    }
-
-    @Override
-    public Supplier<Object> getRenderProvider() {
-        return this.renderProvider;
-    }
 }

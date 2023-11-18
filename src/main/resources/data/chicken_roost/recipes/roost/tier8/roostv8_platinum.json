@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "forge:seeds/tier8orup" 
-  },
-  "chicken": {
-      "item": "chicken_roost:c_platinum"
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier8orup"
     },
+    {
+      "item": "chicken_roost:c_platinum"
+    }
+  ],
   "output": {
     "item": "chicken_roost:ingot_platinum"
   }

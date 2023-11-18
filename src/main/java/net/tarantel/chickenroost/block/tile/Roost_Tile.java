@@ -17,19 +17,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import net.tarantel.chickenroost.block.blocks.Roost_Block;
 import net.tarantel.chickenroost.handler.Roost_Handler;
-///import net.tarantel.chickenroost.network.ModMessages;
-///import net.tarantel.chickenroost.network.RoostItemStackSyncS2CPacket;
+import net.tarantel.chickenroost.network.ModMessages;
+import net.tarantel.chickenroost.network.RoostItemStackSyncS2CPacket;
 import net.tarantel.chickenroost.recipes.Roost_Recipe;
 import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.WrappedHandler;
@@ -179,7 +178,7 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
         if(!level.isClientSide()) {
-          ///  ModMessages.sendToClients(new RoostItemStackSyncS2CPacket(this.itemHandler, worldPosition));
+            ///  ModMessages.sendToClients(new RoostItemStackSyncS2CPacket(this.itemHandler, worldPosition));
         }
         setChanged();
     }
@@ -220,7 +219,7 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
             return;
         }
         setChanged(level, pos, state);
-       /// ModMessages.sendToClients(new RoostItemStackSyncS2CPacket(pEntity.itemHandler, pEntity.worldPosition));
+        /// ModMessages.sendToClients(new RoostItemStackSyncS2CPacket(pEntity.itemHandler, pEntity.worldPosition));
         if(hasRecipe(pEntity)) {
             pEntity.progress++;
 
@@ -340,12 +339,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                         }
                     }
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
                 }
             }
             /////TIER 2
@@ -424,12 +423,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                         }
                     }
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
                 }
             }
             /////TIER 3
@@ -508,12 +507,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                         }
                     }
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
                 }
             }
             /////TIER 4
@@ -592,12 +591,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                         }
                     }
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
                 }
             }
             /////TIER 5
@@ -676,12 +675,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                         }
                     }
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
                 }
             }
             /////TIER 6
@@ -760,12 +759,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                         }
                     }
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
                 }
             }
             /////TIER 7
@@ -845,12 +844,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                     }
 
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
 
                 }
             }
@@ -931,12 +930,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                     }
 
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
                 }
             }
             /////TIER 9
@@ -1015,12 +1014,12 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
                         }
                     }
                     pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                    pEntity.itemHandler.extractItem(1, 0, true);
+                    pEntity.itemHandler.setStackInSlot(1, MyChicken);
+                    pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().output.copy().getItem(),
+                            pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
 
-            pEntity.resetProgress();
+                    pEntity.resetProgress();
                 }
             }
 
@@ -1034,7 +1033,7 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
         }
     }
 
-   // }
+    // }
 
     private static boolean hasRecipe(Roost_Tile entity) {
         Level level = entity.level;

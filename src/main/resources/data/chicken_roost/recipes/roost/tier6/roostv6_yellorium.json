@@ -1,5 +1,5 @@
 {
-  "type": "neoforge:conditional",
+  "type": "forge:conditional",
   "recipes": [
     {
       "conditions": [
@@ -9,13 +9,16 @@
         }
       ],
       "recipe": {
+
         "type": "chicken_roost:roost_output",
-        "food": {
+        "ingredients": [
+          {
             "tag": "forge:seeds/tier6orup"
           },
-          "chicken": {
+          {
             "item": "chicken_roost:c_yellorium"
-          },
+          }
+        ],
         "output": {
           "item": "bigreactors:yellorium_ingot"
         }

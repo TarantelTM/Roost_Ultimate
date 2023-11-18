@@ -35,7 +35,7 @@ public class Roost_Screen extends AbstractContainerScreen<Roost_Handler> {
     }
     @Override
     public void render(@NotNull GuiGraphics ms, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(ms, mouseX, mouseY, partialTicks);
+        this.renderBackground(ms);
         super.render(ms, mouseX, mouseY, partialTicks);
         this.renderTooltip(ms, mouseX, mouseY);
     }

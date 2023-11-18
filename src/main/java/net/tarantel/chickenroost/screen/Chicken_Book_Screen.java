@@ -1,54 +1,28 @@
 package net.tarantel.chickenroost.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mod.azure.azurelib.core.math.functions.limit.Min;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.HorseInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.HorseInventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LightningRodBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.gameevent.GameEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.tarantel.chickenroost.entity.ModEntities;
-import net.tarantel.chickenroost.entity.vanilla.AChickenAcaciaWoodEntity;
 import net.tarantel.chickenroost.handler.ChickenBookHandler;
 import net.tarantel.chickenroost.item.ModItems;
 import net.tarantel.chickenroost.util.Config;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class Chicken_Book_Screen extends AbstractContainerScreen<ChickenBookHandler> {
     private final static HashMap<String, Object> guistate = ChickenBookHandler.guistate;
@@ -90,7 +64,7 @@ public class Chicken_Book_Screen extends AbstractContainerScreen<ChickenBookHand
 
     @Override
     public void render(GuiGraphics ms, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(ms, mouseX, mouseY, partialTicks);
+        this.renderBackground(ms);
         super.render(ms, mouseX, mouseY, partialTicks);
         this.renderTooltip(ms, mouseX, mouseY);
 

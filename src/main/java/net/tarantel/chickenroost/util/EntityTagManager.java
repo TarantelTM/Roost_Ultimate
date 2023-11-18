@@ -12,7 +12,6 @@ public class EntityTagManager {
 
     private EntityTagManager() {
 
-
     }
 
     private static TagKey<EntityType<?>> of(String id) {

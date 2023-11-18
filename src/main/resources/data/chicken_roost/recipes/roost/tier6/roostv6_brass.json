@@ -1,26 +1,14 @@
 {
-  "type": "neoforge:conditional",
-  "recipes": [
+  "type": "chicken_roost:roost_output",
+  "ingredients": [
     {
-      "conditions": [
-        {
-          "type": "forge:mod_loaded",
-          "modid": "create"
-        }
-      ],
-      "recipe": {
-        "type": "chicken_roost:roost_output",
-        "food": {
-            "tag": "forge:seeds/tier6orup"
-          },
-          "chicken": {
-            "item": "chicken_roost:c_brass"
-          },
-        "output": {
-          "item": "create:brass_ingot"
-        }
-
-      }
+      "tag": "forge:seeds/tier6orup"
+    },
+    {
+      "item": "chicken_roost:c_brass"
     }
-  ]
+  ],
+  "output": {
+    "item": "create:brass_ingot"
+  }
 }

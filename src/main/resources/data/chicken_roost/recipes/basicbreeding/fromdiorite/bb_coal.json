@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": { 
-    "tag": "forge:seeds/tier1orup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier1orup"
+    },
+    {
       "item": "chicken_roost:c_diorite"
-  },
+    }
+  ],
   "output": {
     "item": "chicken_roost:c_coal"
   }

@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -24,7 +23,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import net.tarantel.chickenroost.block.tile.ModBlockEntities;
 import net.tarantel.chickenroost.block.tile.Soul_Breeder_Tile;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +39,7 @@ public class Soul_Breeder_Block extends BaseEntityBlock {
     }
 
     private static final VoxelShape SHAPE =
-            Block.box(0, 0, 0, 16, 32, 16);
+            Block.box(0, 0, 0, 16, 16, 16);
 
     @Override
     public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
@@ -137,10 +136,6 @@ public class Soul_Breeder_Block extends BaseEntityBlock {
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
     }
 
-    @Override
-    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
-        return super.canSurvive(state, world, pos);
-    }
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

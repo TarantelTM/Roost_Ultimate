@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "forge:seeds/tier5orup" 
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier5orup"
+    },
+    {
       "item": "chicken_roost:c_enderpearl"
-  },
+    }
+  ],
   "output": {
     "item": "minecraft:ender_pearl"
   }

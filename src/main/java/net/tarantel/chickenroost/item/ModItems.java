@@ -1,51 +1,56 @@
 package net.tarantel.chickenroost.item;
 
-
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.*;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.item.base.*;
 
 public class ModItems {
 
+	//public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ChickenRoostMod.MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ChickenRoostMod.MODID);
 	public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ChickenRoostMod.MODID);
 
-	public static final RegistryObject<Item> INGOT_ELECTRUM = ITEMS.register("ingot_electrum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_electrum"));
 	public static final RegistryObject<Item> CHICKEN_BOOK = ITEMS.register("book", () -> new ChickenBook(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
-	public static final RegistryObject<Item> INGOT_SILVER = ITEMS.register("ingot_silver", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_silver"));
-	public static final RegistryObject<Item> INGOT_ZINC = ITEMS.register("ingot_zinc", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_zinc"));
+	///Ingots
+	//public static final RegistryObject<Item> INGOT_BRASS = ITEMS.register("ingot_brass", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_ELECTRUM = ITEMS.register("ingot_electrum", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_SILVER = ITEMS.register("ingot_silver", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_ZINC = ITEMS.register("ingot_zinc", () -> new Item(new Item.Properties()));
 
-	public static final RegistryObject<Item> INGOT_BRONZE = ITEMS.register("ingot_bronze", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_bronze"));
-	public static final RegistryObject<Item> INGOT_LEAD = ITEMS.register("ingot_lead", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_lead"));
-	public static final RegistryObject<Item> INGOT_STEEL = ITEMS.register("ingot_steel", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_steel"));
-	public static final RegistryObject<Item> INGOT_TIN = ITEMS.register("ingot_tin", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_tin"));
-	public static final RegistryObject<Item> INGOT_URANIUM = ITEMS.register("ingot_uranium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_uranium"));
-
-
-	public static final RegistryObject<Item> INGOT_ALUMINUM = ITEMS.register("ingot_aluminum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_aluminum"));
-	public static final RegistryObject<Item> INGOT_CHROME = ITEMS.register("ingot_chrome", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_chrome"));
-
-	public static final RegistryObject<Item> INGOT_INVAR = ITEMS.register("ingot_invar", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_invar"));
-	public static final RegistryObject<Item> INGOT_IRIDIUM = ITEMS.register("ingot_iridium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_iridium"));
-
-	public static final RegistryObject<Item> INGOT_NICKEL = ITEMS.register("ingot_nickel", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_nickel"));
-	public static final RegistryObject<Item> INGOT_PLATINUM = ITEMS.register("ingot_platinum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_platinum"));
-
-	public static final RegistryObject<Item> INGOT_TITANUM = ITEMS.register("ingot_titanum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_titanum"));
-	public static final RegistryObject<Item> INGOT_TUNGSTEN = ITEMS.register("ingot_tungsten", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_tungsten"));
-	public static final RegistryObject<Item> INGOT_TUNGSTENSTEEL = ITEMS.register("ingot_tungstensteel", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_tungstensteel"));
+	public static final RegistryObject<Item> INGOT_BRONZE = ITEMS.register("ingot_bronze", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_LEAD = ITEMS.register("ingot_lead", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_STEEL = ITEMS.register("ingot_steel", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_TIN = ITEMS.register("ingot_tin", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_URANIUM = ITEMS.register("ingot_uranium", () -> new Item(new Item.Properties()));
 
 
-	public static final RegistryObject<Item> INGOT_ENDERIUM = ITEMS.register("ingot_enderium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_enderium"));
-	public static final RegistryObject<Item> INGOT_ADAMANTIUM = ITEMS.register("ingot_adamantium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_adamantium"));
-	public static final RegistryObject<Item> INGOT_LUMIUM = ITEMS.register("ingot_lumium", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_lumium"));
-	public static final RegistryObject<Item> INGOT_SIGNALUM = ITEMS.register("ingot_signalum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_signalum"));
+	public static final RegistryObject<Item> INGOT_ALUMINUM = ITEMS.register("ingot_aluminum", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_CHROME = ITEMS.register("ingot_chrome", () -> new Item(new Item.Properties()));
+
+	public static final RegistryObject<Item> INGOT_INVAR = ITEMS.register("ingot_invar", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_IRIDIUM = ITEMS.register("ingot_iridium", () -> new Item(new Item.Properties()));
+
+	public static final RegistryObject<Item> INGOT_NICKEL = ITEMS.register("ingot_nickel", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_PLATINUM = ITEMS.register("ingot_platinum", () -> new Item(new Item.Properties()));
+
+	public static final RegistryObject<Item> INGOT_TITANUM = ITEMS.register("ingot_titanum", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_TUNGSTEN = ITEMS.register("ingot_tungsten", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_TUNGSTENSTEEL = ITEMS.register("ingot_tungstensteel", () -> new Item(new Item.Properties()));
+
+
+	public static final RegistryObject<Item> INGOT_ENDERIUM = ITEMS.register("ingot_enderium", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_ADAMANTIUM = ITEMS.register("ingot_adamantium", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_LUMIUM = ITEMS.register("ingot_lumium", () -> new Item(new Item.Properties()));
+	public static final RegistryObject<Item> INGOT_SIGNALUM = ITEMS.register("ingot_signalum", () -> new Item(new Item.Properties()));
 
 	//region Chicken - Tier 1
 	public static final RegistryObject<Item> E_CHICKEN_COBBLE = ITEMS.register("c_cobble", () -> new AnimatedChicken_1(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "graychicken"));
@@ -241,19 +246,6 @@ public class ModItems {
 	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_8 = ITEMS.register("chicken_food_tier_8", () -> new ModItemNameBlockItem_8(ModBlocks.SEED_CROP_8.get(), new Item.Properties()));
 	public static final RegistryObject<Item> CHICKEN_FOOD_TIER_9 = ITEMS.register("chicken_food_tier_9", () -> new ModItemNameBlockItem_9(ModBlocks.SEED_CROP_9.get(), new Item.Properties()));
 	//endregion
-
-	//public static final RegistryObject<BlockItem> SOUL_BREEDER = ITEMS.register("soul_breeder",
-	//		() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(),
-	//				new Item.Properties()));
-	/*public static final RegistryObject<Item> ANIMATED_BLOCK_ITEM = ITEMS.register("soul_breeder",
-			() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(), new Item.Properties()));*/
-	/*public static final RegistryObject<BlockItem> ANIMATED_BLOCK_ITEM = ITEMS.register("soul_breeder",
-			() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(),
-					new Item.Properties()));*/
-
-	/*private static RegistryObject<Item> block(RegistryObject<Block> block, CreativeModeTab tab) {
-		return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
-	}*/
 
 	public static final RegistryObject<BlockItem> SOUL_BREEDER = ITEMS.register("soul_breeder",
 			() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(),

@@ -4,9 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Containers;
@@ -17,18 +14,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import net.tarantel.chickenroost.block.blocks.Breeder_Block;
 import net.tarantel.chickenroost.handler.Breeder_Handler;
+import net.tarantel.chickenroost.network.BreederItemStackSyncS2CPacket;
+import net.tarantel.chickenroost.network.ModMessages;
 import net.tarantel.chickenroost.recipes.Breeder_Recipe;
 import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.WrappedHandler;
@@ -46,7 +44,7 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
         protected void onContentsChanged(int slot) {
             setChanged();
             if(!level.isClientSide()) {
-                level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+                ModMessages.sendToClients(new BreederItemStackSyncS2CPacket(this, worldPosition));
             }
         }
 
@@ -122,16 +120,10 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
         }
     }
     protected final ContainerData data;
-    public int progress = 0;
-    public int maxProgress = ( Config.breed_speed_tick.get() * 20);
+    private int progress = 0;
+    private int maxProgress = ( Config.breed_speed_tick.get() * 20);
 
-    public int getScaledProgress() {
-        int progresss = progress;
-        int maxProgresss = maxProgress;  // Max Progress
-        int progressArrowSize = 200; // This is the height in pixels of your arrow
 
-        return maxProgresss != 0 && progresss != 0 ? progresss * progressArrowSize / maxProgresss : 0;
-    }
     public Breeder_Tile(BlockPos pos, BlockState state) {
         super(ModBlockEntities.BREEDER.get(), pos, state);
 
@@ -179,7 +171,7 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
             new HashMap<>();
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             if(side == null) {
                 return lazyItemHandler.cast();
             }
@@ -214,7 +206,9 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        setChanged();
+        if(!level.isClientSide()) {
+            ModMessages.sendToClients(new BreederItemStackSyncS2CPacket(this.itemHandler, worldPosition));
+        }
 
     }
 
@@ -255,8 +249,8 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
         if(levelL.isClientSide()) {
             return;
         }
-
         setChanged(levelL, pos, state);
+        ModMessages.sendToClients(new BreederItemStackSyncS2CPacket(pEntity.itemHandler, pEntity.worldPosition));
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
@@ -312,7 +306,7 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
-        List<RecipeHolder<Breeder_Recipe>> recipe = pEntity.getLevel().getRecipeManager()
+        List<Breeder_Recipe> recipe = pEntity.getLevel().getRecipeManager()
                 .getRecipesFor(Breeder_Recipe.Type.INSTANCE, inventory, pEntity.getLevel());
         if(hasRecipe(pEntity)) {
             //outpit = pEntity.itemHandler.getStackInSlot(0).getOrCreateTag().getString("output");
@@ -324,7 +318,7 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
 
 
             //ChickenOutput = new ItemStack((ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(outpit))).getRandomElement(RandomSource.create()).orElseGet(() -> elseitem)));
-            ChickenOutput = new ItemStack(recipe.get(RandomOutputs).value().output.copy().getItem());
+            ChickenOutput = new ItemStack(recipe.get(RandomOutputs).output.getItem());
             if(pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY) {
                 pEntity.itemHandler.extractItem(0, 0, true);
                 pEntity.itemHandler.extractItem(1, 1, false);
@@ -397,21 +391,10 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
             inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
         }
 
-        Optional<RecipeHolder<Breeder_Recipe>> recipe = level.getRecipeManager()
+        Optional<Breeder_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Breeder_Recipe.Type.INSTANCE, inventory, level);
 
 
         return recipe.isPresent();
-    }
-
-    @Nullable
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
     }
 }

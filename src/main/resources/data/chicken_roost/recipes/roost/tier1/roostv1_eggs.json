@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "forge:seeds/tier1orup" 
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier1orup"
+    },
+    {
       "item": "chicken_roost:c_vanilla"
-  },
+    }
+  ],
   "output": {
     "item": "minecraft:egg"
   }

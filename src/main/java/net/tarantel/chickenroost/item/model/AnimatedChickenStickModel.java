@@ -1,15 +1,13 @@
 package net.tarantel.chickenroost.item.model;
 import net.minecraft.resources.ResourceLocation;
 import net.tarantel.chickenroost.ChickenRoostMod;
-import mod.azure.azurelib.model.GeoModel;
 import net.tarantel.chickenroost.item.base.AnimatedChickenStick;
-
+import software.bernie.geckolib.model.GeoModel;
 public class AnimatedChickenStickModel extends GeoModel<AnimatedChickenStick> {
     @Override
     public ResourceLocation getModelResource(AnimatedChickenStick animatable) {
         return new ResourceLocation(ChickenRoostMod.MODID, "geo/chicken_stick.geo.json");
     }
-
 
     @Override
     public ResourceLocation getTextureResource(AnimatedChickenStick animatable) {

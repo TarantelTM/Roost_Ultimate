@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "forge:seeds/tier3orup" 
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier3orup"
+    },
+    {
       "item": "chicken_roost:c_leather"
-  },
+    }
+  ],
   "output": {
     "item": "minecraft:leather"
   }

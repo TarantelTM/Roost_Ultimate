@@ -25,7 +25,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import net.tarantel.chickenroost.block.tile.Breeder_Tile;
 import net.tarantel.chickenroost.block.tile.ModBlockEntities;
 import org.jetbrains.annotations.NotNull;

@@ -9,9 +9,8 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.SlotItemHandler;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.Soul_Extractor_Tile;
 
@@ -48,7 +47,7 @@ public class SoulExtractor_Handler extends AbstractContainerMenu {
 
 
 
-        this.blockEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
+        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
             this.addSlot(new SlotItemHandler(handler, 0, 29, 38){
                 @Override
                 public boolean mayPlace(ItemStack stack) {

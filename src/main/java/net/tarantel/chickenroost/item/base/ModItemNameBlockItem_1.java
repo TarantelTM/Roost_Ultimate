@@ -12,7 +12,7 @@ import net.tarantel.chickenroost.util.Config;
 import java.util.List;
 
 public class ModItemNameBlockItem_1 extends BlockItem {
-    public ModItemNameBlockItem_1(Block p_41579_, Properties p_41580_) {
+    public ModItemNameBlockItem_1(Block p_41579_, Item.Properties p_41580_) {
         super(p_41579_, p_41580_);
     }
 

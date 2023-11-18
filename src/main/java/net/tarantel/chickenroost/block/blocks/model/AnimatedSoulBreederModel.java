@@ -1,9 +1,11 @@
 package net.tarantel.chickenroost.block.blocks.model;
 
-import mod.azure.azurelib.model.GeoModel;
+
 import net.minecraft.resources.ResourceLocation;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.tile.Soul_Breeder_Tile;
+import software.bernie.geckolib.model.GeoModel;
+
 public class AnimatedSoulBreederModel extends GeoModel<Soul_Breeder_Tile> {
     @Override
     public ResourceLocation getModelResource(Soul_Breeder_Tile animatable) {

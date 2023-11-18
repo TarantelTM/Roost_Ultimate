@@ -2,8 +2,6 @@ package net.tarantel.chickenroost.recipes;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,16 +15,26 @@ import net.tarantel.chickenroost.ChickenRoostMod;
 import org.jetbrains.annotations.Nullable;
 
 public class Breeder_Recipe implements Recipe<SimpleContainer> {
-
+    private final ResourceLocation id;
     public final ItemStack output;
-    public final Ingredient ingredient0;
-    public final Ingredient ingredient1;
+    private final NonNullList<Ingredient> recipeItems;
 
-    public Breeder_Recipe(ItemStack output, Ingredient ingredient0, Ingredient ingredient1) {
+    public Breeder_Recipe(ResourceLocation id, ItemStack output,
+                          NonNullList<Ingredient> recipeItems) {
+        this.id = id;
         this.output = output;
-        this.ingredient0 = ingredient0;
-        this.ingredient1 = ingredient1;
+        this.recipeItems = recipeItems;
     }
+
+    @Override
+    public boolean matches(SimpleContainer pContainer, Level pLevel) {
+        if(pLevel.isClientSide()) {
+            return false;
+        }
+
+        return recipeItems.get(0).test(pContainer.getItem(1)) && recipeItems.get(1).test(pContainer.getItem(0));
+    }
+
     @Override
     public ItemStack assemble(SimpleContainer simpleContainer, RegistryAccess registryAccess) {
         return output;
@@ -36,88 +44,87 @@ public class Breeder_Recipe implements Recipe<SimpleContainer> {
     public ItemStack getResultItem(RegistryAccess registryAccess) {
         return output.copy();
     }
-    @Override
-    public boolean matches(SimpleContainer pContainer, Level pLevel) {
-        if(pLevel.isClientSide()) {
-            return false;
-        }
-        return ingredient0.test(pContainer.getItem(1)) && ingredient1.test(pContainer.getItem(0));
-    }
+
     @Override
     public boolean isSpecial() {
         return true;
     }
     @Override
+    public String getGroup() {
+        return "Basic Breeding";
+    }
+
+    @Override
     public NonNullList<Ingredient> getIngredients() {
-        NonNullList<Ingredient> ingredients = NonNullList.createWithCapacity(2);
-        ingredients.add(0, ingredient0);
-        ingredients.add(1, ingredient1);
-        return ingredients;
+        return recipeItems;
     }
 
-    /*public Ingredient ingredient0(){
-        return recipeItems.get(0);
-    }
-
-    public Ingredient ingredient1(){
-        return recipeItems.get(1);
-    }*/
     @Override
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
         return true;
     }
+
     @Override
-    public String getGroup() {
-        return "basic_breeding";
+    public ResourceLocation getId() {
+        return id;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
         return Breeder_Recipe.Serializer.INSTANCE;
     }
+
     @Override
     public RecipeType<?> getType() {
         return Breeder_Recipe.Type.INSTANCE;
     }
+
     public static class Type implements RecipeType<Breeder_Recipe> {
         private Type() { }
         public static final Breeder_Recipe.Type INSTANCE = new Breeder_Recipe.Type();
         public static final String ID = "basic_breeding";
     }
+
+
     public static class Serializer implements RecipeSerializer<Breeder_Recipe> {
         public static final Breeder_Recipe.Serializer INSTANCE = new Breeder_Recipe.Serializer();
         public static final ResourceLocation ID =
                 new ResourceLocation(ChickenRoostMod.MODID, "basic_breeding");
 
-        private final Codec<Breeder_Recipe> CODEC = RecordCodecBuilder.create((instance) -> {
-            return instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> {
-                return recipe.output;
-            }), Ingredient.CODEC_NONEMPTY.fieldOf("food").forGetter((recipe) -> {
-                return recipe.ingredient0;
-            }), Ingredient.CODEC_NONEMPTY.fieldOf("chicken").forGetter((recipe) -> {
-                return recipe.ingredient1;
-            })).apply(instance, Breeder_Recipe::new);
-        });
-
         @Override
-        public Codec<Breeder_Recipe> codec() {
-            return CODEC;
+        public Breeder_Recipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
+            ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
+
+            JsonArray ingredients = GsonHelper.getAsJsonArray(pSerializedRecipe, "ingredients");
+            NonNullList<Ingredient> inputs = NonNullList.withSize(2, Ingredient.EMPTY);
+
+            for (int i = 0; i < inputs.size(); i++) {
+                inputs.set(i, Ingredient.fromJson(ingredients.get(i)));
+            }
+
+            return new Breeder_Recipe(pRecipeId, output, inputs);
         }
 
         @Override
-        public Breeder_Recipe fromNetwork(FriendlyByteBuf buffer) {
-            Ingredient input0 = Ingredient.fromNetwork(buffer);
-            Ingredient input1 = Ingredient.fromNetwork(buffer);
-            ItemStack output = buffer.readItem();
+        public @Nullable Breeder_Recipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
+            NonNullList<Ingredient> inputs = NonNullList.withSize(buf.readInt(), Ingredient.EMPTY);
 
-            return new Breeder_Recipe(output, input0, input1);
+            for (int i = 0; i < inputs.size(); i++) {
+                inputs.set(i, Ingredient.fromNetwork(buf));
+            }
+
+            ItemStack output = buf.readItem();
+            return new Breeder_Recipe(id, output, inputs);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, Breeder_Recipe recipe) {
-            recipe.ingredient0.toNetwork(buffer);
-            recipe.ingredient1.toNetwork(buffer);
-            buffer.writeItemStack(recipe.output, false);
+        public void toNetwork(FriendlyByteBuf buf, Breeder_Recipe recipe) {
+            buf.writeInt(recipe.getIngredients().size());
+
+            for (Ingredient ing : recipe.getIngredients()) {
+                ing.toNetwork(buf);
+            }
+            buf.writeItem(recipe.output);
         }
     }
 }
