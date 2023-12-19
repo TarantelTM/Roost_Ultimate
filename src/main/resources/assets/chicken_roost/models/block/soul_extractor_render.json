@@ -1,8 +1,0 @@
-{
-	"parent": "chicken_roost:custom/soul_extractor_render",
-	"render_type": "cutout",
-	"textures": {
-		"0": "chicken_roost:block/soulextractor_render",
-		"particle": "chicken_roost:block/soulextractor_render"
-	}
-}
