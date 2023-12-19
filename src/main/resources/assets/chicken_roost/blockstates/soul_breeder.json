@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "chicken_roost:block/soul_breeder"
+    },
+    "facing=east": {
+      "model": "chicken_roost:block/soul_breeder",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "chicken_roost:block/soul_breeder",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "chicken_roost:block/soul_breeder",
+      "y": 270
+    }
+  }
+}

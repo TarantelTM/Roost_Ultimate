@@ -1,0 +1,12 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": { 
+    "tag": "forge:seeds/tier2orup"
+  },
+  "chicken": {
+    "tag": "forge:breed/bonetoveg"
+  },
+  "output": {
+    "item": "chicken_roost:c_beetroot"
+  }
+}

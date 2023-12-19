@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "forge:seeds/tier6orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_brass"
+          },
+        "output": {
+          "item": "create:brass_ingot"
+        }
+
+      }

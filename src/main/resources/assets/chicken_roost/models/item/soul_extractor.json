@@ -1,0 +1,22 @@
+{
+  "parent": "chicken_roost:block/soul_extractor_render",
+  "display": {
+    "thirdperson": {
+      "rotation": [
+        10,
+        -45,
+        90
+      ],
+      "translation": [
+        0,
+        1.5,
+        -2.75
+      ],
+      "scale": [
+        0.275,
+        0.275,
+        0.275
+      ]
+    }
+  }
+}

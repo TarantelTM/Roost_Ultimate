@@ -1,0 +1,64 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.tttt.idle": {
+      "loop": true,
+      "animation_length": 3,
+      "bones": {
+        "head": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -2.5,
+                0,
+                0
+              ]
+            },
+            "0.375": {
+              "vector": [
+                -12.5,
+                0,
+                0
+              ]
+            },
+            "1.0417": {
+              "vector": [
+                -22.5,
+                0,
+                0
+              ]
+            },
+            "1.5": {
+              "vector": [
+                -10,
+                0,
+                0
+              ]
+            },
+            "2.0": {
+              "vector": [
+                2.5,
+                0,
+                0
+              ]
+            },
+            "2.5": {
+              "vector": [
+                10,
+                0,
+                0
+              ]
+            },
+            "3.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "chicken_roost:custom/breeder_privacy",
+  "render_type": "cutout",
+  "textures": {
+    "all": "chicken_roost:block/rubberchicken",
+    "particle": "chicken_roost:block/rubberchicken",
+    "side": "chicken_roost:block/curtain_empty",
+    "top": "chicken_roost:block/slat_side",
+    "floor": "chicken_roost:block/hay_floor"
+  },
+  "render_type": "solid"
+}

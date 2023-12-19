@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "refinedstorage"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "forge:seeds/tier5orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_quartzenrichediron"
+          },
+        "output": {
+          "item": "refinedstorage:quartz_enriched_iron"
+        }
+
+      }

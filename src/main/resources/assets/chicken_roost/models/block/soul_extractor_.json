@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "chicken_roost:block/soulextractor",
+    "up": "chicken_roost:block/soulextractor",
+    "north": "chicken_roost:block/soulextractor",
+    "east": "chicken_roost:block/soulextractor",
+    "south": "chicken_roost:block/soulextractor",
+    "west": "chicken_roost:block/soulextractor",
+    "particle": "chicken_roost:block/soulextractor"
+  },
+  "render_type": "solid"
+}

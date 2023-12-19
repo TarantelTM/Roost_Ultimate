@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thermal"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "forge:seeds/tier4orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_niter"
+          },
+        "output": {
+          "item": "thermal:niter"
+        }
+
+      }

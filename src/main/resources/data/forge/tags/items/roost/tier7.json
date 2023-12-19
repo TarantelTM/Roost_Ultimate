@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_nickel", "required": false },
+    { "id":"chicken_roost:c_netherite", "required": false },
+    { "id":"chicken_roost:c_diamond", "required": false },
+    { "id":"chicken_roost:c_terrasteel", "required": false },
+    { "id":"chicken_roost:c_tungstensteel", "required": false },
+    { "id":"chicken_roost:c_elementium", "required": false },
+    { "id":"chicken_roost:c_electrum", "required": false },
+    { "id":"chicken_roost:c_invar", "required": false },
+    { "id":"chicken_roost:c_blutonium", "required": false },
+    { "id":"chicken_roost:c_cobald", "required": false },
+    { "id":"chicken_roost:c_allthemodium", "required": false },
+    { "id":"chicken_roost:c_manyullyn", "required": false },
+    { "id":"chicken_roost:c_netherstar", "required": false }
+  ]
+}

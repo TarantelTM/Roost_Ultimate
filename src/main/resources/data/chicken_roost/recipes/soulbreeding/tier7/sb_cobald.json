@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "tconstruct"
+    }
+  ],
+  "type": "chicken_roost:soul_breeding",
+  "soul": { 
+    "tag": "forge:souls/tier7andup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_cobald"
+  },
+  "output": {
+    "item": "chicken_roost:c_cobald"
+  }
+}

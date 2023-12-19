@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_iridium", "required": false },
+    { "id":"chicken_roost:c_vibranium", "required": false },
+    { "id":"chicken_roost:c_adamantium", "required": false },
+    { "id":"chicken_roost:c_platinum", "required": false }
+  ]
+}

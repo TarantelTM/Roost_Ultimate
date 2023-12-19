@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_soulsoil", "required": false },
+    { "id":"chicken_roost:c_string", "required": false },
+    { "id":"chicken_roost:c_basalt", "required": false },
+    { "id":"chicken_roost:c_copper", "required": false },
+    { "id":"chicken_roost:c_rabbithide", "required": false },
+    { "id":"chicken_roost:c_livingwood", "required": false },
+    { "id":"chicken_roost:c_clay", "required": false },
+    { "id":"chicken_roost:c_spidereye", "required": false },
+    { "id":"chicken_roost:c_soulsand", "required": false },
+    { "id":"chicken_roost:c_livingrock", "required": false },
+    { "id":"chicken_roost:c_sponge", "required": false },
+    { "id":"chicken_roost:c_leather", "required": false }
+  ]
+}

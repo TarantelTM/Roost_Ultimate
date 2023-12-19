@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "chicken_roost:chicken_essence_tier_1"
+    },
+    "1": {
+      "item": "chicken_roost:chicken_essence_tier_2"
+    },
+    "2": {
+      "item": "chicken_roost:chicken_essence_tier_3"
+    },
+    "3": {
+      "item": "chicken_roost:breeder"
+    },
+    "4": {
+      "item": "chicken_roost:soul_extractor"
+    },
+    "5": {
+      "item": "chicken_roost:breeder"
+    },
+    "6": {
+      "item": "chicken_roost:chicken_essence_tier_4"
+    },
+    "7": {
+      "item": "chicken_roost:chicken_essence_tier_5"
+    },
+    "8": {
+      "item": "chicken_roost:chicken_essence_tier_6"
+    }
+  },
+  "result": {
+    "item": "chicken_roost:soul_breeder",
+    "count": 1
+  }
+}

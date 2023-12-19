@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:soul_breeder", "required": false },
+    { "id":"chicken_roost:breeder", "required": false },
+    { "id":"chicken_roost:soul_extractor", "required": false },
+    { "id":"chicken_roost:roost", "required": false },
+    { "id":"chicken_roost:trainer", "required": false }
+  ]
+}

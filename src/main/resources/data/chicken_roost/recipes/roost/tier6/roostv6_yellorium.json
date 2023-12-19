@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "bigreactors"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "forge:seeds/tier6orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_yellorium"
+          },
+        "output": {
+          "item": "bigreactors:yellorium_ingot"
+        }
+      }
