@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": { 
-    "tag": "forge:seeds/tier8orup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier8orup"
+    },
+    {
       "item": "chicken_roost:c_adamantium"
-  },
+    }
+  ],
   "output": {
     "item": "chicken_roost:c_adamantium"
   }

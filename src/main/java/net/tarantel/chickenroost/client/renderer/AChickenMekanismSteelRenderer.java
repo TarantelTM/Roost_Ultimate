@@ -1,12 +1,11 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.mods.random.AChickenSteelEntity;
-import net.tarantel.chickenroost.client.model.Modelchicken;
-
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.tarantel.chickenroost.client.model.Modelchicken;
+import net.tarantel.chickenroost.entity.AChickenSteelEntity;
 
 public class AChickenMekanismSteelRenderer extends MobRenderer<AChickenSteelEntity, Modelchicken<AChickenSteelEntity>> {
 	public AChickenMekanismSteelRenderer(EntityRendererProvider.Context context) {

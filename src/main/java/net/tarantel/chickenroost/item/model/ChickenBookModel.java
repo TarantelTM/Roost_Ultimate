@@ -1,25 +1,25 @@
 package net.tarantel.chickenroost.item.model;
 
-import mod.azure.azurelib.model.GeoModel;
+
 import net.minecraft.resources.ResourceLocation;
 import net.tarantel.chickenroost.ChickenRoostMod;
-import net.tarantel.chickenroost.item.base.AnimatedIngotItem;
 import net.tarantel.chickenroost.item.base.ChickenBook;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-public class ChickenBookModel extends GeoModel<ChickenBook> {
+public class ChickenBookModel extends AnimatedGeoModel<ChickenBook> {
     @Override
-    public ResourceLocation getModelResource(ChickenBook animatable) {
+    public ResourceLocation getModelLocation(ChickenBook animatable) {
         return new ResourceLocation(ChickenRoostMod.MODID, "geo/book.geo.json");
     }
 
 
     @Override
-    public ResourceLocation getTextureResource(ChickenBook animatable) {
+    public ResourceLocation getTextureLocation(ChickenBook animatable) {
         return new ResourceLocation(ChickenRoostMod.MODID, "textures/item/book.png");
     }
 
     @Override
-    public ResourceLocation getAnimationResource(ChickenBook animatable) {
+    public ResourceLocation getAnimationFileLocation(ChickenBook animatable) {
         return null;
     }
 }

@@ -1,5 +1,5 @@
 {
-  "type": "neoforge:conditional",
+  "type": "forge:conditional",
   "recipes": [
     {
       "conditions": [
@@ -9,18 +9,16 @@
         }
       ],
       "recipe": {
-        "type": "chicken_roost:roost_output",
-        "food": {
-            "tag": "forge:seeds/tier7orup"
-          },
-          "chicken": {
-            "item": "chicken_roost:c_elementium"
-          },
-        "output": {
-          "item": "botania:elementium_ingot"
-        }
-
-      }
+  "type": "chicken_roost:roost_output",
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier7orup"
+    },
+    {
+      "item": "chicken_roost:c_elementium"
     }
-  ]
-}
+  ],
+  "output": {
+    "item": "botania:elementium_ingot"
+  }
+}}]}

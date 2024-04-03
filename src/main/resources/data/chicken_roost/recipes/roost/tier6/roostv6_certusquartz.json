@@ -1,12 +1,28 @@
 {
-  "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "forge:seeds/tier6orup" 
-  },
-  "chicken": {
-      "item": "chicken_roost:c_certusquartz"
-  },
-  "output": {
-    "item": "ae2:certus_quartz_crystal"
-  }
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "ae2"
+        }
+      ],
+      "recipe": {
+        "type": "chicken_roost:roost_output",
+        "ingredients": [
+          {
+            "tag": "forge:seeds/tier6orup"
+          },
+          {
+            "item": "chicken_roost:c_certusquartz"
+          }
+        ],
+        "output": {
+          "item": "ae2:certus_quartz_crystal"
+        }
+
+      }
+    }
+  ]
 }

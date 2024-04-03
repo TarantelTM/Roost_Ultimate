@@ -1,19 +1,27 @@
 package net.tarantel.chickenroost.recipes;
 
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import net.tarantel.chickenroost.ChickenRoostMod;
-
+@SuppressWarnings("ALL")
 public class ModRecipes {
+
     public static void register(IEventBus bus){
+        
+
         RECIPE_SERIALIZERS.register(bus);
-        RECIPE_TYPES.register(bus);
     }
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, ChickenRoostMod.MODID);
+
+
+    //public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, ChickenRoostMod.MODID);
+    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(Registry.RECIPE_TYPE_REGISTRY, ChickenRoostMod.MODID);
+
     public static final RegistryObject<RecipeType<Soul_Breeder_Recipe>> SOUL_BREEDING_TYPE =
             RECIPE_TYPES.register("soul_breeding", () -> Soul_Breeder_Recipe.Type.INSTANCE);
     public static final RegistryObject<RecipeType<Breeder_Recipe>> BASIC_BREEDING_TYPE =
@@ -37,4 +45,15 @@ public class ModRecipes {
 
     public static final RegistryObject<RecipeSerializer<Trainer_Recipe>> TRAINER_SERIALIZER =
             RECIPE_SERIALIZERS.register("trainer_output", () -> Trainer_Recipe.Serializer.INSTANCE);
+
+    private static <R extends Recipe<?>> RegistryObject<RecipeType<R>> register(String name)
+    {
+        return RECIPE_TYPES.register(name, () -> new RecipeType<>() {
+            @Override
+            public String toString()
+            {
+                return name;
+            }
+        });
+    }
 }

@@ -1,7 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.mods.aetwo.AChickenAEFluixCrystalEntity;
+import net.tarantel.chickenroost.entity.AChickenAEFluixCrystalEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
 import net.minecraft.resources.ResourceLocation;

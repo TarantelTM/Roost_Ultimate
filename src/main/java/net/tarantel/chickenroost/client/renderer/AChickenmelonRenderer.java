@@ -1,7 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.vanilla.AChickenmelonEntity;
+import net.tarantel.chickenroost.entity.AChickenmelonEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
 import net.minecraft.resources.ResourceLocation;

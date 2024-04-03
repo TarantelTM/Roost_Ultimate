@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "forge:seeds/tier2orup" 
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier2orup"
+    },
+    {
       "item": "chicken_roost:c_ink"
-  },
+    }
+  ],
   "output": {
     "item": "minecraft:ink_sac"
   }

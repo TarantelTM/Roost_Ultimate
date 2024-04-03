@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": { 
-    "tag": "forge:seeds/tier7orup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier7orup"
+    },
+    {
       "item": "chicken_roost:c_cobald"
-  },
+    }
+  ],
   "output": {
     "item": "chicken_roost:c_manyullyn"
   }

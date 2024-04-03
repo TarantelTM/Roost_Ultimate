@@ -1,12 +1,5 @@
 package net.tarantel.chickenroost.item.base;
 
-import mod.azure.azurelib.animatable.GeoItem;
-import mod.azure.azurelib.animatable.client.RenderProvider;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.*;
-import mod.azure.azurelib.core.object.PlayState;
-import mod.azure.azurelib.util.AzureLibUtil;
-import mod.azure.azurelib.util.RenderUtils;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -14,19 +7,24 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.IItemRenderProperties;
+import net.tarantel.chickenroost.Config;
 import net.tarantel.chickenroost.item.renderer.AnimatedChickenRenderer_9;
-import net.tarantel.chickenroost.util.Config;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public class AnimatedChicken_9 extends Item implements GeoItem {
-
+public class AnimatedChicken_9 extends Item implements IAnimatable {
     private String localpath;
-    private final Supplier<Object> renderProvider = GeoItem.makeRenderer(this);
-    private AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+    public AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public AnimatedChicken_9(Properties properties, String path) {
         super(properties);
@@ -44,69 +42,42 @@ public class AnimatedChicken_9 extends Item implements GeoItem {
         roost_chickenlevel = (int) ((itemstack).getOrCreateTag().getInt("roost_lvl"));
         roost_chickenxp = (int) ((itemstack).getOrCreateTag().getInt("roost_xp"));
         list.add(Component.nullToEmpty("\u00A71" + "Tier: " + "\u00A79" + "9"));
-        list.add(Component.nullToEmpty((("\u00A7e") + "Level: " + "\u00A79" + ((roost_chickenlevel)) + "/" + (((int) Config.maxlevel_tier_9.get())))));
-        list.add(Component.nullToEmpty((("\u00A7a") + "XP: " + "\u00A79" + ((roost_chickenxp)) + "/" + (((int) Config.xp_tier_9.get())))));
+        list.add(Component.nullToEmpty((("\u00A7e") + "Level: " + "\u00A79" + ((roost_chickenlevel)) + "/" + (((int) Config.MAX_LEVEL_TIER_9.get())))));
+        list.add(Component.nullToEmpty((("\u00A7a") + "XP: " + "\u00A79" + ((roost_chickenxp)) + "/" + (((int) Config.MAX_XP_TIER_9.get())))));
         list.add(Component.nullToEmpty("\u00A71 Roost Ultimate"));
     }
-    private PlayState predicate(AnimationState animationState) {
-        animationState.getController().setAnimation(RawAnimation.begin().then("idle", Animation.LoopType.LOOP));
+    @Override
+    public void registerControllers(AnimationData data) {
+        AnimationController<AnimatedChicken_9> controller = new AnimationController<>(this, "controller", 10, this::handleAnim);
+        controller.setAnimation(new AnimationBuilder().loop("idle"));
+        data.addAnimationController(controller);
+    }
+    private PlayState handleAnim(AnimationEvent<AnimatedChicken_9> event) {
+        AnimationController<AnimatedChicken_9> controller = event.getController();
         return PlayState.CONTINUE;
     }
-
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController(this, "controller", 0, this::predicate));
+    public AnimationFactory getFactory() {
+        return this.factory;
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
-
-    @Override
-    public double getTick(Object itemStack) {
-        return RenderUtils.getCurrentTick();
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private AnimatedChickenRenderer_9 renderer;
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        super.initializeClient(consumer);
+        consumer.accept(new IItemRenderProperties() {
+            private final BlockEntityWithoutLevelRenderer renderer = new AnimatedChickenRenderer_9();
 
             @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if(this.renderer == null) {
-                    renderer = new AnimatedChickenRenderer_9();
-                }
-
-                return this.renderer;
+            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+                return renderer;
             }
         });
     }
+
 
     @Override
     public float getDestroySpeed(ItemStack par1ItemStack, BlockState par2Block) {
         return 0F;
     }
 
-    @Override
-    public void createRenderer(Consumer<Object> consumer) {
-        consumer.accept(new RenderProvider() {
-            private AnimatedChickenRenderer_9 renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if(this.renderer == null) {
-                    renderer = new AnimatedChickenRenderer_9();
-                }
-
-                return this.renderer;
-            }
-        });
-    }
-
-    @Override
-    public Supplier<Object> getRenderProvider() {
-        return this.renderProvider;
-    }
 }

@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "resourcechickens:duck",
-    "resourcechickens:duck_mallard",
-    "resourcechickens:chicken"
+    { "id":"resourcechickens:duck", "required": false },
+    { "id":"resourcechickens:duck_mallard", "required": false },
+    { "id":"resourcechickens:chicken", "required": false }
   ]
 }

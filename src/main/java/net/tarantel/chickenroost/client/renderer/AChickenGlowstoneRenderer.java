@@ -1,7 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.vanilla.AChickenGlowstoneEntity;
+import net.tarantel.chickenroost.entity.AChickenGlowstoneEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
 import net.minecraft.resources.ResourceLocation;

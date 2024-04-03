@@ -1,7 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.vanilla.AChickenBasaltEntity;
+import net.tarantel.chickenroost.entity.AChickenBasaltEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +15,6 @@ public class AChickenBasaltRenderer extends MobRenderer<AChickenBasaltEntity, Mo
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenBasaltEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/basalz_rod_chicken.png");
+		return new ResourceLocation("chicken_roost:textures/entities/basalz_rod_chicken.png");
 	}
 }

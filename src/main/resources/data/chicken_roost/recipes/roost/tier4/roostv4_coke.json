@@ -1,5 +1,5 @@
 {
-  "type": "neoforge:conditional",
+  "type": "forge:conditional",
   "recipes": [
     {
       "conditions": [
@@ -10,12 +10,14 @@
       ],
       "recipe": {
         "type": "chicken_roost:roost_output",
-        "food": {
+        "ingredients": [
+          {
             "tag": "forge:seeds/tier4orup"
           },
-          "chicken": {
+          {
             "item": "chicken_roost:c_coke"
-          },
+          }
+        ],
         "output": {
           "item": "thermal:coal_coke"
         }

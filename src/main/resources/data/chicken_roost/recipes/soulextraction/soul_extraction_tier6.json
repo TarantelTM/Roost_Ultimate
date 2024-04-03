@@ -1,8 +1,10 @@
 {
   "type": "chicken_roost:soul_extraction",
-  "chicken": { 
+  "ingredients": [
+    {
       "tag": "forge:roost/tier6"
-    },
+    }
+  ],
   "output": {
     "item": "chicken_roost:chicken_essence_tier_6"
   }

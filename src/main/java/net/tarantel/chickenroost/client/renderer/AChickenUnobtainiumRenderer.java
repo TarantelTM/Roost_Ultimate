@@ -1,7 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.mods.allthemodium.AChickenUnobtainiumEntity;
+import net.tarantel.chickenroost.entity.AChickenUnobtainiumEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
 import net.minecraft.resources.ResourceLocation;

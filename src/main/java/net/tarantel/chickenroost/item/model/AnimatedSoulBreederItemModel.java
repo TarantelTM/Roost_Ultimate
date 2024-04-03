@@ -1,23 +1,24 @@
 package net.tarantel.chickenroost.item.model;
-import mod.azure.azurelib.model.GeoModel;
+
 import net.minecraft.resources.ResourceLocation;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.item.base.AnimatedSoulBreederBlockItem;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 
-public class AnimatedSoulBreederItemModel extends GeoModel<AnimatedSoulBreederBlockItem> {
+public class AnimatedSoulBreederItemModel extends AnimatedGeoModel<AnimatedSoulBreederBlockItem> {
     @Override
-    public ResourceLocation getModelResource(AnimatedSoulBreederBlockItem animatable) {
+    public ResourceLocation getModelLocation(AnimatedSoulBreederBlockItem animatable) {
         return new ResourceLocation(ChickenRoostMod.MODID, "geo/soul_breeder.geo.json");
     }
 
     @Override
-    public ResourceLocation getTextureResource(AnimatedSoulBreederBlockItem animatable) {
+    public ResourceLocation getTextureLocation(AnimatedSoulBreederBlockItem animatable) {
         return new ResourceLocation(ChickenRoostMod.MODID, "textures/block/soul_breeder.png");
     }
 
     @Override
-    public ResourceLocation getAnimationResource(AnimatedSoulBreederBlockItem animatable) {
+    public ResourceLocation getAnimationFileLocation(AnimatedSoulBreederBlockItem animatable) {
         return new ResourceLocation(ChickenRoostMod.MODID, "animations/soul_breeder.animation.json");
     }
 }

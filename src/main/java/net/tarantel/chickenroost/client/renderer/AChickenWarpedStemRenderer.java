@@ -1,7 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.vanilla.AChickenWarpedStemEntity;
+import net.tarantel.chickenroost.entity.AChickenWarpedStemEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +15,6 @@ public class AChickenWarpedStemRenderer extends MobRenderer<AChickenWarpedStemEn
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenWarpedStemEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/brownchicken.png");
+		return new ResourceLocation("chicken_roost:textures/entities/brownchicken.png");
 	}
 }

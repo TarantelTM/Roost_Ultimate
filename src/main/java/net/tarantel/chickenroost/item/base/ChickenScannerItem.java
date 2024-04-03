@@ -6,6 +6,6 @@ import net.minecraft.world.item.Item;
 
 public class ChickenScannerItem extends Item {
 	public ChickenScannerItem() {
-		super(new Properties().stacksTo(1).rarity(Rarity.COMMON));
+		super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
 	}
 }

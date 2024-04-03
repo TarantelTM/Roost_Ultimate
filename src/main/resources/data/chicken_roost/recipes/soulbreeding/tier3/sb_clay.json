@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:soul_breeding",
-  "soul": { 
-    "tag": "forge:souls/tier3andup"
-  },
-  "chicken": {
+  "ingredients": [
+    {
+      "tag": "forge:souls/tier3andup"
+    },
+    {
       "item": "chicken_roost:c_clay"
-  },
+    }
+  ],
   "output": {
     "item": "chicken_roost:c_clay"
   }

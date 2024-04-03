@@ -1,16 +1,10 @@
 package net.tarantel.chickenroost.block.tile;
 
-import mod.azure.azurelib.animatable.GeoBlockEntity;
-import mod.azure.azurelib.core.animatable.GeoAnimatable;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.*;
-import mod.azure.azurelib.core.object.PlayState;
-import mod.azure.azurelib.util.AzureLibUtil;
-import mod.azure.azurelib.util.RenderUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -24,48 +18,58 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.tarantel.chickenroost.block.blocks.Roost_Block;
-import net.tarantel.chickenroost.handler.SoulBreeder_Handler;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+import net.tarantel.chickenroost.Config;
+import net.tarantel.chickenroost.block.Roost_Block;
+import net.tarantel.chickenroost.handlers.SoulBreeder_Handler;
+import net.tarantel.chickenroost.network.BreederItemStackSyncS2CPacket;
+import net.tarantel.chickenroost.network.ModMessages;
+import net.tarantel.chickenroost.network.SoulBreederStackSyncS2CPacket;
+import net.tarantel.chickenroost.network.VanillaPacketDispatcher;
 import net.tarantel.chickenroost.recipes.Soul_Breeder_Recipe;
-import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.WrappedHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.builder.RawAnimation;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoBlockEntity {
-    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+
+public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, IAnimatable {
+    public AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    public int animationState = 0;
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    public AnimationFactory getFactory() {
+        return factory;
     }
 
-    @Override
-    public double getTick(Object blockEntity) {
-        return RenderUtils.getCurrentTick();
-    }
+
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(3) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
-            if(!level.isClientSide()) {
-                level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
-            }
+
         }
 
 
@@ -130,8 +134,7 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
     private int crafttimer = 20;
 
     private boolean startcraft = false;
-    public int maxProgress = ((int) Config.soulbreed_speedtimer.get() * 20);
-
+    public int maxProgress = ((int) Config.SOULBREEDERSPEED.get() * 20);
     public int getScaledProgress() {
         int progresss = progress;
         int maxProgresss = maxProgress;  // Max Progress
@@ -139,6 +142,7 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
 
         return maxProgresss != 0 && progresss != 0 ? progresss * progressArrowSize / maxProgresss : 0;
     }
+
     public Soul_Breeder_Tile(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SOUL_BREEDER.get(), pos, state);
         this.data = new ContainerData() {
@@ -168,8 +172,9 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("name.chicken_roost.soul_breeder");
+        return new TextComponent("name.chicken_roost.soul_breeder");
     }
+
 
     @Nullable
     @Override
@@ -182,7 +187,7 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             if (side == null) {
                 return lazyItemHandler.cast();
             }
@@ -217,11 +222,6 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        setChanged();
-        if(!level.isClientSide()) {
-            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
-        }
-
     }
 
     @Override
@@ -234,6 +234,7 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
     protected void saveAdditional(@NotNull CompoundTag nbt) {
         nbt.put("inventory", itemHandler.serializeNBT());
         nbt.putInt("soul_breeder.progress", this.progress);
+
         super.saveAdditional(nbt);
     }
 
@@ -242,8 +243,6 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         super.load(nbt);
         itemHandler.deserializeNBT(nbt.getCompound("inventory"));
         progress = nbt.getInt("soul_breeder.progress");
-        setChanged();
-        getRenderStack();
     }
 
     public void drops() {
@@ -252,6 +251,9 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
         Containers.dropContents(this.level, this.worldPosition, inventory);
+    }
+    private void resetProgress() {
+        this.progress = 0;
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, Soul_Breeder_Tile pEntity) {
@@ -270,25 +272,34 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         if (hasRecipe(pEntity) && pEntity.startcraft == false) {
             pEntity.progress++;
 
-            pEntity.triggerAnim("controller", "craft");
-
-
             if (pEntity.progress >= pEntity.maxProgress) {
                 pEntity.startcraft = true;
                 craftItem(pEntity);
             }
         } if (!hasRecipe(pEntity) && pEntity.startcraft == false){
             pEntity.resetProgress();
-            pEntity.triggerAnim("controller", "idle");
+
             setChanged(level, pos, state);
         }  if(hasRecipe(pEntity) && pEntity.startcraft == true) {
-            pEntity.triggerAnim("controller", "finish");
+
         }
 
     }
 
-    private void resetProgress() {
-        this.progress = 0;
+    @Override
+    public void registerControllers(AnimationData data) {
+        data.addAnimationController(new AnimationController<Soul_Breeder_Tile>(this, "controller", 0, this::predicate));
+        //controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
+    }
+
+
+
+    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+        AnimationController<E> controller = event.getController();
+
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("normal.idle", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+
     }
 
     private static void craftItem(Soul_Breeder_Tile pEntity) {
@@ -297,70 +308,48 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
-        Optional<RecipeHolder<Soul_Breeder_Recipe>> recipe = level.getRecipeManager()
+        Optional<Soul_Breeder_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Soul_Breeder_Recipe.Type.INSTANCE, inventory, level);
-        ItemStack MyChicken = recipe.get().value().output.copy().getItem().getDefaultInstance();
+        ItemStack MyChicken = recipe.get().getResultItem().getItem().getDefaultInstance();
         MyChicken.setCount(pEntity.itemHandler.getStackInSlot(2).getCount() + 1);
         if (hasRecipe(pEntity)) {
 
             pEntity.itemHandler.extractItem(0, 1, false);
             pEntity.itemHandler.extractItem(1, 0, true);
             pEntity.itemHandler.setStackInSlot(2, MyChicken);
-
             pEntity.resetProgress();
         }
     }
-
     private static boolean hasRecipe(Soul_Breeder_Tile entity) {
         Level level = entity.level;
         SimpleContainer inventory = new SimpleContainer(entity.itemHandler.getSlots());
         for (int i = 0; i < entity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
         }
-        Optional<RecipeHolder<Soul_Breeder_Recipe>> recipe = level.getRecipeManager()
+        Optional<Soul_Breeder_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Soul_Breeder_Recipe.Type.INSTANCE, inventory, level);
         return recipe.isPresent() && canInsertAmountIntoOutputSlot(inventory) &&
-                canInsertItemIntoOutputSlot(inventory, recipe.get().value().output.copy().getItem().getDefaultInstance());
-
+                canInsertItemIntoOutputSlot(inventory, recipe.get().getResultItem().getItem().getDefaultInstance());
     }
-
     private static boolean canInsertItemIntoOutputSlot(SimpleContainer inventory, ItemStack stack) {
         return inventory.getItem(2).getItem() == stack.getItem() || inventory.getItem(2).isEmpty();
     }
-
     private static boolean canInsertAmountIntoOutputSlot(SimpleContainer inventory) {
         return inventory.getItem(2).getMaxStackSize() > inventory.getItem(2).getCount();
     }
-
-    private static final RawAnimation CRAFTING = RawAnimation.begin().then("crafting.idle", Animation.LoopType.LOOP);
-    private static final RawAnimation IDLE = RawAnimation.begin().then("normal.idle", Animation.LoopType.LOOP);
-    private static final RawAnimation FINISH = RawAnimation.begin().then("crafting.finish2", Animation.LoopType.PLAY_ONCE);
-
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
-
-    }
+    private static final RawAnimation CRAFTING = new RawAnimation("crafting.idle", ILoopType.EDefaultLoopTypes.LOOP);
+    private static final RawAnimation IDLE = new RawAnimation("normal.idle", ILoopType.EDefaultLoopTypes.LOOP);
+    private static final RawAnimation FINISH = new RawAnimation("crafting.finish2", ILoopType.EDefaultLoopTypes.LOOP);
 
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
+
     @Override
     public CompoundTag getUpdateTag() {
         return saveWithoutMetadata();
     }
-
-    private PlayState predicate(AnimationState<GeoAnimatable> state) {
-        AnimationController<GeoAnimatable> controller = state.getController();
-        controller.triggerableAnim("craft", CRAFTING);
-        controller.triggerableAnim("idle", IDLE);
-        controller.triggerableAnim("finish", FINISH);
-
-        return PlayState.CONTINUE;
-    }
-
 
 }

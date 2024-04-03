@@ -1,11 +1,13 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "forge:seeds/tier7orup" 
-  },
-  "chicken": {
-      "item": "chicken_roost:c_invar"
+  "ingredients": [
+    {
+      "tag": "forge:seeds/tier7orup"
     },
+    {
+      "item": "chicken_roost:c_invar"
+    }
+  ],
   "output": {
     "item": "chicken_roost:ingot_invar"
   }

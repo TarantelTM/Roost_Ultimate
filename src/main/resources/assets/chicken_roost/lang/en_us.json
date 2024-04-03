@@ -1,4 +1,9 @@
 {
+  "breeder.fuel": "Iron Chicken",
+  "trainer.fuel": "Iron Chicken",
+  "roost.fuel": "Iron Chicken",
+  "soulextractor.fuel": "Iron Chicken",
+  "soulbreeder.fuel": "Iron Chicken",
   "item.chicken_roost.c_iron": "Iron Chicken",
   "entity.chicken_roost.c_adamantium": "Adamantium Chicken",
   "entity.chicken_roost.c_pigiron": "Pig Iron Chicken",

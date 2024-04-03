@@ -1,4 +1,14 @@
 {
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "thermal"
+        }
+      ],
+      "recipe": {
   "type": "thermal:insolator",
   "ingredient": {
     "item": "chicken_roost:chicken_food_tier_4"
@@ -15,4 +25,4 @@
   ],
   "energy_mod": 3.0,
   "water_mod": 3.0
-}
+      }}]}

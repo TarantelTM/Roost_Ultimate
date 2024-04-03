@@ -1,0 +1,39 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "immersiveengineering"
+        }
+      ],
+      "recipe": {
+        "type":"immersiveengineering:cloche",
+        "input":
+        {
+          "item":"chicken_roost:chicken_food_tier_5"
+        },
+        "render":
+        {
+          "type":"crop",
+          "block":"chicken_roost:seed_crop_5"
+        },
+        "results":[
+          {
+            "count":2,
+            "item":"chicken_roost:chicken_food_tier_5"
+          },
+          {
+            "item":"chicken_roost:chicken_food_tier_5"
+          }
+        ]
+      ,"soil":
+        {
+          "item":"minecraft:dirt"
+        }
+      ,"time":640
+      }
+    }
+  ]
+}

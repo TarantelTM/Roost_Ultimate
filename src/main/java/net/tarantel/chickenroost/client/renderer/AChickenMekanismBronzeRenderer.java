@@ -1,12 +1,11 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.mods.random.AChickenBronzeEntity;
-import net.tarantel.chickenroost.client.model.Modelchicken;
-
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.tarantel.chickenroost.client.model.Modelchicken;
+import net.tarantel.chickenroost.entity.AChickenBronzeEntity;
 
 public class AChickenMekanismBronzeRenderer extends MobRenderer<AChickenBronzeEntity, Modelchicken<AChickenBronzeEntity>> {
 	public AChickenMekanismBronzeRenderer(EntityRendererProvider.Context context) {

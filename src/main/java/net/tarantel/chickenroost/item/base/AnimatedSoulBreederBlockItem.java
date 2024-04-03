@@ -1,94 +1,62 @@
 package net.tarantel.chickenroost.item.base;
 
-import mod.azure.azurelib.animatable.client.RenderProvider;
-import mod.azure.azurelib.util.AzureLibUtil;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.tarantel.chickenroost.ChickenRoostMod;
-import mod.azure.azurelib.animatable.GeoItem;
-import mod.azure.azurelib.animatable.SingletonGeoAnimatable;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.AnimatableManager;
-import mod.azure.azurelib.core.animation.AnimationController;
-import mod.azure.azurelib.core.animation.RawAnimation;
-import mod.azure.azurelib.model.DefaultedBlockGeoModel;
-import mod.azure.azurelib.renderer.GeoItemRenderer;
-import mod.azure.azurelib.util.RenderUtils;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.IItemRenderProperties;
 import net.tarantel.chickenroost.item.renderer.AnimatedSoulBreederItemRenderer;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-public class AnimatedSoulBreederBlockItem extends BlockItem implements GeoItem {
-    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
-    private final Supplier<Object> renderProvider = GeoItem.makeRenderer(this);
-    private static final RawAnimation IDLE_NORMAL = RawAnimation.begin().thenLoop("normal.idle");
+public class AnimatedSoulBreederBlockItem extends BlockItem implements IAnimatable {
+    public AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    //private static final RawAnimation IDLE_NORMAL = RawAnimation.begin().thenLoop("normal.idle");
     public AnimatedSoulBreederBlockItem(Block block, Properties properties) {
         super(block, properties);
-        SingletonGeoAnimatable.registerSyncedAnimatable(this);
+        //SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private GeoItemRenderer<AnimatedSoulBreederBlockItem> renderer = null;
+    public void registerControllers(AnimationData data) {
+        AnimationController<AnimatedSoulBreederBlockItem> controller = new AnimationController<>(this, "controller", 10, this::handleAnim);
+        controller.setAnimation(new AnimationBuilder().loop("normal.idle"));
+        data.addAnimationController(controller);
+    }
+    private PlayState handleAnim(AnimationEvent<AnimatedSoulBreederBlockItem> event) {
+        AnimationController<AnimatedSoulBreederBlockItem> controller = event.getController();
+        return PlayState.CONTINUE;
+    }
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        super.initializeClient(consumer);
+        consumer.accept(new IItemRenderProperties() {
+            private final BlockEntityWithoutLevelRenderer renderer = new AnimatedSoulBreederItemRenderer();
 
             @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (this.renderer == null)
-                    this.renderer = new GeoItemRenderer<>(new DefaultedBlockGeoModel<>(new ResourceLocation(ChickenRoostMod.MODID, "soul_breeder")));
-
-                return this.renderer;
+            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+                return renderer;
             }
         });
     }
 
-   /* @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
-    }*/
-
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        //controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
-        controllerRegistrar.add(new AnimationController<>(this, state -> {
-
-                return state.setAndContinue(IDLE_NORMAL);
-
-        }));
+    public float getDestroySpeed(ItemStack par1ItemStack, BlockState par2Block) {
+        return 0F;
     }
 
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    @Override
-    public double getTick(Object itemStack) {
-        return RenderUtils.getCurrentTick();
-    }
-
-    @Override
-    public void createRenderer(Consumer<Object> consumer) {
-        consumer.accept(new RenderProvider() {
-            private AnimatedSoulBreederItemRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (this.renderer == null)
-                    this.renderer = new AnimatedSoulBreederItemRenderer();
-
-                return this.renderer;
-            }
-        });
-    }
-
-    @Override
-    public Supplier<Object> getRenderProvider() {
-        return this.renderProvider;
-    }
 }

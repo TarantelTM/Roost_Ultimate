@@ -1,5 +1,5 @@
 {
   "values": [
-    "chicken_roost:ingot_lead"
+    { "id":"chicken_roost:ingot_lead", "required": false }
   ]
 }

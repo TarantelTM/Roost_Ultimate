@@ -1,13 +1,28 @@
-{"bookshelf:load_conditions":[{"type":"bookshelf:item_exists",
-  "values":["chicken_roost:chicken_essence_tier_9",
-    "chicken_roost:chicken_food_tier_9"]}],
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "botanypots"
+        }
+      ],
+      "recipe": {
   "type":"botanypots:crop",
   "seed":{"item":"chicken_roost:chicken_food_tier_9"},
   "categories":["dirt"],
-  "growthTicks":3000,
+  "growthTicks":500,
   "display":{"type":"botanypots:aging",
     "block":"chicken_roost:seed_crop_9"},
   "drops":[{"chance":1.00,
-    "output":{"item":"chicken_roost:chicken_food_tier_9"}},
-    {"chance":0.01,
-      "output":{"item":"chicken_roost:chicken_essence_tier_9"}}]}
+    "output":{"item":"chicken_roost:chicken_food_tier_9",
+      "count":  2}},
+    {"chance":0.50,
+      "output":{"item":"chicken_roost:chicken_food_tier_9",
+        "count":  1}},
+    {"chance":0.20,
+      "output":{"item":"chicken_roost:chicken_essence_tier_9"}}]}}
+
+  ]
+}

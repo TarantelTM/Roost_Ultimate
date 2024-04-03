@@ -1,17 +1,17 @@
 {
   "replace": false,
   "values": [
-    "chicken_roost:c_soulsoil",
-    "chicken_roost:c_string",
-    "chicken_roost:c_basalt",
-    "chicken_roost:c_copper",
-    "chicken_roost:c_rabbithide",
-    "chicken_roost:c_livingwood",
-    "chicken_roost:c_clay",
-    "chicken_roost:c_spidereye",
-    "chicken_roost:c_soulsand",
-    "chicken_roost:c_livingrock",
-    "chicken_roost:c_sponge",
-    "chicken_roost:c_leather"
+    { "id":"chicken_roost:c_soulsoil", "required": false },
+    { "id":"chicken_roost:c_string", "required": false },
+    { "id":"chicken_roost:c_basalt", "required": false },
+    { "id":"chicken_roost:c_copper", "required": false },
+    { "id":"chicken_roost:c_rabbithide", "required": false },
+    { "id":"chicken_roost:c_livingwood", "required": false },
+    { "id":"chicken_roost:c_clay", "required": false },
+    { "id":"chicken_roost:c_spidereye", "required": false },
+    { "id":"chicken_roost:c_soulsand", "required": false },
+    { "id":"chicken_roost:c_livingrock", "required": false },
+    { "id":"chicken_roost:c_sponge", "required": false },
+    { "id":"chicken_roost:c_leather", "required": false }
   ]
 }

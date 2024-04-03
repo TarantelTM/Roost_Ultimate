@@ -1,8 +1,10 @@
 package net.tarantel.chickenroost.item.renderer;
 
-import mod.azure.azurelib.renderer.GeoItemRenderer;
-import net.tarantel.chickenroost.item.base.*;
-import net.tarantel.chickenroost.item.model.*;
+
+import net.tarantel.chickenroost.item.base.AnimatedChicken_1;
+import net.tarantel.chickenroost.item.model.AnimatedChickenModel_1;
+import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
+
 
 public class AnimatedChickenRenderer_1 extends GeoItemRenderer<AnimatedChicken_1> {
     public AnimatedChickenRenderer_1() {

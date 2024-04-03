@@ -1,12 +1,11 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.mods.random.AChickenUraniumEntity;
-import net.tarantel.chickenroost.client.model.Modelchicken;
-
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.tarantel.chickenroost.client.model.Modelchicken;
+import net.tarantel.chickenroost.entity.AChickenUraniumEntity;
 
 public class AChickenMekanismUraniumRenderer extends MobRenderer<AChickenUraniumEntity, Modelchicken<AChickenUraniumEntity>> {
 	public AChickenMekanismUraniumRenderer(EntityRendererProvider.Context context) {

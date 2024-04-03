@@ -17,21 +17,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.tarantel.chickenroost.block.blocks.Soul_Extractor_Block;
-import net.tarantel.chickenroost.handler.SoulExtractor_Handler;
-///import net.tarantel.chickenroost.network.ExtractorStackSyncS2CPacket;
-///import net.tarantel.chickenroost.network.ModMessages;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+import net.tarantel.chickenroost.Config;
+import net.tarantel.chickenroost.block.Soul_Extractor_Block;
+import net.tarantel.chickenroost.handlers.SoulExtractor_Handler;
 import net.tarantel.chickenroost.recipes.Soul_Extractor_Recipe;
-import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.WrappedHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -79,8 +76,7 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
     }
     protected final ContainerData data;
     public int progress = 0;
-    public int maxProgress = ((int) Config.extractor_speedtimer.get() * 20);
-
+    public int maxProgress = ((int) Config.SOULEXTRACTORSPEED.get() * 20);
     public int getScaledProgress() {
         int progresss = progress;
         int maxProgresss = maxProgress;  // Max Progress
@@ -88,6 +84,7 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
 
         return maxProgresss != 0 && progresss != 0 ? progresss * progressArrowSize / maxProgresss : 0;
     }
+
     public Soul_Extractor_Tile(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SOUL_EXTRACTOR.get(), pos, state);
         this.data = new ContainerData() {
@@ -117,7 +114,7 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("name.chicken_roost.soul_extractor_");
+        return Component.nullToEmpty("name.chicken_roost.soul_extractor_");
     }
 
     @Nullable
@@ -130,7 +127,7 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
             new HashMap<>();
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             if(side == null) {
                 return lazyItemHandler.cast();
             }
@@ -166,9 +163,8 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
         if(!level.isClientSide()) {
-          ///  ModMessages.sendToClients(new ExtractorStackSyncS2CPacket(this.itemHandler, worldPosition));
+            //ModMessages.sendToClients(new ExtractorStackSyncS2CPacket(this.itemHandler, worldPosition));
         }
-        setChanged();
     }
 
     @Override
@@ -206,7 +202,7 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
             return;
         }
         setChanged(level, pos, state);
-      ///  ModMessages.sendToClients(new ExtractorStackSyncS2CPacket(pEntity.itemHandler, pEntity.worldPosition));
+       // ModMessages.sendToClients(new ExtractorStackSyncS2CPacket(pEntity.itemHandler, pEntity.worldPosition));
         if(hasRecipe(pEntity)) {
             pEntity.progress++;
             if(pEntity.progress >= pEntity.maxProgress) {
@@ -229,13 +225,13 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
 
-        Optional<RecipeHolder<Soul_Extractor_Recipe>> recipe = level.getRecipeManager()
+        Optional<Soul_Extractor_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Soul_Extractor_Recipe.Type.INSTANCE, inventory, level);
 
         if(hasRecipe(pEntity)) {
             //pEntity.itemHandler.extractItem(0, 1, false);
             pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.setStackInSlot(1, new ItemStack(recipe.get().value().output.copy().getItem(),
+            pEntity.itemHandler.setStackInSlot(1, new ItemStack(recipe.get().output.getItem(),
                     pEntity.itemHandler.getStackInSlot(1).getCount() + 1));
 
             pEntity.resetProgress();
@@ -249,12 +245,12 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
             inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
         }
 
-        Optional<RecipeHolder<Soul_Extractor_Recipe>> recipe = level.getRecipeManager()
+        Optional<Soul_Extractor_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Soul_Extractor_Recipe.Type.INSTANCE, inventory, level);
 
 
         return recipe.isPresent() && canInsertAmountIntoOutputSlot(inventory) &&
-                canInsertItemIntoOutputSlot(inventory, recipe.get().value().output.copy().getItem().getDefaultInstance());
+                canInsertItemIntoOutputSlot(inventory, recipe.get().output.getItem().getDefaultInstance());
     }
 
 

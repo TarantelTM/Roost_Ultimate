@@ -1,56 +1,65 @@
 package net.tarantel.chickenroost.block.tile.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import mod.azure.azurelib.cache.object.GeoBone;
-import mod.azure.azurelib.renderer.GeoBlockRenderer;
-import mod.azure.azurelib.renderer.layer.BlockAndItemGeoLayer;
+import com.mojang.math.Quaternion;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.tarantel.chickenroost.block.blocks.model.AnimatedTrainerModel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
+import net.tarantel.chickenroost.block.Trainer_Block;
 import net.tarantel.chickenroost.block.tile.Trainer_Tile;
 
-import javax.annotation.Nullable;
+public class AnimatedTrainerRenderer implements BlockEntityRenderer<Trainer_Tile> {
+    public AnimatedTrainerRenderer(BlockEntityRendererProvider.Context rendererDispatcherIn) {
 
-public class AnimatedTrainerRenderer extends GeoBlockRenderer<Trainer_Tile> {
-    public AnimatedTrainerRenderer(BlockEntityRendererProvider.Context context) {
-        super(new AnimatedTrainerModel());
-        this.addRenderLayer(new BlockAndItemGeoLayer<>(this) {
+    }
 
-            @Nullable
-            @Override
-            protected ItemStack getStackForBone(GeoBone bone, Trainer_Tile animatable) {
-                ItemStack itemStack = animatable.getRenderStack();
-                return switch (bone.getName()) {
-                    case "bone" -> new ItemStack(itemStack.getItem());
-                    default -> null;
-                };
+    @Override
+    public void render(Trainer_Tile pBlockEntity, float pPartialTick, PoseStack pPoseStack,
+                       MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
+        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+        ItemStack itemStack = pBlockEntity.getRenderStack();
+        pPoseStack.pushPose();
+        //pPoseStack.translate(0.5f, 0.65f, 0.5f);
+        pPoseStack.scale(1.0f, 1.0f, 1.0f);
+        //pPoseStack.mulPose(Axis.XP.rotationDegrees(0));
+
+
+        switch (pBlockEntity.getBlockState().getValue(Trainer_Block.FACING)) {
+            case NORTH -> {
+                pPoseStack.translate(0.5f, 0.5f, 0.6f);
+                pPoseStack.mulPose(new Quaternion(0, 0, 0, true));
             }
-
-
-            @Override
-            protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack,
-                                                                  Trainer_Tile animatable) {
-                return switch (bone.getName()) {
-                    default -> ItemDisplayContext.FIXED;
-                };
+            case EAST -> {
+                pPoseStack.translate(0.4f, 0.5f, 0.5f);
+                pPoseStack.mulPose(new Quaternion(0, -90, 0, true));
             }
-
-            @Override
-            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack,
-                                              Trainer_Tile animatable, MultiBufferSource bufferSource, float partialTick, int packedLight,
-                                              int packedOverlay) {
-                poseStack.mulPose(Axis.XP.rotationDegrees(0));
-                poseStack.mulPose(Axis.YP.rotationDegrees(0));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack.translate(0.0D, 0.4D, 0.0D);
-                poseStack.scale(1.0f, 1.0f, 1.0f);
-                super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight,
-                        packedOverlay);
+            case SOUTH -> {
+                pPoseStack.translate(0.5f, 0.5f, 0.4f);
+                pPoseStack.mulPose(new Quaternion(0, -180, 0, true));
             }
-        });
+            case WEST -> {
+                pPoseStack.translate(0.6f, 0.5f, 0.5f);
+                pPoseStack.mulPose(new Quaternion(0, +90, 0, true));
+            }
+        }
 
+        itemRenderer.renderStatic(itemStack, ItemTransforms.TransformType.FIXED, pPackedLight,
+                OverlayTexture.NO_OVERLAY, pPoseStack, pBufferSource, 0);
+        pPoseStack.popPose();
+    }
+
+    private int getLightLevel(Level level, BlockPos pos) {
+        int bLight = level.getBrightness(LightLayer.BLOCK, pos);
+        int sLight = level.getBrightness(LightLayer.SKY, pos);
+        return LightTexture.pack(bLight, sLight);
     }
 }

@@ -1,5 +1,5 @@
 {
-  "type": "neoforge:conditional",
+  "type": "forge:conditional",
   "recipes": [
     {
       "conditions": [
@@ -10,12 +10,14 @@
       ],
       "recipe": {
         "type": "chicken_roost:roost_output",
-        "food": {
+        "ingredients": [
+          {
             "tag": "forge:seeds/tier7orup"
           },
-          "chicken": {
+          {
             "item": "chicken_roost:c_manyullyn"
-          },
+          }
+        ],
         "output": {
           "item": "tconstruct:manyullyn_nugget"
         }

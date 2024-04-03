@@ -1,12 +1,11 @@
 
 package net.tarantel.chickenroost.client.renderer;
 
-import net.tarantel.chickenroost.entity.mods.random.AChickenLeadEntity;
-import net.tarantel.chickenroost.client.model.Modelchicken;
-
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.tarantel.chickenroost.client.model.Modelchicken;
+import net.tarantel.chickenroost.entity.AChickenLeadEntity;
 
 public class AChickenMekanismLeadRenderer extends MobRenderer<AChickenLeadEntity, Modelchicken<AChickenLeadEntity>> {
 	public AChickenMekanismLeadRenderer(EntityRendererProvider.Context context) {

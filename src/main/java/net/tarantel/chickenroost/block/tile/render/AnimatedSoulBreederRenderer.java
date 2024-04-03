@@ -1,175 +1,63 @@
-package net.tarantel.chickenroost.block.tile.render;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import mod.azure.azurelib.cache.object.GeoBone;
-import mod.azure.azurelib.renderer.GeoBlockRenderer;
-import mod.azure.azurelib.renderer.layer.BlockAndItemGeoLayer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.tarantel.chickenroost.block.tile.Soul_Breeder_Tile;
-import net.tarantel.chickenroost.block.blocks.model.AnimatedSoulBreederModel;
-
-import javax.annotation.Nullable;
-
-public class AnimatedSoulBreederRenderer extends GeoBlockRenderer<Soul_Breeder_Tile> {
-    public AnimatedSoulBreederRenderer(BlockEntityRendererProvider.Context context) {
-        super(new AnimatedSoulBreederModel());
-        this.addRenderLayer(new BlockAndItemGeoLayer<>(this) {
-
-            @Nullable
-            @Override
-            protected ItemStack getStackForBone(GeoBone bone, Soul_Breeder_Tile animatable) {
-                ItemStack itemStack = animatable.getRenderStack();
-                return switch (bone.getName()) {
-                    case "bone9" -> new ItemStack(itemStack.getItem());
-                    default -> null;
-                };
-            }
-
-            @Override
-            protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack,
-                                                                  Soul_Breeder_Tile animatable) {
-                return switch (bone.getName()) {
-                    default -> ItemDisplayContext.FIXED;
-                };
-            }
-
-            @Override
-            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack,
-                                              Soul_Breeder_Tile animatable, MultiBufferSource bufferSource, float partialTick, int packedLight,
-                                              int packedOverlay) {
-                poseStack.mulPose(Axis.XP.rotationDegrees(0));
-                poseStack.mulPose(Axis.YP.rotationDegrees(0));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack.translate(0.0D, 0.2D, 0.0D);
-                poseStack.scale(1.0f, 1.0f, 1.0f);
-                super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight,
-                        packedOverlay);
-            }
-        });
-        this.addRenderLayer(new BlockAndItemGeoLayer<>(this) {
-
-            @Nullable
-            @Override
-            protected ItemStack getStackForBone(GeoBone bone, Soul_Breeder_Tile animatable) {
-                ItemStack itemStack2 = animatable.getRenderStackInput();
-                if(itemStack2.getCount() == 1) {
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-                if(itemStack2.getCount() == 2) {
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        case "bone6" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-                if(itemStack2.getCount() == 3) {
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        case "bone6" -> new ItemStack(itemStack2.getItem());
-                        case "bone5" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-                if(itemStack2.getCount() == 4) {
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        case "bone6" -> new ItemStack(itemStack2.getItem());
-                        case "bone5" -> new ItemStack(itemStack2.getItem());
-                        case "bone8" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-                if(itemStack2.getCount() == 5) {
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        case "bone6" -> new ItemStack(itemStack2.getItem());
-                        case "bone5" -> new ItemStack(itemStack2.getItem());
-                        case "bone8" -> new ItemStack(itemStack2.getItem());
-                        case "bone36" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-                if(itemStack2.getCount() == 6) {
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        case "bone6" -> new ItemStack(itemStack2.getItem());
-                        case "bone5" -> new ItemStack(itemStack2.getItem());
-                        case "bone8" -> new ItemStack(itemStack2.getItem());
-                        case "bone36" -> new ItemStack(itemStack2.getItem());
-                        case "bone26" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-                if(itemStack2.getCount() == 7) {
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        case "bone6" -> new ItemStack(itemStack2.getItem());
-                        case "bone5" -> new ItemStack(itemStack2.getItem());
-                        case "bone8" -> new ItemStack(itemStack2.getItem());
-                        case "bone36" -> new ItemStack(itemStack2.getItem());
-                        case "bone26" -> new ItemStack(itemStack2.getItem());
-                        case "bone23" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-                if(itemStack2.getCount() == 8) {
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        case "bone6" -> new ItemStack(itemStack2.getItem());
-                        case "bone5" -> new ItemStack(itemStack2.getItem());
-                        case "bone8" -> new ItemStack(itemStack2.getItem());
-                        case "bone36" -> new ItemStack(itemStack2.getItem());
-                        case "bone26" -> new ItemStack(itemStack2.getItem());
-                        case "bone23" -> new ItemStack(itemStack2.getItem());
-                        case "bone14" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-                else{
-                    return switch (bone.getName()) {
-                        case "bone7" -> new ItemStack(itemStack2.getItem());
-                        case "bone6" -> new ItemStack(itemStack2.getItem());
-                        case "bone5" -> new ItemStack(itemStack2.getItem());
-                        case "bone8" -> new ItemStack(itemStack2.getItem());
-                        case "bone36" -> new ItemStack(itemStack2.getItem());
-                        case "bone26" -> new ItemStack(itemStack2.getItem());
-                        case "bone23" -> new ItemStack(itemStack2.getItem());
-                        case "bone14" -> new ItemStack(itemStack2.getItem());
-                        default -> null;
-                    };
-                }
-
-            }
-
-            @Override
-            protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack,
-                                                                  Soul_Breeder_Tile animatable) {
-                return switch (bone.getName()) {
-                    default -> ItemDisplayContext.FIXED;
-                };
-            }
-
-            @Override
-            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack,
-                                              Soul_Breeder_Tile animatable, MultiBufferSource bufferSource, float partialTick, int packedLight,
-                                              int packedOverlay) {
-                poseStack.mulPose(Axis.XP.rotationDegrees(0));
-                poseStack.mulPose(Axis.YP.rotationDegrees(0));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack.translate(0.0D, 0.2D, 0.0D);
-                poseStack.scale(0.3f, 0.3f, 0.3f);
-
-                super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight,
-                        packedOverlay);
-            }
-        });
-    }
-
-}
+//package net.tarantel.chickenroost.block.tile.render;
+//
+//import com.mojang.blaze3d.vertex.PoseStack;
+//import com.mojang.blaze3d.vertex.VertexConsumer;
+//import net.minecraft.client.Minecraft;
+//import net.minecraft.client.renderer.LightTexture;
+//import net.minecraft.client.renderer.MultiBufferSource;
+//import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.renderer.block.model.ItemTransforms;
+//import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+//import net.minecraft.client.renderer.entity.ItemRenderer;
+//import net.minecraft.client.renderer.texture.OverlayTexture;
+//import net.minecraft.core.BlockPos;
+//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.world.item.ItemStack;
+//import net.minecraft.world.level.Level;
+//import net.minecraft.world.level.LightLayer;
+//import net.tarantel.chickenroost.block.model.AnimatedSoulBreederModel;
+//import net.tarantel.chickenroost.block.tile.Soul_Breeder_Tile;
+//import software.bernie.geckolib3.geo.render.built.GeoBone;
+//import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
+//
+//public class AnimatedSoulBreederRenderer extends GeoBlockRenderer<Soul_Breeder_Tile> {
+//    public AnimatedSoulBreederRenderer(BlockEntityRendererProvider.Context renderManager) {
+//        super(renderManager, new AnimatedSoulBreederModel());
+//        //super(new AnimatedSoulBreederModel());
+//
+//
+//    }
+//    @Override
+//    public RenderType getRenderType(Soul_Breeder_Tile animatable, float partialTick, PoseStack poseStack,
+//                                    MultiBufferSource bufferSource, VertexConsumer buffer, int packedLight,
+//                                    ResourceLocation texture) {
+//        return RenderType.entityTranslucent(getTextureLocation(animatable));
+//    }
+//
+//    @Override
+//    public void renderRecursively(GeoBone bone, PoseStack stack, VertexConsumer bufferIn, int packedLightIn,
+//                                  int packedOverlayIn, float red, float green, float blue, float alpha) {
+//
+//
+//        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+//        ItemStack itemStack = this.animatable.getRenderStack();
+//
+//        if (bone.getName().equals("bone9")) {
+//            stack.pushPose();
+//            stack.translate(0.5f, 2.5f, 0.6f);
+//            //stack.translate(0.34D, 0.1D, 1.0D);
+//            stack.scale(1.0f, 1.0f, 1.0f);
+//            Minecraft.getInstance().getItemRenderer().renderStatic(itemStack, ItemTransforms.TransformType.FIXED,
+//                    packedLightIn, packedOverlayIn, stack, this.rtb, 0);
+//            itemRenderer.renderStatic(itemStack, ItemTransforms.TransformType.FIXED, packedLightIn,
+//                    OverlayTexture.NO_OVERLAY, stack, (MultiBufferSource) bufferIn, 0);
+//            stack.popPose();
+//        }
+//        super.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+//    }
+//    private int getLightLevel(Level level, BlockPos pos) {
+//        int bLight = level.getBrightness(LightLayer.BLOCK, pos);
+//        int sLight = level.getBrightness(LightLayer.SKY, pos);
+//        return LightTexture.pack(bLight, sLight);
+//    }
+//}
