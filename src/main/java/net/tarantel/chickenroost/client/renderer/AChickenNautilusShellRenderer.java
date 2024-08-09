@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.vanilla.AChickenNautilusShellEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenNautilusShellRenderer extends MobRenderer<AChickenNautilusS
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenNautilusShellEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/conductive_iron_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/conductive_iron_chicken.png");
 	}
 }

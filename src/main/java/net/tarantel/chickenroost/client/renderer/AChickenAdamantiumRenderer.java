@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.random.AChickenAdamantiumEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenAdamantiumRenderer extends MobRenderer<AChickenAdamantiumEn
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenAdamantiumEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/emeradic_crystal_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/emeradic_crystal_chicken.png");
 	}
 }

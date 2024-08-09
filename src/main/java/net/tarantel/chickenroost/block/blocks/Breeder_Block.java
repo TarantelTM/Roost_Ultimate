@@ -1,5 +1,6 @@
 package net.tarantel.chickenroost.block.blocks;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -7,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -25,9 +27,9 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.tarantel.chickenroost.block.tile.Breeder_Tile;
 import net.tarantel.chickenroost.block.tile.ModBlockEntities;
+import net.tarantel.chickenroost.block.tile.Trainer_Tile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +44,11 @@ public class Breeder_Block extends BaseEntityBlock {
     public Breeder_Block(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TEST_MYNEWSTATE, 2));
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return null;
     }
 
 
@@ -68,6 +75,7 @@ public class Breeder_Block extends BaseEntityBlock {
         return Collections.singletonList(new ItemStack(this, 1));
 
     }
+
 
     @Override
     public BlockState rotate(BlockState pState, Rotation pRotation) {
@@ -119,19 +127,35 @@ public class Breeder_Block extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos,
-                                 Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (!pLevel.isClientSide()) {
-            BlockEntity entity = pLevel.getBlockEntity(pPos);
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            ServerPlayer theplayer = (ServerPlayer) player;
             if(entity instanceof Breeder_Tile) {
-                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (Breeder_Tile)entity, pPos);
+                //ServerPlayer.openScreen(((ServerPlayer)pPlayer), (Breeder_Tile)entity, pPos);
+                theplayer.openMenu((Breeder_Tile)entity, pos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }
         }
 
-        return InteractionResult.sidedSuccess(pLevel.isClientSide());
+        return InteractionResult.PASS;
     }
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            ServerPlayer theplayer = (ServerPlayer) player;
+            if(entity instanceof Breeder_Tile) {
+                theplayer.openMenu((Breeder_Tile)entity, pos);
+            } else {
+                throw new IllegalStateException("Our Container provider is missing!");
+            }
+        }
+
+        return ItemInteractionResult.sidedSuccess(true);
+    }
+
 
     @Nullable
     @Override

@@ -1,6 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
-
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.entity.mods.tct.AChickenCobaldEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
@@ -15,6 +16,6 @@ public class AChickenCobaldRenderer extends MobRenderer<AChickenCobaldEntity, Mo
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenCobaldEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/cobalt_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/cobalt_chicken.png");
 	}
 }

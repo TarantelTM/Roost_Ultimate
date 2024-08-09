@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thermal"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "c:seeds/tier5orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_constantan"
+          },
+        "output": {
+          "item": "thermal:constantan_nugget"
+        }
+
+      }

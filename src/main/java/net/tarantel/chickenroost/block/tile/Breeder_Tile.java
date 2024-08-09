@@ -2,12 +2,12 @@ package net.tarantel.chickenroost.block.tile;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -18,18 +18,19 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.tarantel.chickenroost.block.blocks.Breeder_Block;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.handler.Breeder_Handler;
+import net.tarantel.chickenroost.item.base.*;
 import net.tarantel.chickenroost.recipes.Breeder_Recipe;
+import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.WrappedHandler;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,7 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
     public static int x;
     public static int y;
     public static int z;
-    private final ItemStackHandler itemHandler = new ItemStackHandler(10) {
+    public final ItemStackHandler itemHandler = new ItemStackHandler(10) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -88,8 +89,8 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
-                case 0 -> (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
-                case 1 -> (stack.is(ItemTags.create(new ResourceLocation("forge:seeds/tiered"))));
+                case 0 -> (stack.getItem() instanceof ChickenItemBase);
+                case 1 -> (stack.is(ItemTags.create(ChickenRoostMod.commonsource("seeds/tiered"))));
                 case 2 -> false;
                 case 3 -> false;
                 case 4 -> false;
@@ -102,8 +103,8 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
             };
         }
     };
-
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    //private BlockCapabilityCache<IItemHandler, @Nullable Direction> capCache;
+    //private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     public ItemStack getRenderStack() {
         ItemStack stack;
 
@@ -175,66 +176,39 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
         return new Breeder_Handler(id, inventory, this, this.data);
     }
 
-    private final Map<Direction, LazyOptional<WrappedHandler>> directionWrappedHandlerMap =
+    private final Map<Direction, Lazy<WrappedHandler>> directionWrappedHandlerMap =
             new HashMap<>();
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            if(side == null) {
-                return lazyItemHandler.cast();
-            }
-            for (Direction direction : Arrays.asList(Direction.DOWN, Direction.UP, Direction.NORTH, Direction.EAST, Direction.WEST, Direction.SOUTH)) {
-                directionWrappedHandlerMap.put (direction, LazyOptional.of(() -> new WrappedHandler(itemHandler, (i) -> i == 2 || i == 3 || i == 4 || i == 5 || i == 6 || i == 7 || i == 8 || i == 9, (i, s) -> false)));
-            }
-            for (Direction direction : Arrays.asList(Direction.DOWN,Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.UP)) {
-                directionWrappedHandlerMap.put (direction, LazyOptional.of(() -> new WrappedHandler(itemHandler, (index) -> index == 2 || index == 3 || index == 4 || index == 5 || index == 6 || index == 7 || index == 8 || index == 9,
-                        (index, stack) -> itemHandler.isItemValid(0, stack) || itemHandler.isItemValid(1, stack))));
-            }
 
-            if(directionWrappedHandlerMap.containsKey(side)) {
-                Direction localDir = this.getBlockState().getValue(Breeder_Block.FACING);
 
-                if(side == Direction.UP || side == Direction.DOWN) {
-                    return directionWrappedHandlerMap.get(side).cast();
-                }
+    private final IItemHandler itemHandlerSided = new InputOutputItemHandler(itemHandler, (i, stack) -> i == 0 || i == 1, i -> i == 2 || i == 3 || i == 4 || i == 5 || i == 6 || i == 7 || i == 8 || i == 9);
 
-                return switch (localDir) {
-                    default -> directionWrappedHandlerMap.get(side.getOpposite()).cast();
-                    case EAST -> directionWrappedHandlerMap.get(side.getClockWise()).cast();
-                    case SOUTH -> directionWrappedHandlerMap.get(side).cast();
-                    case WEST -> directionWrappedHandlerMap.get(side.getCounterClockWise()).cast();
-                };
-            }
-        }
 
-        return super.getCapability(cap, side);
+    public @Nullable IItemHandler getItemHandlerCapability(@Nullable Direction side) {
+        if(side == null)
+            return itemHandler;
+
+        return itemHandlerSided;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
         setChanged();
 
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-    }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag nbt) {
-        nbt.put("inventory", itemHandler.serializeNBT());
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookup) {
+        nbt.put("inventory", itemHandler.serializeNBT(lookup));
         nbt.putInt("breeder.progress", this.progress);
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, lookup);
     }
 
     @Override
-    public void load(@NotNull CompoundTag nbt) {
-        super.load(nbt);
-        itemHandler.deserializeNBT(nbt.getCompound("inventory"));
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookup) {
+        super.loadAdditional(nbt, lookup);
+        itemHandler.deserializeNBT(lookup,nbt.getCompound("inventory"));
         progress = nbt.getInt("breeder.progress");
 
 
@@ -312,8 +286,10 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
-        List<RecipeHolder<Breeder_Recipe>> recipe = pEntity.getLevel().getRecipeManager()
-                .getRecipesFor(Breeder_Recipe.Type.INSTANCE, inventory, pEntity.getLevel());
+        List<RecipeHolder<Breeder_Recipe>> recipe= level.getRecipeManager().getRecipesFor(Breeder_Recipe.Type.INSTANCE, getRecipeInput(inventory), level);
+        /*if (level != null) {
+            recipe = level.getRecipeManager().getRecipesFor(Breeder_Recipe.Type.INSTANCE, getRecipeInput(inventory), level);
+        }*/
         if(hasRecipe(pEntity)) {
             //outpit = pEntity.itemHandler.getStackInSlot(0).getOrCreateTag().getString("output");
             //Item elseitem = pEntity.itemHandler.getStackInSlot(0).getItem().asItem();
@@ -323,8 +299,8 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
             int RandomOutputs = ran.nextInt(recipe.size());
 
 
-            //ChickenOutput = new ItemStack((ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(outpit))).getRandomElement(RandomSource.create()).orElseGet(() -> elseitem)));
-            ChickenOutput = new ItemStack(recipe.get(RandomOutputs).value().output.copy().getItem());
+            //ChickenOutput = new ItemStack((ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(ResourceLocation.withDefaultNamespace(outpit))).getRandomElement(RandomSource.create()).orElseGet(() -> elseitem)));
+            ChickenOutput = new ItemStack(recipe.get(RandomOutputs).value().output.getItem());
             if(pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY) {
                 pEntity.itemHandler.extractItem(0, 0, true);
                 pEntity.itemHandler.extractItem(1, 1, false);
@@ -397,13 +373,27 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
             inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
         }
 
-        Optional<RecipeHolder<Breeder_Recipe>> recipe = level.getRecipeManager()
-                .getRecipeFor(Breeder_Recipe.Type.INSTANCE, inventory, level);
+        Optional<RecipeHolder<Breeder_Recipe>> recipe = Optional.empty();
+        if (level != null) {
+            recipe = level.getRecipeManager().getRecipeFor(ModRecipes.BASIC_BREEDING_TYPE.get(), getRecipeInput(inventory), level);
+        }
 
 
         return recipe.isPresent();
     }
+    public static RecipeInput getRecipeInput(SimpleContainer inventory) {
+        return new RecipeInput() {
+            @Override
+            public ItemStack getItem(int index) {
+                return inventory.getItem(index).copy();
+            }
 
+            @Override
+            public int size() {
+                return inventory.getContainerSize();
+            }
+        };
+    }
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
@@ -411,7 +401,7 @@ public class Breeder_Tile extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider prov) {
+        return saveWithFullMetadata(prov);
     }
 }

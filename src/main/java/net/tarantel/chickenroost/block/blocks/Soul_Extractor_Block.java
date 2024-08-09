@@ -1,11 +1,13 @@
 package net.tarantel.chickenroost.block.blocks;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -23,8 +25,8 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.tarantel.chickenroost.block.tile.ModBlockEntities;
+import net.tarantel.chickenroost.block.tile.Soul_Breeder_Tile;
 import net.tarantel.chickenroost.block.tile.Soul_Extractor_Tile;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +38,10 @@ public class Soul_Extractor_Block extends BaseEntityBlock {
     public Soul_Extractor_Block(Properties properties) {
         super(properties);
     }
-
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return null;
+    }
     private static final VoxelShape SHAPE =
             Block.box(0, 0, 0, 16, 16, 16);
 
@@ -107,19 +112,35 @@ public class Soul_Extractor_Block extends BaseEntityBlock {
         world.scheduleTick(pos, this, 20);
     }
 
+
+
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos,
-                                 Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (!pLevel.isClientSide()) {
-            BlockEntity entity = pLevel.getBlockEntity(pPos);
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            ServerPlayer theplayer = (ServerPlayer) player;
             if(entity instanceof Soul_Extractor_Tile) {
-                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (Soul_Extractor_Tile)entity, pPos);
+                theplayer.openMenu((Soul_Extractor_Tile)entity, pos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }
         }
 
-        return InteractionResult.sidedSuccess(pLevel.isClientSide());
+        return InteractionResult.PASS;
+    }
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            ServerPlayer theplayer = (ServerPlayer) player;
+            if(entity instanceof Soul_Extractor_Tile) {
+                theplayer.openMenu((Soul_Extractor_Tile)entity, pos);
+            } else {
+                throw new IllegalStateException("Our Container provider is missing!");
+            }
+        }
+
+        return ItemInteractionResult.sidedSuccess(true);
     }
 
     @Nullable

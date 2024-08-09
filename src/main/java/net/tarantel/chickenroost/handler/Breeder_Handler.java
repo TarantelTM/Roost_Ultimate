@@ -1,6 +1,7 @@
 package net.tarantel.chickenroost.handler;
 
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,8 +12,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.resources.ResourceLocation;
 import net.tarantel.chickenroost.block.tile.Breeder_Tile;
+import net.tarantel.chickenroost.item.base.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,64 +49,64 @@ public class Breeder_Handler extends AbstractContainerMenu {
 
 
 
-        this.blockEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
-            this.addSlot(new SlotItemHandler(handler, 1, 35, 26){
+        ItemCapabilityMenuHelper.getCapabilityItemHandler(this.level, this.blockEntity).ifPresent(itemHandler -> {
+            this.addSlot(new SlotItemHandler(itemHandler, 1, 35, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:seeds/tiered"))));
+                    return (stack.is(ItemTags.create(ChickenRoostMod.commonsource("seeds/tiered"))));
                 }
             });
 
-            this.addSlot(new SlotItemHandler(handler, 0, 7, 26){
+            this.addSlot(new SlotItemHandler(itemHandler, 0, 7, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                    return (stack.getItem() instanceof AnimatedChicken_1 || stack.getItem() instanceof AnimatedChicken_2 || stack.getItem() instanceof AnimatedChicken_3 || stack.getItem() instanceof AnimatedChicken_4 || stack.getItem() instanceof AnimatedChicken_5 || stack.getItem() instanceof AnimatedChicken_6 || stack.getItem() instanceof AnimatedChicken_7 || stack.getItem() instanceof AnimatedChicken_8 || stack.getItem() instanceof AnimatedChicken_9);
                 }
             });
 
-            this.addSlot(new SlotItemHandler(handler, 2, 97, 26){
+            this.addSlot(new SlotItemHandler(itemHandler, 2, 97, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 3, 115, 26){
+            this.addSlot(new SlotItemHandler(itemHandler, 3, 115, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 4, 133, 26){
+            this.addSlot(new SlotItemHandler(itemHandler, 4, 133, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 5, 151, 26){
+            this.addSlot(new SlotItemHandler(itemHandler, 5, 151, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 6, 97, 44){
+            this.addSlot(new SlotItemHandler(itemHandler, 6, 97, 44){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 7, 115, 44){
+            this.addSlot(new SlotItemHandler(itemHandler, 7, 115, 44){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 8, 133, 44){
+            this.addSlot(new SlotItemHandler(itemHandler, 8, 133, 44){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 9, 151, 44){
+            this.addSlot(new SlotItemHandler(itemHandler, 9, 151, 44){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;

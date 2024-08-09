@@ -1,10 +1,10 @@
 
 package net.tarantel.chickenroost.entity.mods.thermal;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -12,7 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobType;
+
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -24,16 +24,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.network.PlayMessages;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.tarantel.chickenroost.entity.ModEntities;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 public class AChickenSignalumEntity extends Chicken {
 	public int eggTime = this.random.nextInt(6000) + 6000;
-	public AChickenSignalumEntity(PlayMessages.SpawnEntity packet, Level world) {
-		this(ModEntities.A_CHICKEN_SIGNALUM.get(), world);
-	}
+
 
 	public AChickenSignalumEntity(EntityType<AChickenSignalumEntity> type, Level world) {
 		super(type, world);
@@ -42,10 +37,7 @@ public class AChickenSignalumEntity extends Chicken {
 		setPersistenceRequired();
 	}
 
-	@Override
-	public Packet<ClientGamePacketListener> getAddEntityPacket() {
-		return NetworkHooks.getEntitySpawningPacket(this);
-	}
+	/**/
 
 	@Override
 	protected void registerGoals() {
@@ -55,15 +47,15 @@ public class AChickenSignalumEntity extends Chicken {
 		this.goalSelector.addGoal(3, new FloatGoal(this));
 	}
 
-	@Override
-	public MobType getMobType() {
-		return MobType.UNDEFINED;
-	}
+	/*@Override
+	public EntityType getMobType() {
+		return EntityType.CHICKEN;
+	}*/
 
 	@Override
-	protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
-		super.dropCustomDeathLoot(source, looting, recentlyHitIn);
-		this.spawnAtLocation(new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation("chicken_roost:ingot_signalum"))));
+	protected void dropCustomDeathLoot(ServerLevel serverLevel, DamageSource source, boolean recentlyHitIn) {
+		super.dropCustomDeathLoot(serverLevel, source, recentlyHitIn);
+		this.spawnAtLocation(new ItemStack(BuiltInRegistries.ITEM.get(ChickenRoostMod.ownresource("ingot_signalum"))));
 	}
 	@Override
 	public void aiStep() {
@@ -85,15 +77,15 @@ public class AChickenSignalumEntity extends Chicken {
 		this.flap += this.flapping * 2.0F;
 		if (!this.level().isClientSide && this.isAlive() && !this.isBaby() && !this.isChickenJockey() && --this.eggTime <= 0) {
 			this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			this.spawnAtLocation(new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation("chicken_roost:ingot_signalum"))));
+			this.spawnAtLocation(new ItemStack(BuiltInRegistries.ITEM.get(ChickenRoostMod.ownresource("ingot_signalum"))));
 			this.gameEvent(GameEvent.ENTITY_PLACE);
 			this.eggTime = this.random.nextInt(6000) + 6000;
 		}
 
 	}
 	@Override
-	public int getExperienceReward() {
-		return this.isChickenJockey() ? 10 : super.getExperienceReward();
+	public int getBaseExperienceReward() {
+		return this.isChickenJockey() ? 10 : super.getBaseExperienceReward();
 	}
 	@Override
 	public void readAdditionalSaveData(CompoundTag p_28243_) {
@@ -118,22 +110,22 @@ public class AChickenSignalumEntity extends Chicken {
 
 	@Override
 	public SoundEvent getAmbientSound() {
-		return ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("entity.chicken.ambient"));
+		return BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace("entity.chicken.ambient"));
 	}
 
 	@Override
 	public void playStepSound(BlockPos pos, BlockState blockIn) {
-		this.playSound(ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("entity.chicken.step")), 0.15f, 1);
+		this.playSound(BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace("entity.chicken.step")), 0.15f, 1);
 	}
 
 	@Override
 	public SoundEvent getHurtSound(DamageSource ds) {
-		return ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("entity.chicken.hurt"));
+		return BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace("entity.chicken.hurt"));
 	}
 
 	@Override
 	public SoundEvent getDeathSound() {
-		return ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("entity.chicken.death"));
+		return BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace("entity.chicken.death"));
 	}
 
 	public static void init() {

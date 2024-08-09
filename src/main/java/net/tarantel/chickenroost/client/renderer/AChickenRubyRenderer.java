@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.silentgems.AChickenRubyEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenRubyRenderer extends MobRenderer<AChickenRubyEntity, Modelc
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenRubyEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/ruby_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/ruby_chicken.png");
 	}
 }

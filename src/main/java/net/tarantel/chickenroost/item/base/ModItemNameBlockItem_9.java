@@ -11,16 +11,18 @@ import net.tarantel.chickenroost.util.Config;
 
 import java.util.List;
 
-public class ModItemNameBlockItem_9 extends BlockItem {
-    public ModItemNameBlockItem_9(Block p_41579_, Properties p_41580_) {
-        super(p_41579_, p_41580_);
+public class ModItemNameBlockItem_9 extends ChickenSeedBase {
+    public static int currentmaxxpp;
+    public ModItemNameBlockItem_9(Block p_41579_, Properties p_41580_, int currentmaxxp) {
+        super(p_41579_, p_41580_, currentmaxxp);
+        currentmaxxpp = currentmaxxp;
     }
 
     public String getDescriptionId() {
         return this.getOrCreateDescriptionId();
     }
     @Override
-    public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
+    public void appendHoverText(ItemStack itemstack, TooltipContext world, List<Component> list, TooltipFlag flag) {
 
         super.appendHoverText(itemstack, world, list, flag);
         list.add(Component.nullToEmpty((("\u00A7a") + "XP: " + "\u00A79" + (((int) Config.food_xp_tier_9.get())))));

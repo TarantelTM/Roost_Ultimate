@@ -1,0 +1,12 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": { 
+    "tag": "c:seeds/tier2orup"
+  },
+  "chicken": {
+    "tag": "c:breed/bonetoveg"
+  },
+  "output": {
+    "item": "chicken_roost:c_apple"
+  }
+}

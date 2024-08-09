@@ -1,0 +1,19 @@
+{
+  "group": "roost",
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:roosts"
+    },
+    {
+      "item": "chicken_roost:c_vanilla"
+    },
+    {
+      "item": "chicken_roost:chicken_stick"
+    }
+  ],
+  "result": {
+    "id": "chicken_roost:breeder",
+    "count": 1
+  }
+}

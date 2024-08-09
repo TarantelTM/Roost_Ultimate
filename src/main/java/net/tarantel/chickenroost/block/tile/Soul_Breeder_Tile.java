@@ -1,20 +1,14 @@
 package net.tarantel.chickenroost.block.tile;
 
-import mod.azure.azurelib.animatable.GeoBlockEntity;
-import mod.azure.azurelib.core.animatable.GeoAnimatable;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.*;
-import mod.azure.azurelib.core.object.PlayState;
-import mod.azure.azurelib.util.AzureLibUtil;
-import mod.azure.azurelib.util.RenderUtils;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -25,29 +19,33 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.tarantel.chickenroost.block.blocks.Roost_Block;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.handler.SoulBreeder_Handler;
+import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.recipes.Soul_Breeder_Recipe;
 import net.tarantel.chickenroost.util.Config;
-import net.tarantel.chickenroost.util.WrappedHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.util.RenderUtil;
+
+
 import java.util.Optional;
 
 public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoBlockEntity {
-    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
@@ -56,10 +54,10 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
 
     @Override
     public double getTick(Object blockEntity) {
-        return RenderUtils.getCurrentTick();
+        return RenderUtil.getCurrentTick();
     }
 
-    private final ItemStackHandler itemHandler = new ItemStackHandler(3) {
+    public final ItemStackHandler itemHandler = new ItemStackHandler(3) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -87,14 +85,13 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
-                case 0 -> (stack.is(ItemTags.create(new ResourceLocation("forge:roost/souls"))));
-                case 1 -> (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                case 0 -> (stack.is(ItemTags.create(ChickenRoostMod.commonsource("roost/souls"))));
+                case 1 -> (stack.getItem() instanceof ChickenItemBase);
                 case 2 -> false;
                 default -> super.isItemValid(slot, stack);
             };
         }
     };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     public ItemStack getRenderStack() {
         ItemStack stack;
@@ -177,46 +174,19 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         return new SoulBreeder_Handler(id, inventory, this, this.data);
     }
 
-    private final Map<Direction, LazyOptional<WrappedHandler>> directionWrappedHandlerMap =
-            new HashMap<>();
+    private final IItemHandler itemHandlerSided = new InputOutputItemHandler(itemHandler, (i, stack) -> i == 0 || i == 1, i -> i == 2);
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            if (side == null) {
-                return lazyItemHandler.cast();
-            }
-            for (Direction direction : Arrays.asList(Direction.DOWN, Direction.UP, Direction.NORTH, Direction.EAST, Direction.WEST, Direction.SOUTH)) {
-                directionWrappedHandlerMap.put(direction, LazyOptional.of(() -> new WrappedHandler(itemHandler, (i) -> i == 2, (i, s) -> false)));
-            }
-            for (Direction direction : Arrays.asList(Direction.DOWN, Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.UP)) {
-                directionWrappedHandlerMap.put(direction, LazyOptional.of(() -> new WrappedHandler(itemHandler, (index) -> index == 2,
-                        (index, stack) -> itemHandler.isItemValid(0, stack) || itemHandler.isItemValid(1, stack))));
-            }
 
-            if (directionWrappedHandlerMap.containsKey(side)) {
-                Direction localDir = this.getBlockState().getValue(Roost_Block.FACING);
+    public @Nullable IItemHandler getItemHandlerCapability(@Nullable Direction side) {
+        if(side == null)
+            return itemHandler;
 
-                if (side == Direction.UP || side == Direction.DOWN) {
-                    return directionWrappedHandlerMap.get(side).cast();
-                }
-
-                return switch (localDir) {
-                    default -> directionWrappedHandlerMap.get(side.getOpposite()).cast();
-                    case EAST -> directionWrappedHandlerMap.get(side.getClockWise()).cast();
-                    case SOUTH -> directionWrappedHandlerMap.get(side).cast();
-                    case WEST -> directionWrappedHandlerMap.get(side.getCounterClockWise()).cast();
-                };
-            }
-        }
-
-        return super.getCapability(cap, side);
+        return itemHandlerSided;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
         setChanged();
         if(!level.isClientSide()) {
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
@@ -225,22 +195,16 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(@NotNull CompoundTag nbt) {
-        nbt.put("inventory", itemHandler.serializeNBT());
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookup) {
+        nbt.put("inventory", itemHandler.serializeNBT(lookup));
         nbt.putInt("soul_breeder.progress", this.progress);
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, lookup);
     }
 
     @Override
-    public void load(@NotNull CompoundTag nbt) {
-        super.load(nbt);
-        itemHandler.deserializeNBT(nbt.getCompound("inventory"));
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookup) {
+        super.loadAdditional(nbt, lookup);
+        itemHandler.deserializeNBT(lookup,nbt.getCompound("inventory"));
         progress = nbt.getInt("soul_breeder.progress");
         setChanged();
         getRenderStack();
@@ -297,8 +261,11 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
-        Optional<RecipeHolder<Soul_Breeder_Recipe>> recipe = level.getRecipeManager()
-                .getRecipeFor(Soul_Breeder_Recipe.Type.INSTANCE, inventory, level);
+        Optional<RecipeHolder<Soul_Breeder_Recipe>> recipe = Optional.empty();
+        if (level != null) {
+            recipe = level.getRecipeManager().getRecipeFor(ModRecipes.SOUL_BREEDING_TYPE.get(), getRecipeInput(inventory), level);
+        }
+
         ItemStack MyChicken = recipe.get().value().output.copy().getItem().getDefaultInstance();
         MyChicken.setCount(pEntity.itemHandler.getStackInSlot(2).getCount() + 1);
         if (hasRecipe(pEntity)) {
@@ -317,13 +284,29 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         for (int i = 0; i < entity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
         }
-        Optional<RecipeHolder<Soul_Breeder_Recipe>> recipe = level.getRecipeManager()
-                .getRecipeFor(Soul_Breeder_Recipe.Type.INSTANCE, inventory, level);
+
+        Optional<RecipeHolder<Soul_Breeder_Recipe>> recipe = Optional.empty();
+        if (level != null) {
+            recipe = level.getRecipeManager().getRecipeFor(ModRecipes.SOUL_BREEDING_TYPE.get(), getRecipeInput(inventory), level);
+        }
+
         return recipe.isPresent() && canInsertAmountIntoOutputSlot(inventory) &&
                 canInsertItemIntoOutputSlot(inventory, recipe.get().value().output.copy().getItem().getDefaultInstance());
 
     }
+    public static RecipeInput getRecipeInput(SimpleContainer inventory) {
+        return new RecipeInput() {
+            @Override
+            public ItemStack getItem(int index) {
+                return inventory.getItem(index).copy();
+            }
 
+            @Override
+            public int size() {
+                return inventory.getContainerSize();
+            }
+        };
+    }
     private static boolean canInsertItemIntoOutputSlot(SimpleContainer inventory, ItemStack stack) {
         return inventory.getItem(2).getItem() == stack.getItem() || inventory.getItem(2).isEmpty();
     }
@@ -348,9 +331,10 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
+
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider prov) {
+        return saveWithFullMetadata(prov);
     }
 
     private PlayState predicate(AnimationState<GeoAnimatable> state) {

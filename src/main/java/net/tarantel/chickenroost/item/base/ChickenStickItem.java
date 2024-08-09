@@ -16,7 +16,7 @@ import net.minecraft.world.item.Item;
 import net.tarantel.chickenroost.util.ChickenStickTool;
 import net.tarantel.chickenroost.util.WrenchTool;
 
-public class ChickenStickItem extends Item {
+public class ChickenStickItem extends RoostUltimateItem {
 	public ChickenStickItem() {
 		super(new Properties().durability(16).rarity(Rarity.COMMON));
 	}

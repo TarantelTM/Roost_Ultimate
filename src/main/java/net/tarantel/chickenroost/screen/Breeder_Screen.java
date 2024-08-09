@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.handler.Breeder_Handler;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,9 +16,9 @@ public class Breeder_Screen extends AbstractContainerScreen<Breeder_Handler> {
         this.imageWidth = 176;
         this.imageHeight = 166;
     }
-    private static final ResourceLocation GUI = new ResourceLocation("chicken_roost:textures/screens/breedergui8.png");
-    private static final ResourceLocation ARROWBACK = new ResourceLocation("chicken_roost:textures/screens/arrowback.png");
-    private static final ResourceLocation ARROW = new ResourceLocation("chicken_roost:textures/screens/arrow.png");
+    private static final ResourceLocation GUI = ChickenRoostMod.ownresource("textures/screens/breedergui8.png");
+    private static final ResourceLocation ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
+    private static final ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/arrow.png");
     @Override
     protected void init() {
         super.init();
@@ -32,9 +33,9 @@ public class Breeder_Screen extends AbstractContainerScreen<Breeder_Handler> {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderTexture(0, GUI);
         ms.blit(GUI, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
-        //RenderSystem.setShaderTexture(0, new ResourceLocation("chicken_roost:textures/screens/arrowback.png"));
+        //RenderSystem.setShaderTexture(0, ChickenRoostMod.ownresource("textures/screens/arrowback.png"));
         ms.blit(ARROWBACK, this.leftPos + 53, this.topPos + 30, 0, 0, 40, 10, 40, 10);
-        //RenderSystem.setShaderTexture(0, new ResourceLocation("chicken_roost:textures/screens/arrow.png"));
+        //RenderSystem.setShaderTexture(0, ChickenRoostMod.ownresource("textures/screens/arrow.png"));
         ms.blit(ARROW, this.leftPos + 53, this.topPos + 30, 0, 0, menu.getScaledProgress(), 10, 40, 10);
         RenderSystem.disableBlend();
     }

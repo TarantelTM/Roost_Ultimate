@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.thermal.AChickenLumiumEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenLumiumRenderer extends MobRenderer<AChickenLumiumEntity, Mo
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenLumiumEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/lumium_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/lumium_chicken.png");
 	}
 }

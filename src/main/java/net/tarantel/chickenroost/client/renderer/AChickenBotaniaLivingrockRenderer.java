@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.botania.AChickenBotaniaLivingrockEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenBotaniaLivingrockRenderer extends MobRenderer<AChickenBotan
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenBotaniaLivingrockEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/moonstone_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/moonstone_chicken.png");
 	}
 }

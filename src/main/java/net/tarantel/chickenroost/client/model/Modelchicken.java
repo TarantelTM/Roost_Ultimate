@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 public class Modelchicken<T extends Entity> extends EntityModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in
 	// the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("chicken_roost", "modelchicken"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("chicken_roost", "modelchicken"), "main");
 	public final ModelPart body;
 	public final ModelPart head;
 	public final ModelPart leg0;
@@ -71,14 +71,13 @@ public class Modelchicken<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green,
-			float blue, float alpha) {
-		body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		leg0.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		leg1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		wing0.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		wing1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(PoseStack var1, VertexConsumer var2, int var3, int var4, int var5) {
+		body.render(var1, var2, var3, var4, -1);
+		head.render(var1, var2, var3, var4, -1);
+		leg0.render(var1, var2, var3, var4, -1);
+		leg1.render(var1, var2, var3, var4, -1);
+		wing0.render(var1, var2, var3, var4, -1);
+		wing1.render(var1, var2, var3, var4, -1);
 	}
 
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {

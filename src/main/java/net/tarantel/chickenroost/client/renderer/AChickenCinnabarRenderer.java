@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.thermal.AChickenCinnabarEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenCinnabarRenderer extends MobRenderer<AChickenCinnabarEntity
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenCinnabarEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/cinnabar_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/cinnabar_chicken.png");
 	}
 }

@@ -1,48 +1,46 @@
 package net.tarantel.chickenroost.item.base;
 
 import io.netty.buffer.Unpooled;
-import mod.azure.azurelib.animatable.GeoItem;
-import mod.azure.azurelib.animatable.client.RenderProvider;
-import mod.azure.azurelib.core.animatable.GeoAnimatable;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.*;
-import mod.azure.azurelib.core.object.PlayState;
-import mod.azure.azurelib.util.AzureLibUtil;
-import mod.azure.azurelib.util.RenderUtils;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.*;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.network.NetworkHooks;
-import net.tarantel.chickenroost.entity.vanilla.AChickencarrotEntity;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 import net.tarantel.chickenroost.handler.ChickenBookHandler;
-import net.tarantel.chickenroost.item.ModItems;
-import net.tarantel.chickenroost.item.renderer.AnimatedChickenRenderer_1;
 import net.tarantel.chickenroost.item.renderer.ChickenBookRenderer;
-import net.tarantel.chickenroost.screen.Chicken_Book_Screen;
+import net.tarantel.chickenroost.screen.OwnCraftingMenu;
+import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.util.RenderUtil;
+
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public class ChickenBook extends Item implements GeoItem {
+public class ChickenBook extends RoostUltimateItem implements GeoItem, IItemExtension {
+    private static final Component CONTAINER_TITLE = Component.translatable("container.crafting");
 
 
-    private final Supplier<Object> renderProvider = GeoItem.makeRenderer(this);
-    private AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+
+    private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public ChickenBook(Properties p_41383_) {
         super(p_41383_);
@@ -56,9 +54,11 @@ public class ChickenBook extends Item implements GeoItem {
         double y = entity.getY();
         double z = entity.getZ();
 
+
         if (entity instanceof ServerPlayer _ent) {
             BlockPos _bpos = BlockPos.containing(x, y, z);
-            NetworkHooks.openScreen((ServerPlayer) _ent, new MenuProvider() {
+            ServerPlayer theplayer = (ServerPlayer) entity;
+            _ent.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return Component.literal(" ");
@@ -66,13 +66,48 @@ public class ChickenBook extends Item implements GeoItem {
 
                 @Override
                 public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
-                    return new ChickenBookHandler(id, inventory, new FriendlyByteBuf(Unpooled.buffer()).writeBlockPos(_bpos));
+                    return new ChickenBookHandler(id, inventory,new FriendlyByteBuf(Unpooled.buffer()).writeBlockPos(_bpos));
+
                 }
             }, _bpos);
         }
         return ar;
     }
 
+
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        //InteractionResultHolder<ItemStack> ar = super.use(world, entity, hand);
+        double x = entity.getX();
+        double y = entity.getY();
+        double z = entity.getZ();
+        Level world = entity.level();
+        Player player = entity.level().getNearestPlayer(entity, 1);
+
+        BlockPos newpos = new BlockPos((int) x, (int) y ,(int) z);
+        if (world.isClientSide) {
+            return false;
+        } else {
+            player.openMenu(this.getMenuProvider(world, newpos));
+            //entity.awardStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
+
+        }
+        return false;
+    }
+
+
+    /*@Override
+    protected MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+        return new SimpleMenuProvider(
+                (p_52229_, p_52230_, p_52231_) -> new CraftingMenu(p_52229_, p_52230_, ContainerLevelAccess.create(level, pos)), CONTAINER_TITLE
+        );
+    }*/
+    //@Override
+    protected MenuProvider getMenuProvider(Level p_52241_, BlockPos p_52242_) {
+        return new SimpleMenuProvider(
+                (p_52229_, p_52230_, p_52231_) -> new OwnCraftingMenu(p_52229_, p_52230_, ContainerLevelAccess.create(p_52241_, p_52242_)), CONTAINER_TITLE
+        );
+    }
 
     private static final RawAnimation CRAFTING = RawAnimation.begin().then("crafting.idle", Animation.LoopType.LOOP);
     private static final RawAnimation IDLE = RawAnimation.begin().then("normal.idle", Animation.LoopType.LOOP);
@@ -102,7 +137,7 @@ public class ChickenBook extends Item implements GeoItem {
 
     @Override
     public double getTick(Object itemStack) {
-        return RenderUtils.getCurrentTick();
+        return RenderUtil.getCurrentTick();
     }
 
     @Override
@@ -120,25 +155,27 @@ public class ChickenBook extends Item implements GeoItem {
             }
         });
     }
-    @Override
-    public void createRenderer(Consumer<Object> consumer) {
-        consumer.accept(new RenderProvider() {
-            private ChickenBookRenderer renderer;
 
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if(this.renderer == null) {
-                    renderer = new ChickenBookRenderer();
-                }
 
-                return this.renderer;
-            }
-        });
+
+    /*@Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag compound) {
+        return new NewCraftingCap();
     }
 
     @Override
-    public Supplier<Object> getRenderProvider() {
-        return this.renderProvider;
+    public CompoundTag getShareTag(ItemStack stack) {
+        CompoundTag nbt = stack.getOrCreateTag();
+        stack.getCapability(Capabilities.ITEM_HANDLER, null).ifPresent(capability -> nbt.put("Inventory", ((ItemStackHandler) capability).serializeNBT()));
+        return nbt;
     }
+
+    @Override
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt) {
+        super.readShareTag(stack, nbt);
+        if (nbt != null)
+            stack.getCapability(Capabilities.ITEM_HANDLER, null).ifPresent(capability -> ((ItemStackHandler) capability).deserializeNBT((CompoundTag) nbt.get("Inventory")));
+    }
+*/
 
 }

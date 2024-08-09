@@ -1,0 +1,12 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": { 
+    "tag": "c:seeds/tier4orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_obsidian"
+  },
+  "output": {
+    "item": "chicken_roost:c_blazerod"
+  }
+}

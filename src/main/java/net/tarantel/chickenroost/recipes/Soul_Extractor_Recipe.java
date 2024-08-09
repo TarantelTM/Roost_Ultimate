@@ -1,22 +1,18 @@
 package net.tarantel.chickenroost.recipes;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.RegistryAccess;
-import net.tarantel.chickenroost.ChickenRoostMod;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+import net.tarantel.chickenroost.ChickenRoostMod;
 @SuppressWarnings("ALL")
-public class Soul_Extractor_Recipe implements Recipe<SimpleContainer> {
+public class Soul_Extractor_Recipe implements Recipe<RecipeInput> {
 
     public final ItemStack output;
     public final Ingredient ingredient0;
@@ -26,16 +22,21 @@ public class Soul_Extractor_Recipe implements Recipe<SimpleContainer> {
         this.ingredient0 = ingredient0;
     }
     @Override
-    public ItemStack assemble(SimpleContainer simpleContainer, RegistryAccess registryAccess) {
+    public ItemStack assemble(RecipeInput container, HolderLookup.Provider registries) {
         return output;
     }
-
+    public ResourceLocation getId() {
+        return ChickenRoostMod.ownresource("soul_extraction");
+    }
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
+        return output.copy();
+    }
+    public ItemStack getResultEmi(){
         return output.copy();
     }
     @Override
-    public boolean matches(SimpleContainer pContainer, Level pLevel) {
+    public boolean matches(RecipeInput pContainer, Level pLevel) {
         if(pLevel.isClientSide()) {
             return false;
         }
@@ -51,14 +52,6 @@ public class Soul_Extractor_Recipe implements Recipe<SimpleContainer> {
         ingredients.add(0, ingredient0);
         return ingredients;
     }
-
-    /*public Ingredient ingredient0(){
-        return recipeItems.get(0);
-    }
-
-    public Ingredient ingredient1(){
-        return recipeItems.get(1);
-    }*/
     @Override
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
         return true;
@@ -72,21 +65,23 @@ public class Soul_Extractor_Recipe implements Recipe<SimpleContainer> {
     public RecipeSerializer<?> getSerializer() {
         return Soul_Extractor_Recipe.Serializer.INSTANCE;
     }
+
     @Override
     public RecipeType<?> getType() {
         return Soul_Extractor_Recipe.Type.INSTANCE;
     }
-    public static class Type implements RecipeType<Soul_Extractor_Recipe> {
+    public static final class Type implements RecipeType<Soul_Extractor_Recipe> {
         private Type() { }
-        public static final Soul_Extractor_Recipe.Type INSTANCE = new Soul_Extractor_Recipe.Type();
+        public static final Type INSTANCE = new Type();
         public static final String ID = "soul_extraction";
     }
-    public static class Serializer implements RecipeSerializer<Soul_Extractor_Recipe> {
-        public static final Soul_Extractor_Recipe.Serializer INSTANCE = new Soul_Extractor_Recipe.Serializer();
+    public static final class Serializer implements RecipeSerializer<Soul_Extractor_Recipe> {
+        private Serializer() {}
+        public static final Serializer INSTANCE = new Serializer();
         public static final ResourceLocation ID =
-                new ResourceLocation(ChickenRoostMod.MODID, "soul_extraction");
+                ChickenRoostMod.ownresource("soul_extraction");
 
-        private final Codec<Soul_Extractor_Recipe> CODEC = RecordCodecBuilder.create((instance) -> {
+        private final MapCodec<Soul_Extractor_Recipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
             return instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> {
                 return recipe.output;
             }), Ingredient.CODEC_NONEMPTY.fieldOf("chicken").forGetter((recipe) -> {
@@ -94,23 +89,31 @@ public class Soul_Extractor_Recipe implements Recipe<SimpleContainer> {
             })).apply(instance, Soul_Extractor_Recipe::new);
         });
 
+        private final StreamCodec<RegistryFriendlyByteBuf, Soul_Extractor_Recipe> STREAM_CODEC = StreamCodec.of(
+                Serializer::write, Serializer::read);
+
         @Override
-        public Codec<Soul_Extractor_Recipe> codec() {
+        public MapCodec<Soul_Extractor_Recipe> codec() {
             return CODEC;
         }
 
         @Override
-        public Soul_Extractor_Recipe fromNetwork(FriendlyByteBuf buffer) {
-            Ingredient input0 = Ingredient.fromNetwork(buffer);
-            ItemStack output = buffer.readItem();
+        public StreamCodec<RegistryFriendlyByteBuf, Soul_Extractor_Recipe> streamCodec() {
+            return STREAM_CODEC;
+        }
+
+
+        private static Soul_Extractor_Recipe read(RegistryFriendlyByteBuf  buffer) {
+            Ingredient input0 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
+            ItemStack output = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
 
             return new Soul_Extractor_Recipe(output, input0);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, Soul_Extractor_Recipe recipe) {
-            recipe.ingredient0.toNetwork(buffer);
-            buffer.writeItemStack(recipe.output, false);
+
+        private static void write(RegistryFriendlyByteBuf  buffer, Soul_Extractor_Recipe recipe) {
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient0);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.output);
         }
     }
 }

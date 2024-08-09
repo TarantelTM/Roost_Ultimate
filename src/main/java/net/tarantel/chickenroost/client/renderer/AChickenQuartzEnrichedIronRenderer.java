@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.wip.AChickenQuartzEnrichedIronEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -17,6 +19,6 @@ public class AChickenQuartzEnrichedIronRenderer
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenQuartzEnrichedIronEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/quartz_enriched_iron_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/quartz_enriched_iron_chicken.png");
 	}
 }

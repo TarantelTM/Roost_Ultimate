@@ -1,51 +1,44 @@
 package net.tarantel.chickenroost.item.base;
 
-import mod.azure.azurelib.animatable.GeoItem;
-import mod.azure.azurelib.animatable.client.RenderProvider;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.*;
-import mod.azure.azurelib.core.object.PlayState;
-import mod.azure.azurelib.util.AzureLibUtil;
-import mod.azure.azurelib.util.RenderUtils;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.tarantel.chickenroost.item.renderer.AnimatedChickenRenderer_7;
 import net.tarantel.chickenroost.util.Config;
+import net.tarantel.chickenroost.util.ModDataComponents;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public class AnimatedChicken_7 extends Item implements GeoItem {
+public class AnimatedChicken_7 extends ChickenItemBase implements GeoItem {
 
     private String localpath;
-    private final Supplier<Object> renderProvider = GeoItem.makeRenderer(this);
-    private AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+    public int currentchickena;
+    private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public AnimatedChicken_7(Properties properties, String path) {
-        super(properties);
+    public AnimatedChicken_7(Properties properties, String path, int currentchicken) {
+        super(properties, currentchicken);
         this.localpath = path;
+        this.currentchickena = currentchicken;
     }
     public String getLocalpath() {
         return localpath;
     }
 
     @Override
-    public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
-        int roost_chickenlevel = 0;
-        int roost_chickenxp = 0;
-        super.appendHoverText(itemstack, world, list, flag);
-        roost_chickenlevel = (int) ((itemstack).getOrCreateTag().getInt("roost_lvl"));
-        roost_chickenxp = (int) ((itemstack).getOrCreateTag().getInt("roost_xp"));
+    public void appendHoverText(ItemStack itemstack, TooltipContext context, List<Component> list, TooltipFlag flag) {
+        super.appendHoverText(itemstack, context, list, flag);
         list.add(Component.nullToEmpty("\u00A71" + "Tier: " + "\u00A79" + "7"));
-        list.add(Component.nullToEmpty((("\u00A7e") + "Level: " + "\u00A79" + ((roost_chickenlevel)) + "/" + (((int) Config.maxlevel_tier_7.get())))));
-        list.add(Component.nullToEmpty((("\u00A7a") + "XP: " + "\u00A79" + ((roost_chickenxp)) + "/" + (((int) Config.xp_tier_7.get())))));
+        list.add(Component.nullToEmpty((("\u00A7e") + "Level: " + "\u00A79" + ((itemstack.get(ModDataComponents.CHICKENLEVEL))) + "/" + (((int) Config.maxlevel_tier_7.get())))));
+        list.add(Component.nullToEmpty((("\u00A7a") + "XP: " + "\u00A79" + ((itemstack.get(ModDataComponents.CHICKENXP))) + "/" + (((int) Config.xp_tier_7.get())))));
         list.add(Component.nullToEmpty("\u00A71 Roost Ultimate"));
     }
     private PlayState predicate(AnimationState animationState) {
@@ -65,7 +58,7 @@ public class AnimatedChicken_7 extends Item implements GeoItem {
 
     @Override
     public double getTick(Object itemStack) {
-        return RenderUtils.getCurrentTick();
+        return RenderUtil.getCurrentTick();
     }
 
     @Override
@@ -89,24 +82,5 @@ public class AnimatedChicken_7 extends Item implements GeoItem {
         return 0F;
     }
 
-    @Override
-    public void createRenderer(Consumer<Object> consumer) {
-        consumer.accept(new RenderProvider() {
-            private AnimatedChickenRenderer_7 renderer;
 
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if(this.renderer == null) {
-                    renderer = new AnimatedChickenRenderer_7();
-                }
-
-                return this.renderer;
-            }
-        });
-    }
-
-    @Override
-    public Supplier<Object> getRenderProvider() {
-        return this.renderProvider;
-    }
 }

@@ -1,13 +1,10 @@
 package net.tarantel.chickenroost.item.base;
 
-import mod.azure.azurelib.animatable.GeoItem;
-import mod.azure.azurelib.animatable.client.RenderProvider;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.*;
-import mod.azure.azurelib.core.object.PlayState;
-import mod.azure.azurelib.renderer.layer.AutoGlowingGeoLayer;
-import mod.azure.azurelib.util.AzureLibUtil;
-import mod.azure.azurelib.util.RenderUtils;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
+import software.bernie.geckolib.util.GeckoLibUtil;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,15 +12,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.tarantel.chickenroost.item.renderer.AnimatedIngotRenderer;
 import net.tarantel.chickenroost.item.renderer.AnimatedOrbRenderer;
+import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class AnimatedOrbItem extends Item implements GeoItem {
+public class AnimatedOrbItem extends RoostUltimateItem implements GeoItem {
 
     private String localpath;
-    private final Supplier<Object> renderProvider = GeoItem.makeRenderer(this);
-    private AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+
+    private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public AnimatedOrbItem(Properties properties, String path) {
         super(properties);
@@ -50,7 +48,7 @@ public class AnimatedOrbItem extends Item implements GeoItem {
 
     @Override
     public double getTick(Object itemStack) {
-        return RenderUtils.getCurrentTick();
+        return RenderUtil.getCurrentTick();
     }
 
     @Override
@@ -75,24 +73,4 @@ public class AnimatedOrbItem extends Item implements GeoItem {
         return 0F;
     }
 
-    @Override
-    public void createRenderer(Consumer<Object> consumer) {
-        consumer.accept(new RenderProvider() {
-            private AnimatedOrbRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if(this.renderer == null) {
-                    renderer = new AnimatedOrbRenderer();
-                }
-                renderer.addRenderLayer(new AutoGlowingGeoLayer<>(renderer));
-                return this.renderer;
-            }
-        });
-    }
-
-    @Override
-    public Supplier<Object> getRenderProvider() {
-        return this.renderProvider;
-    }
 }

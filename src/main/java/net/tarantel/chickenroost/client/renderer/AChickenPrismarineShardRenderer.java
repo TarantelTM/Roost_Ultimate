@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.wip.AChickenPrismarineShardEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenPrismarineShardRenderer extends MobRenderer<AChickenPrismar
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenPrismarineShardEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/salt_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/salt_chicken.png");
 	}
 }

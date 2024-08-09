@@ -2,45 +2,46 @@ package net.tarantel.chickenroost.block.tile;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.tarantel.chickenroost.block.blocks.Soul_Extractor_Block;
 import net.tarantel.chickenroost.handler.SoulExtractor_Handler;
-///import net.tarantel.chickenroost.network.ExtractorStackSyncS2CPacket;
-///import net.tarantel.chickenroost.network.ModMessages;
+import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.recipes.Soul_Extractor_Recipe;
 import net.tarantel.chickenroost.util.Config;
-import net.tarantel.chickenroost.util.WrappedHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
 
-    private final ItemStackHandler itemHandler = new ItemStackHandler(2) {
+    public final ItemStackHandler itemHandler = new ItemStackHandler(2) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -52,14 +53,14 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
-                case 0 -> (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                case 0 -> (stack.getItem() instanceof ChickenItemBase);
                 case 1 -> false;
                 default -> super.isItemValid(slot, stack);
             };
         }
     };
 
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+   // private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     public ItemStack getRenderStack() {
         ItemStack stack;
@@ -126,68 +127,43 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
         return new SoulExtractor_Handler(id, inventory, this, this.data);
     }
 
-    private final Map<Direction, LazyOptional<WrappedHandler>> directionWrappedHandlerMap =
-            new HashMap<>();
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            if(side == null) {
-                return lazyItemHandler.cast();
-            }
-            for (Direction direction : Arrays.asList(Direction.DOWN, Direction.UP, Direction.NORTH, Direction.EAST, Direction.WEST, Direction.SOUTH)) {
-                directionWrappedHandlerMap.put (direction, LazyOptional.of(() -> new WrappedHandler(itemHandler, (i) -> i == 1, (i, s) -> false)));
-            }
-            for (Direction direction : Arrays.asList(Direction.DOWN,Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.UP)) {
-                directionWrappedHandlerMap.put (direction, LazyOptional.of(() -> new WrappedHandler(itemHandler, (index) -> index == 1,
-                        (index, stack) -> itemHandler.isItemValid(0, stack) || itemHandler.isItemValid(1, stack))));
-            }
+    private final IItemHandler itemHandlerSided = new InputOutputItemHandler(itemHandler, (i, stack) -> i == 0, i -> i == 1);
 
-            if(directionWrappedHandlerMap.containsKey(side)) {
-                Direction localDir = this.getBlockState().getValue(Soul_Extractor_Block.FACING);
 
-                if(side == Direction.UP || side == Direction.DOWN) {
-                    return directionWrappedHandlerMap.get(side).cast();
-                }
+    public @Nullable IItemHandler getItemHandlerCapability(@Nullable Direction side) {
+        if(side == null)
+            return itemHandler;
 
-                return switch (localDir) {
-                    default -> directionWrappedHandlerMap.get(side.getOpposite()).cast();
-                    case EAST -> directionWrappedHandlerMap.get(side.getClockWise()).cast();
-                    case SOUTH -> directionWrappedHandlerMap.get(side).cast();
-                    case WEST -> directionWrappedHandlerMap.get(side.getCounterClockWise()).cast();
-                };
-            }
-        }
-
-        return super.getCapability(cap, side);
+        return itemHandlerSided;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
+       // lazyItemHandler = LazyOptional.of(() -> itemHandler);
         if(!level.isClientSide()) {
           ///  ModMessages.sendToClients(new ExtractorStackSyncS2CPacket(this.itemHandler, worldPosition));
         }
         setChanged();
     }
 
-    @Override
+   /*@Override
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
-    }
+    }*/
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag nbt) {
-        nbt.put("inventory", itemHandler.serializeNBT());
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider lookup) {
+        nbt.put("inventory", itemHandler.serializeNBT(lookup));
         nbt.putInt("soul_extractor.progress", this.progress);
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, lookup);
     }
 
     @Override
-    public void load(@NotNull CompoundTag nbt) {
-        super.load(nbt);
-        itemHandler.deserializeNBT(nbt.getCompound("inventory"));
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider lookup) {
+        super.loadAdditional(nbt, lookup);
+        itemHandler.deserializeNBT(lookup, nbt.getCompound("inventory"));
         progress = nbt.getInt("soul_extractor.progress");
     }
 
@@ -221,16 +197,27 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
         this.progress = 0;
     }
 
+    record OrbInput(SimpleContainer inventory) implements RecipeInput {
+        @Override
+        public ItemStack getItem(int index) {
+            return inventory.getItem(index).copy();
+        }
 
+        @Override
+        public int size() {
+            return inventory.getContainerSize();
+        }
+    }
     private static void craftItem(Soul_Extractor_Tile pEntity) {
         Level level = pEntity.level;
         SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
-
-        Optional<RecipeHolder<Soul_Extractor_Recipe>> recipe = level.getRecipeManager()
-                .getRecipeFor(Soul_Extractor_Recipe.Type.INSTANCE, inventory, level);
+        Optional<RecipeHolder<Soul_Extractor_Recipe>> recipe = Optional.empty();
+        if (level != null) {
+            recipe = level.getRecipeManager().getRecipeFor(ModRecipes.SOUL_EXTRACTION_TYPE.get(), getRecipeInput(inventory), level);
+        }
 
         if(hasRecipe(pEntity)) {
             //pEntity.itemHandler.extractItem(0, 1, false);
@@ -241,7 +228,19 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
             pEntity.resetProgress();
         }
     }
+    public static RecipeInput getRecipeInput(SimpleContainer inventory) {
+        return new RecipeInput() {
+            @Override
+            public ItemStack getItem(int index) {
+                return inventory.getItem(index).copy();
+            }
 
+            @Override
+            public int size() {
+                return inventory.getContainerSize();
+            }
+        };
+    }
     private static boolean hasRecipe(Soul_Extractor_Tile entity) {
         Level level = entity.level;
         SimpleContainer inventory = new SimpleContainer(entity.itemHandler.getSlots());
@@ -249,9 +248,12 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
             inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
         }
 
-        Optional<RecipeHolder<Soul_Extractor_Recipe>> recipe = level.getRecipeManager()
-                .getRecipeFor(Soul_Extractor_Recipe.Type.INSTANCE, inventory, level);
-
+        /*Optional<RecipeHolder<Soul_Extractor_Recipe>> recipe = level.getRecipeManager()
+                .getRecipeFor(Soul_Extractor_Recipe.Type.INSTANCE, inventory, level);*/
+        Optional<RecipeHolder<Soul_Extractor_Recipe>> recipe = Optional.empty();
+        if (level != null) {
+            recipe = level.getRecipeManager().getRecipeFor(ModRecipes.SOUL_EXTRACTION_TYPE.get(), getRecipeInput(inventory), level);
+        }
 
         return recipe.isPresent() && canInsertAmountIntoOutputSlot(inventory) &&
                 canInsertItemIntoOutputSlot(inventory, recipe.get().value().output.copy().getItem().getDefaultInstance());
@@ -273,7 +275,7 @@ public class Soul_Extractor_Tile extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider prov) {
+        return saveWithFullMetadata(prov);
     }
 }

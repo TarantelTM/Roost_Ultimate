@@ -1,20 +1,19 @@
 package net.tarantel.chickenroost.handler;
 
 
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
-import net.minecraft.tags.ItemTags;
-import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.Roost_Tile;
+import net.tarantel.chickenroost.item.base.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,23 +49,23 @@ public class Roost_Handler extends AbstractContainerMenu {
 
 
 
-        this.blockEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
-            this.addSlot(new SlotItemHandler(handler, 0, 11, 15){
+        ItemCapabilityMenuHelper.getCapabilityItemHandler(this.level, this.blockEntity).ifPresent(itemHandler -> {
+            addSlot(new SlotItemHandler(itemHandler, 0, 11, 15){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:seeds/tiered"))));
+                    return (stack.is(ItemTags.create(ChickenRoostMod.commonsource("seeds/tiered"))));
                 }
 
             });
 
-            this.addSlot(new SlotItemHandler(handler, 1, 29, 38){
+            addSlot(new SlotItemHandler(itemHandler, 1, 29, 38){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                    return (stack.getItem() instanceof AnimatedChicken_1 || stack.getItem() instanceof AnimatedChicken_2 || stack.getItem() instanceof AnimatedChicken_3 || stack.getItem() instanceof AnimatedChicken_4 || stack.getItem() instanceof AnimatedChicken_5 || stack.getItem() instanceof AnimatedChicken_6 || stack.getItem() instanceof AnimatedChicken_7 || stack.getItem() instanceof AnimatedChicken_8 || stack.getItem() instanceof AnimatedChicken_9);
                 }
             });
 
-            this.addSlot(new SlotItemHandler(handler, 2, 111, 38){
+            addSlot(new SlotItemHandler(itemHandler, 2, 111, 38){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
@@ -81,7 +80,7 @@ public class Roost_Handler extends AbstractContainerMenu {
 		for (int si = 0; si < 9; ++si){
 			this.addSlot(new Slot(inv, si, 0 + 8 + si * 18, 0 + 142));
         }*/
-        addDataSlots(data);
+        addDataSlots(this.data);
     }
 
     public boolean isCrafting() {
@@ -147,6 +146,41 @@ public class Roost_Handler extends AbstractContainerMenu {
         return copyOfSourceStack;
     }
 
+    /*@Override
+    public ItemStack quickMoveStack(Player player, int index) {
+        Slot sourceSlot = slots.get(index);
+        if(sourceSlot == null || !sourceSlot.hasItem())
+            return ItemStack.EMPTY;
+
+        ItemStack sourceItem = sourceSlot.getItem();
+        ItemStack sourceItemCopy = sourceItem.copy();
+
+        if(index < 4 * 9) {
+            //Player inventory slot -> Merge into tile inventory
+            if(!moveItemStackTo(sourceItem, 4 * 9, 4 * 9 + 1, false)) {
+                //"+1" instead of "+2": Do not allow adding to output slot
+                return ItemStack.EMPTY;
+            }
+        }else if(index < 4 * 9 + 2) {
+            //Tile inventory slot -> Merge into player inventory
+            if(!moveItemStackTo(sourceItem, 0, 4 * 9, false)) {
+                return ItemStack.EMPTY;
+            }
+        }else {
+            throw new IllegalArgumentException("Invalid slot index");
+        }
+
+        if(sourceItem.getCount() == 0)
+            sourceSlot.set(ItemStack.EMPTY);
+        else
+            sourceSlot.setChanged();
+
+        sourceSlot.onTake(player, sourceItem);
+
+        return sourceItemCopy;
+    }*/
+
+
     @Override
     public boolean stillValid(Player player) {
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
@@ -165,5 +199,9 @@ public class Roost_Handler extends AbstractContainerMenu {
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
+    }
+
+    public BlockEntity getBlockEntity() {
+        return blockEntity;
     }
 }

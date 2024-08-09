@@ -1,8 +1,8 @@
 
-/*
- *    MCreator note: This file will be REGENERATED on each build.
- */
 package net.tarantel.chickenroost.client.renderer;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -11,11 +11,12 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.fml.common.Mod;
 import net.tarantel.chickenroost.entity.ModEntities;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModEntityRenderers {
 	@SubscribeEvent
 	public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
 		event.registerEntityRenderer(ModEntities.A_CHICKEN_COBBLE.get(), AChickenCobbleRenderer::new);
+		event.registerEntityRenderer(ModEntities.A_CHICKEN_BREEZE.get(), AChickenBreezeRenderer::new);
 		event.registerEntityRenderer(ModEntities.A_CHICKEN_FLINT.get(), AChickenFlintRenderer::new);
 		event.registerEntityRenderer(ModEntities.A_CHICKEN_SAND.get(), AChickenSandRenderer::new);
 		event.registerEntityRenderer(ModEntities.A_CHICKEN_GRAVEL.get(), AChickenGravelRenderer::new);

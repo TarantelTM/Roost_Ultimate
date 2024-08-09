@@ -1,0 +1,12 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": { 
+    "tag": "c:seeds/tier5orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_refinediron"
+  },
+  "output": {
+    "item": "chicken_roost:c_yellorium"
+  }
+}

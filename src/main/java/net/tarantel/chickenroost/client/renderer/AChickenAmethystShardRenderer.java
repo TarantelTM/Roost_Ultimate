@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.random.AChickenAmethystShardEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenAmethystShardRenderer extends MobRenderer<AChickenAmethystS
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenAmethystShardEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/amethyst_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/amethyst_chicken.png");
 	}
 }

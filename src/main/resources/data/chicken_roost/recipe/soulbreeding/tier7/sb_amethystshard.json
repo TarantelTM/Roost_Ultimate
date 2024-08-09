@@ -1,0 +1,12 @@
+{
+  "type": "chicken_roost:soul_breeding",
+  "soul": { 
+    "tag": "c:souls/tier7andup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_amethystshard"
+  },
+  "output": {
+    "item": "chicken_roost:c_amethystshard"
+  }
+}

@@ -1,7 +1,6 @@
 package net.tarantel.chickenroost.handler;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -9,10 +8,11 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.Trainer_Tile;
+import net.tarantel.chickenroost.item.base.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class Trainer_Handler extends AbstractContainerMenu {
 
     public Trainer_Handler(int id, Inventory inv, BlockEntity entity, ContainerData data) {
         super(ModHandlers.TRAINER.get(), id);
-        checkContainerSize(inv, 3);
+        checkContainerSize(inv, 2);
         blockEntity = (Trainer_Tile) entity;
         this.level = inv.player.level();
         this.data = data;
@@ -48,18 +48,18 @@ public class Trainer_Handler extends AbstractContainerMenu {
 
 
 
-        this.blockEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
-            this.addSlot(new SlotItemHandler(handler, 0, 111, 38){
+        ItemCapabilityMenuHelper.getCapabilityItemHandler(this.level, this.blockEntity).ifPresent(itemHandler -> {
+            this.addSlot(new SlotItemHandler(itemHandler, 0, 111, 38){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                    return (stack.getItem() instanceof AnimatedChicken_1 || stack.getItem() instanceof AnimatedChicken_2 || stack.getItem() instanceof AnimatedChicken_3 || stack.getItem() instanceof AnimatedChicken_4 || stack.getItem() instanceof AnimatedChicken_5 || stack.getItem() instanceof AnimatedChicken_6 || stack.getItem() instanceof AnimatedChicken_7 || stack.getItem() instanceof AnimatedChicken_8 || stack.getItem() instanceof AnimatedChicken_9);
                 }
             });
 
-            this.addSlot(new SlotItemHandler(handler, 1, 29, 38){
+            this.addSlot(new SlotItemHandler(itemHandler, 1, 29, 38){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:seeds/tiered"))) || stack.is(ItemTags.create(new ResourceLocation("forge:seeds"))));
+                    return (stack.is(ItemTags.create(ChickenRoostMod.commonsource("seeds/tiered"))) || stack.is(ItemTags.create(ChickenRoostMod.commonsource("seeds"))));
                 }
             });
 

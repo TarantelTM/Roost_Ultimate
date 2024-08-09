@@ -5,11 +5,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
+
+import java.util.function.Supplier;
 
 
 public class ModCreativeModeTabs {
@@ -18,7 +17,7 @@ public class ModCreativeModeTabs {
 			ChickenRoostMod.MODID);
 
 
-	public static RegistryObject<CreativeModeTab> TAB_CHICKEN_ROOST_TAB = TAB_CHICKEN_ROOST.register("tab_chicken_roost", () ->
+	public static Supplier<CreativeModeTab> TAB_CHICKEN_ROOST_TAB = TAB_CHICKEN_ROOST.register("tab_chicken_roost", () ->
 			CreativeModeTab.builder().icon(() -> new ItemStack(ModBlocks.ROOST.get()))
 					.title(Component.translatable("tab.chicken_roost.roost")).build());
 

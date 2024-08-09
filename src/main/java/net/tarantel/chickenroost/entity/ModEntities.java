@@ -1,24 +1,18 @@
 
-/*
- *    MCreator note: This file will be REGENERATED on each build.
- */
 package net.tarantel.chickenroost.entity;
 
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.tarantel.chickenroost.ChickenRoostMod;
-
-import net.neoforged.neoforge.registries.RegistryObject;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.common.Mod;
-
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.entity.mods.aetwo.AChickenAECertusQuartzEntity;
 import net.tarantel.chickenroost.entity.mods.aetwo.AChickenAEChargedCertusEntity;
 import net.tarantel.chickenroost.entity.mods.aetwo.AChickenAEFluixCrystalEntity;
@@ -27,7 +21,8 @@ import net.tarantel.chickenroost.entity.mods.allthemodium.AChickenAllthemodiumEn
 import net.tarantel.chickenroost.entity.mods.allthemodium.AChickenUnobtainiumEntity;
 import net.tarantel.chickenroost.entity.mods.allthemodium.AChickenVibraniumEntity;
 import net.tarantel.chickenroost.entity.mods.botania.*;
-import net.tarantel.chickenroost.entity.mods.mekanism.*;
+import net.tarantel.chickenroost.entity.mods.mekanism.AChickenMekanismBioFuelEntity;
+import net.tarantel.chickenroost.entity.mods.mekanism.AChickenOsmiumEntity;
 import net.tarantel.chickenroost.entity.mods.random.*;
 import net.tarantel.chickenroost.entity.mods.silentgems.AChickenRubyEntity;
 import net.tarantel.chickenroost.entity.mods.silentgems.AChickenSapphireEntity;
@@ -36,736 +31,309 @@ import net.tarantel.chickenroost.entity.mods.thermal.*;
 import net.tarantel.chickenroost.entity.vanilla.*;
 import net.tarantel.chickenroost.entity.wip.*;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class ModEntities {
-	public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, ChickenRoostMod.MODID);
-	public static final RegistryObject<EntityType<AChickenCobbleEntity>> A_CHICKEN_COBBLE = register("c_cobble",
-			EntityType.Builder.<AChickenCobbleEntity>of(AChickenCobbleEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenCobbleEntity::new)
+	//public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, ChickenRoostMod.MODID);
+	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE,
+			ChickenRoostMod.MODID);
 
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenFlintEntity>> A_CHICKEN_FLINT = register("c_flint",
-			EntityType.Builder.<AChickenFlintEntity>of(AChickenFlintEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenFlintEntity::new)
 
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSandEntity>> A_CHICKEN_SAND = register("c_sand",
-			EntityType.Builder.<AChickenSandEntity>of(AChickenSandEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSandEntity::new)
+	public static <T extends Mob> DeferredHolder<EntityType<?>, EntityType<T>> registerMob(String name, EntityType.EntityFactory<T> entity,
+																						   float width, float height, int primaryEggColor, int secondaryEggColor) {
+		DeferredHolder<EntityType<?>, EntityType<T>> entityType = ENTITIES.register(name,
+				() -> EntityType.Builder.of(entity, MobCategory.CREATURE).sized(width, height).build(name));
 
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenGravelEntity>> A_CHICKEN_GRAVEL = register("c_gravel",
-			EntityType.Builder.<AChickenGravelEntity>of(AChickenGravelEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenGravelEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenGranitEntity>> A_CHICKEN_GRANIT = register("c_granit",
-			EntityType.Builder.<AChickenGranitEntity>of(AChickenGranitEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenGranitEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAndersiteEntity>> A_CHICKEN_ANDERSITE = register("c_andesite",
-			EntityType.Builder.<AChickenAndersiteEntity>of(AChickenAndersiteEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenAndersiteEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenCopperEntity>> A_CHICKEN_COPPER = register("c_copper",
-			EntityType.Builder.<AChickenCopperEntity>of(AChickenCopperEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenCopperEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenIronEntity>> A_CHICKEN_IRON = register("c_iron",
-			EntityType.Builder.<AChickenIronEntity>of(AChickenIronEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenIronEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenRedstoneEntity>> A_CHICKEN_REDSTONE = register("c_redstone",
-			EntityType.Builder.<AChickenRedstoneEntity>of(AChickenRedstoneEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenRedstoneEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenLapisEntity>> A_CHICKEN_LAPIS = register("c_lapis",
-			EntityType.Builder.<AChickenLapisEntity>of(AChickenLapisEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenLapisEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenDiamondEntity>> A_CHICKEN_DIAMOND = register("c_diamond",
-			EntityType.Builder.<AChickenDiamondEntity>of(AChickenDiamondEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenDiamondEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenObsidianEntity>> A_CHICKEN_OBSIDIAN = register("c_obsidian",
-			EntityType.Builder.<AChickenObsidianEntity>of(AChickenObsidianEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenObsidianEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenGoldEntity>> A_CHICKEN_GOLD = register("c_gold",
-			EntityType.Builder.<AChickenGoldEntity>of(AChickenGoldEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenGoldEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSlimeEntity>> A_CHICKEN_SLIME = register("c_slime",
-			EntityType.Builder.<AChickenSlimeEntity>of(AChickenSlimeEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSlimeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBirchwoodEntity>> A_CHICKEN_BIRCHWOOD = register("c_birchwood",
-			EntityType.Builder.<AChickenBirchwoodEntity>of(AChickenBirchwoodEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBirchwoodEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenOakwoodEntity>> A_CHICKEN_OAKWOOD = register("c_oakwood",
-			EntityType.Builder.<AChickenOakwoodEntity>of(AChickenOakwoodEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenOakwoodEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenOsmiumEntity>> A_CHICKEN_OSMIUM = register("c_osmium",
-			EntityType.Builder.<AChickenOsmiumEntity>of(AChickenOsmiumEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenOsmiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenTinEntity>> A_CHICKEN_MEKANISM_TIN = register("c_tin",
-			EntityType.Builder.<AChickenTinEntity>of(AChickenTinEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenTinEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBronzeEntity>> A_CHICKEN_MEKANISM_BRONZE = register("c_bronze",
-			EntityType.Builder.<AChickenBronzeEntity>of(AChickenBronzeEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenBronzeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSteelEntity>> A_CHICKEN_MEKANISM_STEEL = register("c_steel",
-			EntityType.Builder.<AChickenSteelEntity>of(AChickenSteelEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenSteelEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenUraniumEntity>> A_CHICKEN_MEKANISM_URANIUM = register("c_uranium",
-			EntityType.Builder.<AChickenUraniumEntity>of(AChickenUraniumEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenUraniumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenLeadEntity>> A_CHICKEN_MEKANISM_LEAD = register("c_lead",
-			EntityType.Builder.<AChickenLeadEntity>of(AChickenLeadEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenLeadEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenMekanismBioFuelEntity>> A_CHICKEN_MEKANISM_BIO_FUEL = register(
-			"c_biofuel",
-			EntityType.Builder.<AChickenMekanismBioFuelEntity>of(AChickenMekanismBioFuelEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenMekanismBioFuelEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAESiliconEntity>> A_CHICKEN_AE_SILICON = register("c_silicon",
-			EntityType.Builder.<AChickenAESiliconEntity>of(AChickenAESiliconEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenAESiliconEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAECertusQuartzEntity>> A_CHICKEN_AE_CERTUS_QUARTZ = register("c_certusquartz",
-			EntityType.Builder.<AChickenAECertusQuartzEntity>of(AChickenAECertusQuartzEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenAECertusQuartzEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAEFluixCrystalEntity>> A_CHICKEN_AE_FLUIX_CRYSTAL = register("c_fluixcrystal",
-			EntityType.Builder.<AChickenAEFluixCrystalEntity>of(AChickenAEFluixCrystalEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenAEFluixCrystalEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAEChargedCertusEntity>> A_CHICKEN_AE_CHARGED_CERTUS = register(
-			"c_chargedcertus",
-			EntityType.Builder.<AChickenAEChargedCertusEntity>of(AChickenAEChargedCertusEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenAEChargedCertusEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBotaniaManasteelEntity>> A_CHICKEN_BOTANIA_MANASTEEL = register(
-			"c_manasteel",
-			EntityType.Builder.<AChickenBotaniaManasteelEntity>of(AChickenBotaniaManasteelEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenBotaniaManasteelEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBotaniaTerrasteelEntity>> A_CHICKEN_BOTANIA_TERRASTEEL = register(
-			"c_terrasteel",
-			EntityType.Builder.<AChickenBotaniaTerrasteelEntity>of(AChickenBotaniaTerrasteelEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenBotaniaTerrasteelEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBotaniaElementiumEntity>> A_CHICKEN_BOTANIA_ELEMENTIUM = register(
-			"c_elementium",
-			EntityType.Builder.<AChickenBotaniaElementiumEntity>of(AChickenBotaniaElementiumEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenBotaniaElementiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBotaniaLivingrockEntity>> A_CHICKEN_BOTANIA_LIVINGROCK = register(
-			"c_livingrock",
-			EntityType.Builder.<AChickenBotaniaLivingrockEntity>of(AChickenBotaniaLivingrockEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenBotaniaLivingrockEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBotaniaLivingwoodEntity>> A_CHICKEN_BOTANIA_LIVINGWOOD = register(
-			"c_livingwood",
-			EntityType.Builder.<AChickenBotaniaLivingwoodEntity>of(AChickenBotaniaLivingwoodEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenBotaniaLivingwoodEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenCrimstonStemEntity>> A_CHICKEN_CRIMSTON_STEM = register("c_crimstonstem",
-			EntityType.Builder.<AChickenCrimstonStemEntity>of(AChickenCrimstonStemEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenCrimstonStemEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenWarpedStemEntity>> A_CHICKEN_WARPED_STEM = register("c_warpedstem",
-			EntityType.Builder.<AChickenWarpedStemEntity>of(AChickenWarpedStemEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenWarpedStemEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSprucewoodEntity>> A_CHICKEN_SPRUCEWOOD = register("c_sprucewood",
-			EntityType.Builder.<AChickenSprucewoodEntity>of(AChickenSprucewoodEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSprucewoodEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenGlassEntity>> A_CHICKEN_GLASS = register("c_glass",
-			EntityType.Builder.<AChickenGlassEntity>of(AChickenGlassEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenGlassEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenWoolEntity>> A_CHICKEN_WOOL = register("c_wool",
-			EntityType.Builder.<AChickenWoolEntity>of(AChickenWoolEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenWoolEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSoulSandEntity>> A_CHICKEN_SOUL_SAND = register("c_soulsand",
-			EntityType.Builder.<AChickenSoulSandEntity>of(AChickenSoulSandEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSoulSandEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenNetherrackEntity>> A_CHICKEN_NETHERRACK = register("c_netherrack",
-			EntityType.Builder.<AChickenNetherrackEntity>of(AChickenNetherrackEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenNetherrackEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSoulSoilEntity>> A_CHICKEN_SOUL_SOIL = register("c_soulsoil",
-			EntityType.Builder.<AChickenSoulSoilEntity>of(AChickenSoulSoilEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSoulSoilEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBasaltEntity>> A_CHICKEN_BASALT = register("c_basalt",
-			EntityType.Builder.<AChickenBasaltEntity>of(AChickenBasaltEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBasaltEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenInkEntity>> A_CHICKEN_INK = register("c_ink",
-			EntityType.Builder.<AChickenInkEntity>of(AChickenInkEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenInkEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenPaperEntity>> A_CHICKEN_PAPER = register("c_paper",
-			EntityType.Builder.<AChickenPaperEntity>of(AChickenPaperEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenPaperEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenClayEntity>> A_CHICKEN_CLAY = register("c_clay",
-			EntityType.Builder.<AChickenClayEntity>of(AChickenClayEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenClayEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenQuartzEntity>> A_CHICKEN_QUARTZ = register("c_quartz",
-			EntityType.Builder.<AChickenQuartzEntity>of(AChickenQuartzEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenQuartzEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAmethystShardEntity>> A_CHICKEN_AMETHYST_SHARD = register("c_amethystshard",
-			EntityType.Builder.<AChickenAmethystShardEntity>of(AChickenAmethystShardEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenAmethystShardEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenEmeraldEntity>> A_CHICKEN_EMERALD = register("c_emerald",
-			EntityType.Builder.<AChickenEmeraldEntity>of(AChickenEmeraldEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenEmeraldEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenTNTEntity>> A_CHICKEN_TNT = register("c_tnt",
-			EntityType.Builder.<AChickenTNTEntity>of(AChickenTNTEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenTNTEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenDioriteEntity>> A_CHICKEN_DIORITE = register("c_diorite",
-			EntityType.Builder.<AChickenDioriteEntity>of(AChickenDioriteEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenDioriteEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenStoneEntity>> A_CHICKEN_STONE = register("c_stone",
-			EntityType.Builder.<AChickenStoneEntity>of(AChickenStoneEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenStoneEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenNetherStarEntity>> A_CHICKEN_NETHER_STAR = register("c_netherstar",
-			EntityType.Builder.<AChickenNetherStarEntity>of(AChickenNetherStarEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenNetherStarEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenNetherWartEntity>> A_CHICKEN_NETHER_WART = register("c_netherwart",
-			EntityType.Builder.<AChickenNetherWartEntity>of(AChickenNetherWartEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenNetherWartEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenEnderEyeEntity>> A_CHICKEN_ENDER_EYE = register("c_endereye",
-			EntityType.Builder.<AChickenEnderEyeEntity>of(AChickenEnderEyeEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenEnderEyeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenGlowstoneEntity>> A_CHICKEN_GLOWSTONE = register("c_glowstone",
-			EntityType.Builder.<AChickenGlowstoneEntity>of(AChickenGlowstoneEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenGlowstoneEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBlazeRodEntity>> A_CHICKEN_BLAZE_ROD = register("c_blazerod",
-			EntityType.Builder.<AChickenBlazeRodEntity>of(AChickenBlazeRodEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBlazeRodEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSugarEntity>> A_CHICKEN_SUGAR = register("c_sugar",
-			EntityType.Builder.<AChickenSugarEntity>of(AChickenSugarEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSugarEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBoneMealEntity>> A_CHICKEN_BONE_MEAL = register("c_bonemeal",
-			EntityType.Builder.<AChickenBoneMealEntity>of(AChickenBoneMealEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBoneMealEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenEnderPearlEntity>> A_CHICKEN_ENDER_PEARL = register("c_enderpearl",
-			EntityType.Builder.<AChickenEnderPearlEntity>of(AChickenEnderPearlEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenEnderPearlEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBoneEntity>> A_CHICKEN_BONE = register("c_bone",
-			EntityType.Builder.<AChickenBoneEntity>of(AChickenBoneEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBoneEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenDarkOakEntity>> A_CHICKEN_DARK_OAK = register("c_darkoak",
-			EntityType.Builder.<AChickenDarkOakEntity>of(AChickenDarkOakEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenDarkOakEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAcaciaWoodEntity>> A_CHICKEN_ACACIA_WOOD = register("c_acaciawood",
-			EntityType.Builder.<AChickenAcaciaWoodEntity>of(AChickenAcaciaWoodEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenAcaciaWoodEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenJungleWoodEntity>> A_CHICKEN_JUNGLE_WOOD = register("c_junglewood",
-			EntityType.Builder.<AChickenJungleWoodEntity>of(AChickenJungleWoodEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenJungleWoodEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenNautilusShellEntity>> A_CHICKEN_NAUTILUS_SHELL = register("c_nautilusshell",
-			EntityType.Builder.<AChickenNautilusShellEntity>of(AChickenNautilusShellEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenNautilusShellEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenHoneycombEntity>> A_CHICKEN_HONEYCOMB = register("c_honeycomb",
-			EntityType.Builder.<AChickenHoneycombEntity>of(AChickenHoneycombEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenHoneycombEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenRabbitHideEntity>> A_CHICKEN_RABBIT_HIDE = register("c_rabbithide",
-			EntityType.Builder.<AChickenRabbitHideEntity>of(AChickenRabbitHideEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenRabbitHideEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenPrismarineShardEntity>> A_CHICKEN_PRISMARINE_SHARD = register("c_prismarineshard",
-			EntityType.Builder.<AChickenPrismarineShardEntity>of(AChickenPrismarineShardEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenPrismarineShardEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenNetherBrickEntity>> A_CHICKEN_NETHER_BRICK = register("c_netherbrick",
-			EntityType.Builder.<AChickenNetherBrickEntity>of(AChickenNetherBrickEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenNetherBrickEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenChorusFruitEntity>> A_CHICKEN_CHORUS_FRUIT = register("c_chorusfruit",
-			EntityType.Builder.<AChickenChorusFruitEntity>of(AChickenChorusFruitEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenChorusFruitEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenCoalEntity>> A_CHICKEN_COAL = register("c_coal",
-			EntityType.Builder.<AChickenCoalEntity>of(AChickenCoalEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenCoalEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenCharCoalEntity>> A_CHICKEN_CHAR_COAL = register("c_charcoal",
-			EntityType.Builder.<AChickenCharCoalEntity>of(AChickenCharCoalEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenCharCoalEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenLeatherEntity>> A_CHICKEN_LEATHER = register("c_leather",
-			EntityType.Builder.<AChickenLeatherEntity>of(AChickenLeatherEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenLeatherEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenStringEntity>> A_CHICKEN_STRING = register("c_string",
-			EntityType.Builder.<AChickenStringEntity>of(AChickenStringEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenStringEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenFeatherEntity>> A_CHICKEN_FEATHER = register("c_feather",
-			EntityType.Builder.<AChickenFeatherEntity>of(AChickenFeatherEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenFeatherEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickensnowEntity>> A_CHICKENSNOW = register("c_snow",
-			EntityType.Builder.<AChickensnowEntity>of(AChickensnowEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickensnowEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenappleEntity>> A_CHICKENAPPLE = register("c_apple",
-			EntityType.Builder.<AChickenappleEntity>of(AChickenappleEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenappleEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenspongeEntity>> A_CHICKENSPONGE = register("c_sponge",
-			EntityType.Builder.<AChickenspongeEntity>of(AChickenspongeEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenspongeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenmelonEntity>> A_CHICKENMELON = register("c_melon",
-			EntityType.Builder.<AChickenmelonEntity>of(AChickenmelonEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenmelonEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenmagmacreamEntity>> A_CHICKENMAGMACREAM = register("c_magmacream",
-			EntityType.Builder.<AChickenmagmacreamEntity>of(AChickenmagmacreamEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenmagmacreamEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenblazepowderEntity>> A_CHICKENBLAZEPOWDER = register("c_blazepowder",
-			EntityType.Builder.<AChickenblazepowderEntity>of(AChickenblazepowderEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenblazepowderEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenglowberriesEntity>> A_CHICKENGLOWBERRIES = register("c_glowberries",
-			EntityType.Builder.<AChickenglowberriesEntity>of(AChickenglowberriesEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenglowberriesEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickensweetberriesEntity>> A_CHICKENSWEETBERRIES = register("c_sweetberries",
-			EntityType.Builder.<AChickensweetberriesEntity>of(AChickensweetberriesEntity::new, MobCategory.CREATURE)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickensweetberriesEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickentintedglassEntity>> A_CHICKENTINTEDGLASS = register("c_tintedglass",
-			EntityType.Builder.<AChickentintedglassEntity>of(AChickentintedglassEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickentintedglassEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickennetheriteEntity>> A_CHICKENNETHERITE = register("c_netherite",
-			EntityType.Builder.<AChickennetheriteEntity>of(AChickennetheriteEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickennetheriteEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenbeetrootEntity>> A_CHICKENBEETROOT = register("c_beetroot",
-			EntityType.Builder.<AChickenbeetrootEntity>of(AChickenbeetrootEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenbeetrootEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenspidereyeEntity>> A_CHICKENSPIDEREYE = register("c_spidereye",
-			EntityType.Builder.<AChickenspidereyeEntity>of(AChickenspidereyeEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenspidereyeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickencarrotEntity>> A_CHICKENCARROT = register("c_carrot",
-			EntityType.Builder.<AChickencarrotEntity>of(AChickencarrotEntity::new, MobCategory.CREATURE).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickencarrotEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenrottenEntity>> A_CHICKENROTTEN = register("c_rotten",
-			EntityType.Builder.<AChickenrottenEntity>of(AChickenrottenEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenrottenEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenghasttearEntity>> A_CHICKENGHASTTEAR = register("c_ghasttear",
-			EntityType.Builder.<AChickenghasttearEntity>of(AChickenghasttearEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenghasttearEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAluminiumEntity>> A_CHICKEN_ALUMINIUM = register("c_aluminium",
-			EntityType.Builder.<AChickenAluminiumEntity>of(AChickenAluminiumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenAluminiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenZincEntity>> A_CHICKEN_ZINC = register("c_zinc",
-			EntityType.Builder.<AChickenZincEntity>of(AChickenZincEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenZincEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSilverEntity>> A_CHICKEN_SILVER = register("c_silver",
-			EntityType.Builder.<AChickenSilverEntity>of(AChickenSilverEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSilverEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenNickelEntity>> A_CHICKEN_NICKEL = register("c_nickel",
-			EntityType.Builder.<AChickenNickelEntity>of(AChickenNickelEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenNickelEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAdamantiumEntity>> A_CHICKEN_ADAMANTIUM = register("c_adamantium",
-			EntityType.Builder.<AChickenAdamantiumEntity>of(AChickenAdamantiumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenAdamantiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBrassEntity>> A_CHICKEN_BRASS = register("c_brass",
-			EntityType.Builder.<AChickenBrassEntity>of(AChickenBrassEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBrassEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenChromeEntity>> A_CHICKEN_CHROME = register("c_chrome",
-			EntityType.Builder.<AChickenChromeEntity>of(AChickenChromeEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenChromeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenElectrumEntity>> A_CHICKEN_ELECTRUM = register("c_electrum",
-			EntityType.Builder.<AChickenElectrumEntity>of(AChickenElectrumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenElectrumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenInvarEntity>> A_CHICKEN_INVAR = register("c_invar",
-			EntityType.Builder.<AChickenInvarEntity>of(AChickenInvarEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenInvarEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenIridiumEntity>> A_CHICKEN_IRIDIUM = register("c_iridium",
-			EntityType.Builder.<AChickenIridiumEntity>of(AChickenIridiumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenIridiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenPlatinumEntity>> A_CHICKEN_PLATINUM = register("c_platinum",
-			EntityType.Builder.<AChickenPlatinumEntity>of(AChickenPlatinumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenPlatinumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenRefinedironEntity>> A_CHICKEN_REFINEDIRON = register("c_refinediron",
-			EntityType.Builder.<AChickenRefinedironEntity>of(AChickenRefinedironEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenRefinedironEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenTitaniumEntity>> A_CHICKEN_TITANIUM = register("c_titanium",
-			EntityType.Builder.<AChickenTitaniumEntity>of(AChickenTitaniumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenTitaniumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenTungstenEntity>> A_CHICKEN_TUNGSTEN = register("c_tungsten",
-			EntityType.Builder.<AChickenTungstenEntity>of(AChickenTungstenEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenTungstenEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenTungstensteelEntity>> A_CHICKEN_TUNGSTENSTEEL = register("c_tungstensteel",
-			EntityType.Builder.<AChickenTungstensteelEntity>of(AChickenTungstensteelEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenTungstensteelEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenYelloriumEntity>> A_CHICKEN_YELLORIUM = register("c_yellorium",
-			EntityType.Builder.<AChickenYelloriumEntity>of(AChickenYelloriumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenYelloriumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBlutoniumEntity>> A_CHICKEN_BLUTONIUM = register("c_blutonium",
-			EntityType.Builder.<AChickenBlutoniumEntity>of(AChickenBlutoniumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBlutoniumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAllthemodiumEntity>> A_CHICKEN_ALLTHEMODIUM = register("c_allthemodium",
-			EntityType.Builder.<AChickenAllthemodiumEntity>of(AChickenAllthemodiumEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenAllthemodiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenVibraniumEntity>> A_CHICKEN_VIBRANIUM = register("c_vibranium",
-			EntityType.Builder.<AChickenVibraniumEntity>of(AChickenVibraniumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenVibraniumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenUnobtainiumEntity>> A_CHICKEN_UNOBTAINIUM = register("c_unobtainium",
-			EntityType.Builder.<AChickenUnobtainiumEntity>of(AChickenUnobtainiumEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenUnobtainiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenEndstoneEntity>> A_CHICKEN_ENDSTONE = register("c_endstone",
-			EntityType.Builder.<AChickenEndstoneEntity>of(AChickenEndstoneEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenEndstoneEntity::new)
-					.sized(0.4f, 0.7f));
-
-	public static final RegistryObject<EntityType<AChickenCobaldEntity>> A_CHICKEN_COBALD = register("c_cobald",
-			EntityType.Builder.<AChickenCobaldEntity>of(AChickenCobaldEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenCobaldEntity::new)
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenHepatizonEntity>> A_CHICKEN_HEPATIZON = register("c_hepatizon",
-			EntityType.Builder.<AChickenHepatizonEntity>of(AChickenHepatizonEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenHepatizonEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenKnightSlimeEntity>> A_CHICKEN_KNIGHT_SLIME = register("c_knightslime",
-			EntityType.Builder.<AChickenKnightSlimeEntity>of(AChickenKnightSlimeEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenKnightSlimeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenManyullynEntity>> A_CHICKEN_MANYULLYN = register("c_manyullyn",
-			EntityType.Builder.<AChickenManyullynEntity>of(AChickenManyullynEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenManyullynEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenPigIronEntity>> A_CHICKEN_PIG_IRON = register("c_pigiron",
-			EntityType.Builder.<AChickenPigIronEntity>of(AChickenPigIronEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenPigIronEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenQueenSlimeEntity>> A_CHICKEN_QUEEN_SLIME = register("c_queenslime",
-			EntityType.Builder.<AChickenQueenSlimeEntity>of(AChickenQueenSlimeEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenQueenSlimeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenRoseGoldEntity>> A_CHICKEN_ROSE_GOLD = register("c_rosegold",
-			EntityType.Builder.<AChickenRoseGoldEntity>of(AChickenRoseGoldEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenRoseGoldEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSlimesteelEntity>> A_CHICKEN_SLIMESTEEL = register("c_slimesteel",
-			EntityType.Builder.<AChickenSlimesteelEntity>of(AChickenSlimesteelEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSlimesteelEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenAmethystBronzeEntity>> A_CHICKEN_AMETHYST_BRONZE = register("c_amethystbronze",
-			EntityType.Builder.<AChickenAmethystBronzeEntity>of(AChickenAmethystBronzeEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenAmethystBronzeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenQuartzEnrichedIronEntity>> A_CHICKEN_QUARTZ_ENRICHED_IRON = register(
-			"c_quartzenrichediron",
-			EntityType.Builder.<AChickenQuartzEnrichedIronEntity>of(AChickenQuartzEnrichedIronEntity::new, MobCategory.MONSTER)
-					.setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3)
-					.setCustomClientFactory(AChickenQuartzEnrichedIronEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenApatiteEntity>> A_CHICKEN_APATITE = register("c_apatite",
-			EntityType.Builder.<AChickenApatiteEntity>of(AChickenApatiteEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenApatiteEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBasalzEntity>> A_CHICKEN_BASALZ = register("c_basalz",
-			EntityType.Builder.<AChickenBasalzEntity>of(AChickenBasalzEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBasalzEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBitumenEntity>> A_CHICKEN_BITUMEN = register("c_bitumen",
-			EntityType.Builder.<AChickenBitumenEntity>of(AChickenBitumenEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBitumenEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBlitzEntity>> A_CHICKEN_BLITZ = register("c_blitz",
-			EntityType.Builder.<AChickenBlitzEntity>of(AChickenBlitzEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBlitzEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenBlizzEntity>> A_CHICKEN_BLIZZ = register("c_blizz",
-			EntityType.Builder.<AChickenBlizzEntity>of(AChickenBlizzEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenBlizzEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenCinnabarEntity>> A_CHICKEN_CINNABAR = register("c_cinnabar",
-			EntityType.Builder.<AChickenCinnabarEntity>of(AChickenCinnabarEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenCinnabarEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenCokeEntity>> A_CHICKEN_COKE = register("c_coke",
-			EntityType.Builder.<AChickenCokeEntity>of(AChickenCokeEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenCokeEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenConstantanEntity>> A_CHICKEN_CONSTANTAN = register("c_constantan",
-			EntityType.Builder.<AChickenConstantanEntity>of(AChickenConstantanEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenConstantanEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenEnderiumEntity>> A_CHICKEN_ENDERIUM = register("c_enderium",
-			EntityType.Builder.<AChickenEnderiumEntity>of(AChickenEnderiumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenEnderiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenLumiumEntity>> A_CHICKEN_LUMIUM = register("c_lumium",
-			EntityType.Builder.<AChickenLumiumEntity>of(AChickenLumiumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenLumiumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenNiterEntity>> A_CHICKEN_NITER = register("c_niter",
-			EntityType.Builder.<AChickenNiterEntity>of(AChickenNiterEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenNiterEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSapphireEntity>> A_CHICKEN_SAPPHIRE = register("c_sapphire",
-			EntityType.Builder.<AChickenSapphireEntity>of(AChickenSapphireEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSapphireEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenRubyEntity>> A_CHICKEN_RUBY = register("c_ruby",
-			EntityType.Builder.<AChickenRubyEntity>of(AChickenRubyEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenRubyEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSignalumEntity>> A_CHICKEN_SIGNALUM = register("c_signalum",
-			EntityType.Builder.<AChickenSignalumEntity>of(AChickenSignalumEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSignalumEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenSulfurEntity>> A_CHICKEN_SULFUR = register("c_sulfur",
-			EntityType.Builder.<AChickenSulfurEntity>of(AChickenSulfurEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenSulfurEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<AChickenTarEntity>> A_CHICKEN_TAR = register("c_tar",
-			EntityType.Builder.<AChickenTarEntity>of(AChickenTarEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(AChickenTarEntity::new)
-
-					.sized(0.4f, 0.7f));
-	public static final RegistryObject<EntityType<GhostChickenEntity>> GHOST_CHICKEN = register("c_ghostchicken",
-			EntityType.Builder.<GhostChickenEntity>of(GhostChickenEntity::new, MobCategory.MONSTER).setShouldReceiveVelocityUpdates(true)
-					.setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(GhostChickenEntity::new)
-
-					.sized(0.4f, 0.7f));
-
-	private static <T extends Entity> RegistryObject<EntityType<T>> register(String registryname, EntityType.Builder<T> entityTypeBuilder) {
-		return REGISTRY.register(registryname, () -> (EntityType<T>) entityTypeBuilder.build(registryname));
+		return entityType;
 	}
+
+
+	/*public static final DeferredHolder<EntityType<?>, EntityType<AChickenCobbleEntity>> A_CHICKEN_COBBLE = registerMob("c_cobble", AChickenCobbleEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);*/
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenCobbleEntity>> A_CHICKEN_COBBLE = registerMob("c_cobble",AChickenCobbleEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBreezeEntity>> A_CHICKEN_BREEZE = registerMob("c_breeze",AChickenBreezeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenFlintEntity>> A_CHICKEN_FLINT = registerMob("c_flint",AChickenFlintEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSandEntity>> A_CHICKEN_SAND = registerMob("c_sand",AChickenSandEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenGravelEntity>> A_CHICKEN_GRAVEL = registerMob("c_gravel",AChickenGravelEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenGranitEntity>> A_CHICKEN_GRANIT = registerMob("c_granit",AChickenGranitEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAndersiteEntity>> A_CHICKEN_ANDERSITE = registerMob("c_andesite",AChickenAndersiteEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenCopperEntity>> A_CHICKEN_COPPER = registerMob("c_copper",AChickenCopperEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenIronEntity>> A_CHICKEN_IRON = registerMob("c_iron",AChickenIronEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenRedstoneEntity>> A_CHICKEN_REDSTONE = registerMob("c_redstone",AChickenRedstoneEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenLapisEntity>> A_CHICKEN_LAPIS = registerMob("c_lapis",AChickenLapisEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenDiamondEntity>> A_CHICKEN_DIAMOND = registerMob("c_diamond",AChickenDiamondEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenObsidianEntity>> A_CHICKEN_OBSIDIAN = registerMob("c_obsidian",AChickenObsidianEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenGoldEntity>> A_CHICKEN_GOLD = registerMob("c_gold",AChickenGoldEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSlimeEntity>> A_CHICKEN_SLIME = registerMob("c_slime",AChickenSlimeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBirchwoodEntity>> A_CHICKEN_BIRCHWOOD = registerMob("c_birchwood",AChickenBirchwoodEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenOakwoodEntity>> A_CHICKEN_OAKWOOD = registerMob("c_oakwood",AChickenOakwoodEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenOsmiumEntity>> A_CHICKEN_OSMIUM = registerMob("c_osmium",AChickenOsmiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenTinEntity>> A_CHICKEN_MEKANISM_TIN = registerMob("c_tin",AChickenTinEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBronzeEntity>> A_CHICKEN_MEKANISM_BRONZE = registerMob("c_bronze",AChickenBronzeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSteelEntity>> A_CHICKEN_MEKANISM_STEEL = registerMob("c_steel",AChickenSteelEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenUraniumEntity>> A_CHICKEN_MEKANISM_URANIUM = registerMob("c_uranium",AChickenUraniumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenLeadEntity>> A_CHICKEN_MEKANISM_LEAD = registerMob("c_lead",AChickenLeadEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenMekanismBioFuelEntity>> A_CHICKEN_MEKANISM_BIO_FUEL = registerMob("c_biofuel",AChickenMekanismBioFuelEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAESiliconEntity>> A_CHICKEN_AE_SILICON = registerMob("c_silicon",AChickenAESiliconEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAECertusQuartzEntity>> A_CHICKEN_AE_CERTUS_QUARTZ = registerMob("c_certusquartz",AChickenAECertusQuartzEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAEFluixCrystalEntity>> A_CHICKEN_AE_FLUIX_CRYSTAL = registerMob("c_fluixcrystal",AChickenAEFluixCrystalEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAEChargedCertusEntity>> A_CHICKEN_AE_CHARGED_CERTUS = registerMob("c_chargedcertus",AChickenAEChargedCertusEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBotaniaManasteelEntity>> A_CHICKEN_BOTANIA_MANASTEEL = registerMob("c_manasteel",AChickenBotaniaManasteelEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBotaniaTerrasteelEntity>> A_CHICKEN_BOTANIA_TERRASTEEL = registerMob("c_terrasteel",AChickenBotaniaTerrasteelEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBotaniaElementiumEntity>> A_CHICKEN_BOTANIA_ELEMENTIUM = registerMob("c_elementium",AChickenBotaniaElementiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBotaniaLivingrockEntity>> A_CHICKEN_BOTANIA_LIVINGROCK = registerMob("c_livingrock",AChickenBotaniaLivingrockEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBotaniaLivingwoodEntity>> A_CHICKEN_BOTANIA_LIVINGWOOD = registerMob("c_livingwood",AChickenBotaniaLivingwoodEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenCrimstonStemEntity>> A_CHICKEN_CRIMSTON_STEM = registerMob("c_crimstonstem",AChickenCrimstonStemEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenWarpedStemEntity>> A_CHICKEN_WARPED_STEM = registerMob("c_warpedstem",AChickenWarpedStemEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSprucewoodEntity>> A_CHICKEN_SPRUCEWOOD = registerMob("c_sprucewood",AChickenSprucewoodEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenGlassEntity>> A_CHICKEN_GLASS = registerMob("c_glass",AChickenGlassEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenWoolEntity>> A_CHICKEN_WOOL = registerMob("c_wool",AChickenWoolEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSoulSandEntity>> A_CHICKEN_SOUL_SAND = registerMob("c_soulsand",AChickenSoulSandEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenNetherrackEntity>> A_CHICKEN_NETHERRACK = registerMob("c_netherrack",AChickenNetherrackEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSoulSoilEntity>> A_CHICKEN_SOUL_SOIL = registerMob("c_soulsoil",AChickenSoulSoilEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBasaltEntity>> A_CHICKEN_BASALT = registerMob("c_basalt",AChickenBasaltEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenInkEntity>> A_CHICKEN_INK = registerMob("c_ink",AChickenInkEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenPaperEntity>> A_CHICKEN_PAPER = registerMob("c_paper",AChickenPaperEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenClayEntity>> A_CHICKEN_CLAY = registerMob("c_clay",AChickenClayEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenQuartzEntity>> A_CHICKEN_QUARTZ = registerMob("c_quartz",AChickenQuartzEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAmethystShardEntity>> A_CHICKEN_AMETHYST_SHARD = registerMob("c_amethystshard",AChickenAmethystShardEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenEmeraldEntity>> A_CHICKEN_EMERALD = registerMob("c_emerald",AChickenEmeraldEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenTNTEntity>> A_CHICKEN_TNT = registerMob("c_tnt",AChickenTNTEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenDioriteEntity>> A_CHICKEN_DIORITE = registerMob("c_diorite",AChickenDioriteEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenStoneEntity>> A_CHICKEN_STONE = registerMob("c_stone",AChickenStoneEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenNetherStarEntity>> A_CHICKEN_NETHER_STAR = registerMob("c_netherstar",AChickenNetherStarEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenNetherWartEntity>> A_CHICKEN_NETHER_WART = registerMob("c_netherwart",AChickenNetherWartEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenEnderEyeEntity>> A_CHICKEN_ENDER_EYE = registerMob("c_endereye",AChickenEnderEyeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenGlowstoneEntity>> A_CHICKEN_GLOWSTONE = registerMob("c_glowstone",AChickenGlowstoneEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBlazeRodEntity>> A_CHICKEN_BLAZE_ROD = registerMob("c_blazerod",AChickenBlazeRodEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSugarEntity>> A_CHICKEN_SUGAR = registerMob("c_sugar",AChickenSugarEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBoneMealEntity>> A_CHICKEN_BONE_MEAL = registerMob("c_bonemeal",AChickenBoneMealEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenEnderPearlEntity>> A_CHICKEN_ENDER_PEARL = registerMob("c_enderpearl",AChickenEnderPearlEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBoneEntity>> A_CHICKEN_BONE = registerMob("c_bone",AChickenBoneEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenDarkOakEntity>> A_CHICKEN_DARK_OAK = registerMob("c_darkoak",AChickenDarkOakEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAcaciaWoodEntity>> A_CHICKEN_ACACIA_WOOD = registerMob("c_acaciawood",AChickenAcaciaWoodEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenJungleWoodEntity>> A_CHICKEN_JUNGLE_WOOD = registerMob("c_junglewood",AChickenJungleWoodEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenNautilusShellEntity>> A_CHICKEN_NAUTILUS_SHELL = registerMob("c_nautilusshell",AChickenNautilusShellEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenHoneycombEntity>> A_CHICKEN_HONEYCOMB = registerMob("c_honeycomb",AChickenHoneycombEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenRabbitHideEntity>> A_CHICKEN_RABBIT_HIDE = registerMob("c_rabbithide",AChickenRabbitHideEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenPrismarineShardEntity>> A_CHICKEN_PRISMARINE_SHARD = registerMob("c_prismarineshard",AChickenPrismarineShardEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenNetherBrickEntity>> A_CHICKEN_NETHER_BRICK = registerMob("c_netherbrick",AChickenNetherBrickEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenChorusFruitEntity>> A_CHICKEN_CHORUS_FRUIT = registerMob("c_chorusfruit",AChickenChorusFruitEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenCoalEntity>> A_CHICKEN_COAL = registerMob("c_coal",AChickenCoalEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenCharCoalEntity>> A_CHICKEN_CHAR_COAL = registerMob("c_charcoal",AChickenCharCoalEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenLeatherEntity>> A_CHICKEN_LEATHER = registerMob("c_leather",AChickenLeatherEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenStringEntity>> A_CHICKEN_STRING = registerMob("c_string",AChickenStringEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenFeatherEntity>> A_CHICKEN_FEATHER = registerMob("c_feather",AChickenFeatherEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickensnowEntity>> A_CHICKENSNOW = registerMob("c_snow",AChickensnowEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenappleEntity>> A_CHICKENAPPLE = registerMob("c_apple",AChickenappleEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenspongeEntity>> A_CHICKENSPONGE = registerMob("c_sponge",AChickenspongeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenmelonEntity>> A_CHICKENMELON = registerMob("c_melon",AChickenmelonEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenmagmacreamEntity>> A_CHICKENMAGMACREAM = registerMob("c_magmacream",AChickenmagmacreamEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenblazepowderEntity>> A_CHICKENBLAZEPOWDER = registerMob("c_blazepowder",AChickenblazepowderEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenglowberriesEntity>> A_CHICKENGLOWBERRIES = registerMob("c_glowberries",AChickenglowberriesEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickensweetberriesEntity>> A_CHICKENSWEETBERRIES = registerMob("c_sweetberries",AChickensweetberriesEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickentintedglassEntity>> A_CHICKENTINTEDGLASS = registerMob("c_tintedglass",AChickentintedglassEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickennetheriteEntity>> A_CHICKENNETHERITE = registerMob("c_netherite",AChickennetheriteEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenbeetrootEntity>> A_CHICKENBEETROOT = registerMob("c_beetroot",AChickenbeetrootEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenspidereyeEntity>> A_CHICKENSPIDEREYE = registerMob("c_spidereye",AChickenspidereyeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickencarrotEntity>> A_CHICKENCARROT = registerMob("c_carrot",AChickencarrotEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenrottenEntity>> A_CHICKENROTTEN = registerMob("c_rotten",AChickenrottenEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenghasttearEntity>> A_CHICKENGHASTTEAR = registerMob("c_ghasttear",AChickenghasttearEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAluminiumEntity>> A_CHICKEN_ALUMINIUM = registerMob("c_aluminium",AChickenAluminiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenZincEntity>> A_CHICKEN_ZINC = registerMob("c_zinc",AChickenZincEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSilverEntity>> A_CHICKEN_SILVER = registerMob("c_silver",AChickenSilverEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenNickelEntity>> A_CHICKEN_NICKEL = registerMob("c_nickel",AChickenNickelEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAdamantiumEntity>> A_CHICKEN_ADAMANTIUM = registerMob("c_adamantium",AChickenAdamantiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBrassEntity>> A_CHICKEN_BRASS = registerMob("c_brass",AChickenBrassEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenChromeEntity>> A_CHICKEN_CHROME = registerMob("c_chrome",AChickenChromeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenElectrumEntity>> A_CHICKEN_ELECTRUM = registerMob("c_electrum",AChickenElectrumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenInvarEntity>> A_CHICKEN_INVAR = registerMob("c_invar",AChickenInvarEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenIridiumEntity>> A_CHICKEN_IRIDIUM = registerMob("c_iridium",AChickenIridiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenPlatinumEntity>> A_CHICKEN_PLATINUM = registerMob("c_platinum",AChickenPlatinumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenRefinedironEntity>> A_CHICKEN_REFINEDIRON = registerMob("c_refinediron", AChickenRefinedironEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenTitaniumEntity>> A_CHICKEN_TITANIUM = registerMob("c_titanium",AChickenTitaniumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenTungstenEntity>> A_CHICKEN_TUNGSTEN = registerMob("c_tungsten",AChickenTungstenEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenTungstensteelEntity>> A_CHICKEN_TUNGSTENSTEEL = registerMob("c_tungstensteel",AChickenTungstensteelEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenYelloriumEntity>> A_CHICKEN_YELLORIUM = registerMob("c_yellorium",AChickenYelloriumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBlutoniumEntity>> A_CHICKEN_BLUTONIUM = registerMob("c_blutonium",AChickenBlutoniumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAllthemodiumEntity>> A_CHICKEN_ALLTHEMODIUM = registerMob("c_allthemodium",AChickenAllthemodiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenVibraniumEntity>> A_CHICKEN_VIBRANIUM = registerMob("c_vibranium",AChickenVibraniumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenUnobtainiumEntity>> A_CHICKEN_UNOBTAINIUM = registerMob("c_unobtainium",AChickenUnobtainiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenEndstoneEntity>> A_CHICKEN_ENDSTONE = registerMob("c_endstone",AChickenEndstoneEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenCobaldEntity>> A_CHICKEN_COBALD = registerMob("c_cobald",AChickenCobaldEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenHepatizonEntity>> A_CHICKEN_HEPATIZON = registerMob("c_hepatizon",AChickenHepatizonEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenKnightSlimeEntity>> A_CHICKEN_KNIGHT_SLIME = registerMob("c_knightslime",AChickenKnightSlimeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenManyullynEntity>> A_CHICKEN_MANYULLYN = registerMob("c_manyullyn",AChickenManyullynEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenPigIronEntity>> A_CHICKEN_PIG_IRON = registerMob("c_pigiron",AChickenPigIronEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenQueenSlimeEntity>> A_CHICKEN_QUEEN_SLIME = registerMob("c_queenslime",AChickenQueenSlimeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenRoseGoldEntity>> A_CHICKEN_ROSE_GOLD = registerMob("c_rosegold",AChickenRoseGoldEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSlimesteelEntity>> A_CHICKEN_SLIMESTEEL = registerMob("c_slimesteel",AChickenSlimesteelEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenAmethystBronzeEntity>> A_CHICKEN_AMETHYST_BRONZE = registerMob("c_amethystbronze",AChickenAmethystBronzeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenQuartzEnrichedIronEntity>> A_CHICKEN_QUARTZ_ENRICHED_IRON = registerMob("c_quartzenrichediron",AChickenQuartzEnrichedIronEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenApatiteEntity>> A_CHICKEN_APATITE = registerMob("c_apatite",AChickenApatiteEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBasalzEntity>> A_CHICKEN_BASALZ = registerMob("c_basalz",AChickenBasalzEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBitumenEntity>> A_CHICKEN_BITUMEN = registerMob("c_bitumen",AChickenBitumenEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBlitzEntity>> A_CHICKEN_BLITZ = registerMob("c_blitz",AChickenBlitzEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenBlizzEntity>> A_CHICKEN_BLIZZ = registerMob("c_blizz",AChickenBlizzEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenCinnabarEntity>> A_CHICKEN_CINNABAR = registerMob("c_cinnabar",AChickenCinnabarEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenCokeEntity>> A_CHICKEN_COKE = registerMob("c_coke",AChickenCokeEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenConstantanEntity>> A_CHICKEN_CONSTANTAN = registerMob("c_constantan",AChickenConstantanEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenEnderiumEntity>> A_CHICKEN_ENDERIUM = registerMob("c_enderium",AChickenEnderiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenLumiumEntity>> A_CHICKEN_LUMIUM = registerMob("c_lumium",AChickenLumiumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenNiterEntity>> A_CHICKEN_NITER = registerMob("c_niter",AChickenNiterEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSapphireEntity>> A_CHICKEN_SAPPHIRE = registerMob("c_sapphire",AChickenSapphireEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenRubyEntity>> A_CHICKEN_RUBY = registerMob("c_ruby",AChickenRubyEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSignalumEntity>> A_CHICKEN_SIGNALUM = registerMob("c_signalum",AChickenSignalumEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenSulfurEntity>> A_CHICKEN_SULFUR = registerMob("c_sulfur",AChickenSulfurEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<AChickenTarEntity>> A_CHICKEN_TAR = registerMob("c_tar",AChickenTarEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+	public static final DeferredHolder<EntityType<?>, EntityType<GhostChickenEntity>> GHOST_CHICKEN = registerMob("c_ghostchicken",GhostChickenEntity::new,
+			0.4f, 0.7f, 0x302219, 0xACACAC);
+
+	/*private static <T extends Entity> Supplier<EntityType<T>> register(String registryname, EntityType.Builder<T> entityTypeBuilder) {
+		return REGISTRY.register(registryname, () -> (EntityType<T>) entityTypeBuilder.build(registryname));
+	}*/
 
 	@SubscribeEvent
 	public static void init(FMLCommonSetupEvent event) {
 		event.enqueueWork(() -> {
 			AChickenCobbleEntity.init();
+			AChickenBreezeEntity.init();
 			AChickenFlintEntity.init();
 			AChickenSandEntity.init();
 			AChickenGravelEntity.init();
@@ -907,6 +475,7 @@ public class ModEntities {
 	@SubscribeEvent
 	public static void registerAttributes(EntityAttributeCreationEvent event) {
 		event.put(A_CHICKEN_COBBLE.get(), AChickenCobbleEntity.createAttributes().build());
+		event.put(A_CHICKEN_BREEZE.get(), AChickenBreezeEntity.createAttributes().build());
 		event.put(A_CHICKEN_FLINT.get(), AChickenFlintEntity.createAttributes().build());
 		event.put(A_CHICKEN_SAND.get(), AChickenSandEntity.createAttributes().build());
 		event.put(A_CHICKEN_GRAVEL.get(), AChickenGravelEntity.createAttributes().build());

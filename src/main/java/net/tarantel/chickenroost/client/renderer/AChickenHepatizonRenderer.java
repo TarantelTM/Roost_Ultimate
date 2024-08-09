@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.tct.AChickenHepatizonEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenHepatizonRenderer extends MobRenderer<AChickenHepatizonEnti
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenHepatizonEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/tanzanite_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/tanzanite_chicken.png");
 	}
 }

@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.tarantel.chickenroost.util.Config;
 
 import java.util.List;
-
+/*
 public class Chicken_Tier_1 extends Item {
 
 	public Chicken_Tier_1() {
@@ -33,11 +33,11 @@ public class Chicken_Tier_1 extends Item {
 		int roost_chickenlevel = 0;
 		int roost_chickenxp = 0;
 		super.appendHoverText(itemstack, world, list, flag);
-		roost_chickenlevel = (int) ((itemstack).getOrCreateTag().getInt("roost_lvl"));
-		roost_chickenxp = (int) ((itemstack).getOrCreateTag().getInt("roost_xp"));
+		//roost_chickenlevel = (int) ((itemstack).getOrCreateTag().getInt("roost_lvl"));
+		//roost_chickenxp = (int) ((itemstack).getOrCreateTag().getInt("roost_xp"));
 		list.add(Component.nullToEmpty("\u00A71" + "Tier: " + "\u00A79" + "1"));
 		list.add(Component.nullToEmpty((("\u00A7e") + "Level: " + "\u00A79" + ((roost_chickenlevel)) + "/" + (((int) Config.maxlevel_tier_1.get())))));
 		list.add(Component.nullToEmpty((("\u00A7a") + "XP: " + "\u00A79" + ((roost_chickenxp)) + "/" + (((int) Config.xp_tier_1.get())))));
 		list.add(Component.nullToEmpty("\u00A71 Roost Ultimate"));
 	}
-}
+}*/

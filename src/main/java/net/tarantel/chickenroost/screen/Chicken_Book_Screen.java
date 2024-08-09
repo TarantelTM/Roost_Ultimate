@@ -1,54 +1,26 @@
 package net.tarantel.chickenroost.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mod.azure.azurelib.core.math.functions.limit.Min;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.HorseInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.HorseInventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LightningRodBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.tarantel.chickenroost.entity.ModEntities;
-import net.tarantel.chickenroost.entity.vanilla.AChickenAcaciaWoodEntity;
 import net.tarantel.chickenroost.handler.ChickenBookHandler;
 import net.tarantel.chickenroost.item.ModItems;
 import net.tarantel.chickenroost.util.Config;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class Chicken_Book_Screen extends AbstractContainerScreen<ChickenBookHandler> {
     private final static HashMap<String, Object> guistate = ChickenBookHandler.guistate;
@@ -80,13 +52,13 @@ public class Chicken_Book_Screen extends AbstractContainerScreen<ChickenBookHand
         //this.page = container.page;
     }
 
-    private final ResourceLocation texture0 = new ResourceLocation("chicken_roost:textures/screens/00.png");
-    private final ResourceLocation emptypage = new ResourceLocation("chicken_roost:textures/screens/emptypage.png");
-    private final ResourceLocation texture00 = new ResourceLocation("chicken_roost:textures/screens/000.png");
-    private final ResourceLocation texture1 = new ResourceLocation("chicken_roost:textures/screens/1.png");
-    private final ResourceLocation texture2 = new ResourceLocation("chicken_roost:textures/screens/2.png");
-    private final ResourceLocation texture3 = new ResourceLocation("chicken_roost:textures/screens/2.png");
-    private final ResourceLocation texture4 = new ResourceLocation("chicken_roost:textures/screens/3.png");
+    private final ResourceLocation texture0 = ChickenRoostMod.ownresource("textures/screens/00.png");
+    private final ResourceLocation emptypage = ChickenRoostMod.ownresource("textures/screens/emptypage.png");
+    private final ResourceLocation texture00 = ChickenRoostMod.ownresource("textures/screens/000.png");
+    private final ResourceLocation texture1 = ChickenRoostMod.ownresource("textures/screens/1.png");
+    private final ResourceLocation texture2 = ChickenRoostMod.ownresource("textures/screens/2.png");
+    private final ResourceLocation texture3 = ChickenRoostMod.ownresource("textures/screens/2.png");
+    private final ResourceLocation texture4 = ChickenRoostMod.ownresource("textures/screens/3.png");
 
     @Override
     public void render(GuiGraphics ms, int mouseX, int mouseY, float partialTicks) {
@@ -162,12 +134,12 @@ public class Chicken_Book_Screen extends AbstractContainerScreen<ChickenBookHand
     public void containerTick() {
         super.containerTick();
         init();
-        Ticker ++;
+        /*Ticker ++;
         if(Ticker == 20){
-            doplanks =  new ItemStack(ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation("minecraft:planks"))).getRandomElement(RandomSource.create()).orElseGet(() -> Items.AIR));
+            doplanks =  new ItemStack(BuiltInRegistries.ITEM.getOrCreateTag(ItemTags.create(new ResourceLocation("minecraft:planks"))).getRandomElement(RandomSource.create()).orElseGet(() -> Items.AIR.builtInRegistryHolder()));
 
             Ticker = 0;
-        }
+        }*/
 
         if(this.page > currentpages){
             this.page = currentpages;
@@ -227,7 +199,7 @@ public class Chicken_Book_Screen extends AbstractContainerScreen<ChickenBookHand
             //endregion
 
             //region tier3
-            guiGraphics.renderItem(ModItems.CHICKEN_ESSENCE_TIER_3.get().getDefaultInstance(), 158 + seed3, 8);
+            guiGraphics.renderFakeItem(ModItems.CHICKEN_ESSENCE_TIER_3.get().getDefaultInstance(), 158 + seed3, 8);
             guiGraphics.renderItem(ModItems.CHICKEN_FOOD_TIER_2.get().getDefaultInstance(), 176 + seed3, 8);
             guiGraphics.renderItem(ModItems.CHICKEN_FOOD_TIER_2.get().getDefaultInstance(), 176 + seed3, 26);
             guiGraphics.renderItem(ModItems.CHICKEN_FOOD_TIER_2.get().getDefaultInstance(), 176 + seed3, 43);
@@ -357,11 +329,11 @@ public class Chicken_Book_Screen extends AbstractContainerScreen<ChickenBookHand
 
 
             //region tier3
-            guiGraphics.renderItem(doplanks, 158 + seed3, 8);
-            guiGraphics.renderItem(doplanks, 176 + seed3, 8);
-            guiGraphics.renderItem(doplanks, 194 + seed3, 8);
-            guiGraphics.renderItem(doplanks, 158 + seed3, 26);
-            guiGraphics.renderItem(doplanks, 194 + seed3, 26);
+            guiGraphics.renderItem(new ItemStack(Items.OAK_PLANKS), 158 + seed3, 8);
+            guiGraphics.renderItem(new ItemStack(Items.OAK_PLANKS), 176 + seed3, 8);
+            guiGraphics.renderItem(new ItemStack(Items.OAK_PLANKS), 194 + seed3, 8);
+            guiGraphics.renderItem(new ItemStack(Items.OAK_PLANKS), 158 + seed3, 26);
+            guiGraphics.renderItem(new ItemStack(Items.OAK_PLANKS), 194 + seed3, 26);
             guiGraphics.renderItem(Items.COMPOSTER.getDefaultInstance(), 158 + seed3, 44);
             guiGraphics.renderItem(Items.COMPOSTER.getDefaultInstance(), 176 + seed3, 44);
             guiGraphics.renderItem(Items.COMPOSTER.getDefaultInstance(), 194 + seed3, 44);
@@ -624,6 +596,8 @@ public class Chicken_Book_Screen extends AbstractContainerScreen<ChickenBookHand
     @Override
     public void onClose() {
         super.onClose();
+
+        this.page = 0;
     }
 
     @Override

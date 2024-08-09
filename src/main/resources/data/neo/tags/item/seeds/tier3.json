@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:chicken_food_tier_3", "required": false }
+  ]
+}

@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.random.AChickenLeadEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenMekanismLeadRenderer extends MobRenderer<AChickenLeadEntity
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenLeadEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/lead_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/lead_chicken.png");
 	}
 }

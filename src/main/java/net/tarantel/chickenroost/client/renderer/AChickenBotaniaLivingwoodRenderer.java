@@ -1,6 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
-
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.entity.mods.botania.AChickenBotaniaLivingwoodEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
@@ -15,6 +16,6 @@ public class AChickenBotaniaLivingwoodRenderer extends MobRenderer<AChickenBotan
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenBotaniaLivingwoodEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/magical_wood_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/magical_wood_chicken.png");
 	}
 }

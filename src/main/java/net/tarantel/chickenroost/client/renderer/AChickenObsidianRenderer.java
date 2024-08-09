@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.vanilla.AChickenObsidianEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenObsidianRenderer extends MobRenderer<AChickenObsidianEntity
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenObsidianEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/obsidianchicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/obsidianchicken.png");
 	}
 }

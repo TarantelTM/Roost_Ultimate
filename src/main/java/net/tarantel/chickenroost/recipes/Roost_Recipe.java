@@ -1,31 +1,21 @@
 package net.tarantel.chickenroost.recipes;
 
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import net.minecraft.world.item.crafting.ShapedRecipe.Serializer;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.util.ExtraCodecs;
-import net.tarantel.chickenroost.ChickenRoostMod;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 
 @SuppressWarnings("ALL")
-public class Roost_Recipe implements Recipe<SimpleContainer> {
+public class Roost_Recipe implements Recipe<RecipeInput> {
 
     public final ItemStack output;
     public final Ingredient ingredient0;
@@ -37,16 +27,21 @@ public class Roost_Recipe implements Recipe<SimpleContainer> {
         this.ingredient1 = ingredient1;
     }
     @Override
-    public ItemStack assemble(SimpleContainer simpleContainer, RegistryAccess registryAccess) {
+    public ItemStack assemble(RecipeInput container, HolderLookup.Provider registries) {
         return output;
     }
-
+    public ResourceLocation getId() {
+        return ChickenRoostMod.ownresource("roost_output");
+    }
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
+        return output.copy();
+    }
+    public ItemStack getResultEmi(){
         return output.copy();
     }
     @Override
-    public boolean matches(SimpleContainer pContainer, Level pLevel) {
+    public boolean matches(RecipeInput pContainer, Level pLevel) {
         if(pLevel.isClientSide()) {
             return false;
         }
@@ -63,14 +58,6 @@ public class Roost_Recipe implements Recipe<SimpleContainer> {
         ingredients.add(1, ingredient1);
         return ingredients;
     }
-
-    /*public Ingredient ingredient0(){
-        return recipeItems.get(0);
-    }
-
-    public Ingredient ingredient1(){
-        return recipeItems.get(1);
-    }*/
     @Override
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
         return true;
@@ -88,17 +75,19 @@ public class Roost_Recipe implements Recipe<SimpleContainer> {
     public RecipeType<?> getType() {
         return Type.INSTANCE;
     }
-    public static class Type implements RecipeType<Roost_Recipe> {
+    public static final class Type implements RecipeType<Roost_Recipe> {
         private Type() { }
         public static final Type INSTANCE = new Type();
-        public static final String ID = "roost_output";
+        public static final ResourceLocation ID =
+                ChickenRoostMod.ownresource("roost_output");
     }
-    public static class Serializer implements RecipeSerializer<Roost_Recipe> {
+    public static final class Serializer implements RecipeSerializer<Roost_Recipe> {
+        private Serializer() {}
         public static final Serializer INSTANCE = new Serializer();
         public static final ResourceLocation ID =
-                new ResourceLocation(ChickenRoostMod.MODID, "roost_output");
+                ChickenRoostMod.ownresource("roost_output");
 
-        private final Codec<Roost_Recipe> CODEC = RecordCodecBuilder.create((instance) -> {
+        private final MapCodec<Roost_Recipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
             return instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> {
                 return recipe.output;
             }), Ingredient.CODEC_NONEMPTY.fieldOf("food").forGetter((recipe) -> {
@@ -108,25 +97,31 @@ public class Roost_Recipe implements Recipe<SimpleContainer> {
             })).apply(instance, Roost_Recipe::new);
         });
 
+        private final StreamCodec<RegistryFriendlyByteBuf, Roost_Recipe> STREAM_CODEC = StreamCodec.of(
+                Serializer::write, Serializer::read);
+
         @Override
-        public Codec<Roost_Recipe> codec() {
+        public MapCodec<Roost_Recipe> codec() {
             return CODEC;
         }
 
         @Override
-        public Roost_Recipe fromNetwork(FriendlyByteBuf buffer) {
-            Ingredient input0 = Ingredient.fromNetwork(buffer);
-            Ingredient input1 = Ingredient.fromNetwork(buffer);
-            ItemStack output = buffer.readItem();
+        public StreamCodec<RegistryFriendlyByteBuf, Roost_Recipe> streamCodec() {
+            return STREAM_CODEC;
+        }
+
+        private static Roost_Recipe read(RegistryFriendlyByteBuf  buffer) {
+            Ingredient input0 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
+            Ingredient input1 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
+            ItemStack output = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
 
             return new Roost_Recipe(output, input0, input1);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, Roost_Recipe recipe) {
-            recipe.ingredient0.toNetwork(buffer);
-            recipe.ingredient1.toNetwork(buffer);
-            buffer.writeItemStack(recipe.output, false);
+        private static void write(RegistryFriendlyByteBuf  buffer, Roost_Recipe recipe) {
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient0);
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient1);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.output);
         }
     }
 }

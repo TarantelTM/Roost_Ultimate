@@ -1,6 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
-
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.entity.mods.aetwo.AChickenAEFluixCrystalEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 
@@ -15,6 +16,6 @@ public class AChickenAEFluixCrystalRenderer extends MobRenderer<AChickenAEFluixC
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenAEFluixCrystalEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/ludicrite_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/ludicrite_chicken.png");
 	}
 }

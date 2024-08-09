@@ -333,5 +333,18 @@
   "item.chicken_roost.ingot_zinc": "Zinc Ingot",
   "item.chicken_roost.ingot_silver": "Silver Ingot",
   "item.chicken_roost.ingot_electrum": "Electrum Ingot",
-  "item.chicken_roost.book": "Roost Ultimate Book"
+  "item.chicken_roost.book": "Roost Ultimate Book",
+  "item.chicken_roost.c_breeze": "Breeze Chicken",
+  "block.chicken_roost.chickenstorage": "Ultimate Chicken Storage",
+  "emi.category.chicken_roost.soul_breeder": "Soul Breeding",
+  "emi.category.chicken_roost.breeder": "Basic Breeding",
+  "emi.category.chicken_roost.trainer": "Training",
+  "emi.category.chicken_roost.roost": "Roost",
+  "emi.category.chicken_roost.soul_extractor": "Soul Extraction",
+  "chicken_roost.progress": "Progress: ",
+  "config.jade.plugin_chicken_roost.soul_breeder.progress": "Progress: ",
+  "config.jade.plugin_chicken_roost.soul_extractor.progress": "Progress: ",
+  "config.jade.plugin_chicken_roost.roost.progress": "Progress: ",
+  "config.jade.plugin_chicken_roost.trainer.progress": "Progress: ",
+  "config.jade.plugin_chicken_roost.breeder.progress": "Progress: "
 }

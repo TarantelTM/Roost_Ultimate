@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "type": "chicken_roost:soul_breeding",
+  "soul": { 
+    "tag": "c:souls/tier5andup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_silicon"
+  },
+  "output": {
+    "item": "chicken_roost:c_silicon"
+  }
+}

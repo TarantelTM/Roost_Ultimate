@@ -1,5 +1,7 @@
 
 package net.tarantel.chickenroost.client.renderer;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import net.tarantel.chickenroost.entity.mods.mekanism.AChickenMekanismBioFuelEntity;
 import net.tarantel.chickenroost.client.model.Modelchicken;
@@ -15,6 +17,6 @@ public class AChickenMekanismBioFuelRenderer extends MobRenderer<AChickenMekanis
 
 	@Override
 	public ResourceLocation getTextureLocation(AChickenMekanismBioFuelEntity entity) {
-		return new ResourceLocation("chicken_roost:textures/entities/enderium_chicken.png");
+		return ChickenRoostMod.ownresource("textures/entities/enderium_chicken.png");
 	}
 }
