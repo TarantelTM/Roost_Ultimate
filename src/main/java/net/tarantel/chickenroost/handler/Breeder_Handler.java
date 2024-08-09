@@ -60,7 +60,7 @@ public class Breeder_Handler extends AbstractContainerMenu {
             this.addSlot(new SlotItemHandler(itemHandler, 0, 7, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.getItem() instanceof AnimatedChicken_1 || stack.getItem() instanceof AnimatedChicken_2 || stack.getItem() instanceof AnimatedChicken_3 || stack.getItem() instanceof AnimatedChicken_4 || stack.getItem() instanceof AnimatedChicken_5 || stack.getItem() instanceof AnimatedChicken_6 || stack.getItem() instanceof AnimatedChicken_7 || stack.getItem() instanceof AnimatedChicken_8 || stack.getItem() instanceof AnimatedChicken_9);
+                    return (stack.getItem() instanceof ChickenItemBase);
                 }
             });
 

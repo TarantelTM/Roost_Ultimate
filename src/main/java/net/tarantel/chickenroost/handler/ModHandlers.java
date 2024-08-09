@@ -1,17 +1,13 @@
 package net.tarantel.chickenroost.handler;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.tarantel.chickenroost.ChickenRoostMod;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.network.IContainerFactory;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.tarantel.chickenroost.screen.OwnCraftingMenu;
+import net.tarantel.chickenroost.ChickenRoostMod;
 
 import java.util.function.Supplier;
 
