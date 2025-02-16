@@ -1,7 +1,4 @@
 
-/*
- *    MCreator note: This file will be REGENERATED on each build.
- */
 package net.tarantel.chickenroost.client.model;
 
 import net.tarantel.chickenroost.client.model.Modelchicken;

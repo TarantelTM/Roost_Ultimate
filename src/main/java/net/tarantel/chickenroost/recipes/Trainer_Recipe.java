@@ -101,7 +101,7 @@ public class Trainer_Recipe implements Recipe<SimpleContainer> {
         @Override
         public Trainer_Recipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             Ingredient input0 = Ingredient.fromNetwork(buffer);
-            ItemStack output = buffer.readItem();
+        ItemStack output = buffer.readItem();
             return new Trainer_Recipe(recipeId, output, input0);
         }
 
