@@ -1,26 +1,20 @@
 {
-  "type": "neoforge:conditional",
-  "recipes": [
+  "conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:mod_loaded",
-          "modid": "tconstruct"
-        }
-      ],
-      "recipe": {
+      "type": "forge:mod_loaded",
+      "modid": "tconstruct"
+    }
+  ],
         "type": "chicken_roost:roost_output",
         "food": {
-            "tag": "forge:seeds/tier6orup"
+            "tag": "c:seeds/tier6orup"
           },
           "chicken": {
             "item": "chicken_roost:c_pigiron"
           },
+        "time": 20,
         "output": {
           "item": "tconstruct:pig_iron_nugget"
         }
 
       }
-    }
-  ]
-}

@@ -2,15 +2,15 @@ package net.tarantel.chickenroost.block.tile.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import mod.azure.azurelib.cache.object.GeoBone;
-import mod.azure.azurelib.renderer.GeoBlockRenderer;
-import mod.azure.azurelib.renderer.layer.BlockAndItemGeoLayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.tarantel.chickenroost.block.tile.Soul_Breeder_Tile;
-import net.tarantel.chickenroost.block.blocks.model.AnimatedSoulBreederModel;
+import net.tarantel.chickenroost.client.model.AnimatedSoulBreederModel;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.renderer.GeoBlockRenderer;
+import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
 
 import javax.annotation.Nullable;
 
@@ -165,7 +165,6 @@ public class AnimatedSoulBreederRenderer extends GeoBlockRenderer<Soul_Breeder_T
                 poseStack.mulPose(Axis.ZP.rotationDegrees(0));
                 poseStack.translate(0.0D, 0.2D, 0.0D);
                 poseStack.scale(0.3f, 0.3f, 0.3f);
-
                 super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight,
                         packedOverlay);
             }

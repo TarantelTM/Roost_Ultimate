@@ -1,7 +1,7 @@
 {
   "type": "chicken_roost:trainer_output",
-  "food": { 
-      "tag": "forge:seeds/tiered"
+  "chicken": {
+      "tag": "c:roost/tiered"
   },
   "output": {
     "item": "chicken_roost:chicken_food_tier_5"

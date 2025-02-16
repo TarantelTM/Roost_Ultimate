@@ -34,22 +34,22 @@ public class SoulBreederChickenRender implements BlockEntityRenderer<Soul_Breede
 
         switch (pBlockEntity.getBlockState().getValue(Soul_Breeder_Block.FACING)) {
             case NORTH -> {
-                pPoseStack.translate(0.5f, 1.35f, 0.6f);
+                pPoseStack.translate(0.5f, 0.35f, 0.6f);
                 pPoseStack.mulPose(Axis.ZP.rotationDegrees(0));
                 pPoseStack.mulPose(Axis.YP.rotationDegrees(0));
             }
             case EAST -> {
-                pPoseStack.translate(0.4f, 1.35f, 0.5f);
+                pPoseStack.translate(0.4f, 0.35f, 0.5f);
                 pPoseStack.mulPose(Axis.ZP.rotationDegrees(0));
                 pPoseStack.mulPose(Axis.YP.rotationDegrees(-90));
             }
             case SOUTH -> {
-                pPoseStack.translate(0.5f, 1.35f, 0.4f);
+                pPoseStack.translate(0.5f, 0.35f, 0.4f);
                 pPoseStack.mulPose(Axis.ZP.rotationDegrees(0));
                 pPoseStack.mulPose(Axis.YP.rotationDegrees(-180));
             }
             case WEST -> {
-                pPoseStack.translate(0.6f, 1.35f, 0.5f);
+                pPoseStack.translate(0.6f, 0.35f, 0.5f);
                 pPoseStack.mulPose(Axis.ZP.rotationDegrees(0));
                 pPoseStack.mulPose(Axis.XP.rotationDegrees(0));
                 pPoseStack.mulPose(Axis.YP.rotationDegrees(+90));

@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:farmland"
+    { "id":"minecraft:farmland", "required": false }
   ]
 }

@@ -1,15 +1,9 @@
 package net.tarantel.chickenroost.block.tile;
 
-import mod.azure.azurelib.animatable.GeoBlockEntity;
-import mod.azure.azurelib.core.animatable.GeoAnimatable;
-import mod.azure.azurelib.core.animatable.instance.AnimatableInstanceCache;
-import mod.azure.azurelib.core.animation.*;
-import mod.azure.azurelib.core.object.PlayState;
-import mod.azure.azurelib.util.AzureLibUtil;
-import mod.azure.azurelib.util.RenderUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -24,30 +18,39 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.blocks.Roost_Block;
 import net.tarantel.chickenroost.handler.SoulBreeder_Handler;
+import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.network.ModMessages;
+import net.tarantel.chickenroost.network.SoulBreederStackSyncS2CPacket;
+import net.tarantel.chickenroost.particle.ModParticles;
 import net.tarantel.chickenroost.recipes.Soul_Breeder_Recipe;
+import net.tarantel.chickenroost.recipes.Soul_Extractor_Recipe;
 import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.WrappedHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.util.RenderUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoBlockEntity {
-    private final AnimatableInstanceCache cache = AzureLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
@@ -59,13 +62,10 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         return RenderUtils.getCurrentTick();
     }
 
-    private final ItemStackHandler itemHandler = new ItemStackHandler(3) {
+    public final ItemStackHandler itemHandler = new ItemStackHandler(3) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
-            if(!level.isClientSide()) {
-                level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
-            }
         }
 
 
@@ -88,7 +88,7 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case 0 -> (stack.is(ItemTags.create(new ResourceLocation("forge:roost/souls"))));
-                case 1 -> (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                case 1 -> (stack.getItem() instanceof AnimatedChicken_1 || stack.getItem() instanceof AnimatedChicken_2 || stack.getItem() instanceof AnimatedChicken_3 || stack.getItem() instanceof AnimatedChicken_4 || stack.getItem() instanceof AnimatedChicken_5 || stack.getItem() instanceof AnimatedChicken_6 || stack.getItem() instanceof AnimatedChicken_7 || stack.getItem() instanceof AnimatedChicken_8 || stack.getItem() instanceof AnimatedChicken_9);
                 case 2 -> false;
                 default -> super.isItemValid(slot, stack);
             };
@@ -131,7 +131,6 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
 
     private boolean startcraft = false;
     public int maxProgress = ((int) Config.soulbreed_speedtimer.get() * 20);
-
     public int getScaledProgress() {
         int progresss = progress;
         int maxProgresss = maxProgress;  // Max Progress
@@ -139,6 +138,7 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
 
         return maxProgresss != 0 && progresss != 0 ? progresss * progressArrowSize / maxProgresss : 0;
     }
+
     public Soul_Breeder_Tile(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SOUL_BREEDER.get(), pos, state);
         this.data = new ContainerData() {
@@ -182,7 +182,7 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             if (side == null) {
                 return lazyItemHandler.cast();
             }
@@ -217,11 +217,9 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        setChanged();
-        if(!level.isClientSide()) {
-            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+        if (!level.isClientSide()) {
+            ModMessages.sendToClients(new SoulBreederStackSyncS2CPacket(this.itemHandler, worldPosition));
         }
-
     }
 
     @Override
@@ -242,20 +240,45 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
         super.load(nbt);
         itemHandler.deserializeNBT(nbt.getCompound("inventory"));
         progress = nbt.getInt("soul_breeder.progress");
-        setChanged();
-        getRenderStack();
     }
 
     public void drops() {
+        // Create a SimpleContainer to hold the items from the item handler
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
-        Containers.dropContents(this.level, this.worldPosition, inventory);
+
+        // Create an ItemStack for the block
+        ItemStack itemStack = new ItemStack(ModBlocks.SOUL_BREEDER.get());
+
+        // Save the inventory contents to the ItemStack's NBT
+        CompoundTag nbt = new CompoundTag();
+        ListTag itemsTag = new ListTag();
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (!stack.isEmpty()) {
+                CompoundTag itemTag = new CompoundTag();
+                itemTag.putInt("Slot", i);
+                stack.save(itemTag);
+                itemsTag.add(itemTag);
+            }
+        }
+        nbt.put("Items", itemsTag);
+        itemStack.setTag(nbt);
+
+        // Create a SimpleContainer to hold the block's ItemStack
+        SimpleContainer block = new SimpleContainer(1);
+        block.setItem(0, itemStack.copy());
+
+        // Drop the contents in the world
+        Containers.dropContents(Objects.requireNonNull(this.level), this.worldPosition, block);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, Soul_Breeder_Tile pEntity) {
+        BlockPos blockPos = pos;
         if (level.isClientSide()) {
+
             return;
         }
 
@@ -266,81 +289,92 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
             pEntity.crafttimer = 20;
             pEntity.startcraft = false;
         }
+       /* if (hasRecipe(pEntity)){
+            if (level.isClientSide()) {
+            pEntity.spawnFoundParticles(level, pos);
+
+                System.out.println("SHoot client");
+                return;
+            }
+            System.out.println("SHoot out");
+            pEntity.spawnFoundParticles(level, pos);
+        }*/
         setChanged(level, pos, state);
+        ModMessages.sendToClients(new SoulBreederStackSyncS2CPacket(pEntity.itemHandler, pEntity.worldPosition));
         if (hasRecipe(pEntity) && pEntity.startcraft == false) {
             pEntity.progress++;
-
+            //shootpart = true;
             pEntity.triggerAnim("controller", "craft");
 
 
             if (pEntity.progress >= pEntity.maxProgress) {
+                //crafttimer = 20;
                 pEntity.startcraft = true;
                 craftItem(pEntity);
             }
         } if (!hasRecipe(pEntity) && pEntity.startcraft == false){
             pEntity.resetProgress();
             pEntity.triggerAnim("controller", "idle");
+            //shootpart = false;
             setChanged(level, pos, state);
         }  if(hasRecipe(pEntity) && pEntity.startcraft == true) {
             pEntity.triggerAnim("controller", "finish");
         }
-
     }
-
     private void resetProgress() {
         this.progress = 0;
     }
-
     private static void craftItem(Soul_Breeder_Tile pEntity) {
         Level level = pEntity.level;
         SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
-        Optional<RecipeHolder<Soul_Breeder_Recipe>> recipe = level.getRecipeManager()
+        Optional<Soul_Breeder_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Soul_Breeder_Recipe.Type.INSTANCE, inventory, level);
-        ItemStack MyChicken = recipe.get().value().output.copy().getItem().getDefaultInstance();
+        ItemStack MyChicken = recipe.get().output.getItem().getDefaultInstance();
         MyChicken.setCount(pEntity.itemHandler.getStackInSlot(2).getCount() + 1);
         if (hasRecipe(pEntity)) {
-
             pEntity.itemHandler.extractItem(0, 1, false);
             pEntity.itemHandler.extractItem(1, 0, true);
             pEntity.itemHandler.setStackInSlot(2, MyChicken);
-
             pEntity.resetProgress();
         }
     }
-
     private static boolean hasRecipe(Soul_Breeder_Tile entity) {
         Level level = entity.level;
         SimpleContainer inventory = new SimpleContainer(entity.itemHandler.getSlots());
         for (int i = 0; i < entity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
         }
-        Optional<RecipeHolder<Soul_Breeder_Recipe>> recipe = level.getRecipeManager()
+        Optional<Soul_Breeder_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Soul_Breeder_Recipe.Type.INSTANCE, inventory, level);
+
+        if(recipe.isPresent()){
+            entity.maxProgress = ( Config.soulbreed_speedtimer.get() * recipe.get().time);
+        }
         return recipe.isPresent() && canInsertAmountIntoOutputSlot(inventory) &&
-                canInsertItemIntoOutputSlot(inventory, recipe.get().value().output.copy().getItem().getDefaultInstance());
-
+                canInsertItemIntoOutputSlot(inventory, recipe.get().output.getItem().getDefaultInstance());
     }
-
     private static boolean canInsertItemIntoOutputSlot(SimpleContainer inventory, ItemStack stack) {
         return inventory.getItem(2).getItem() == stack.getItem() || inventory.getItem(2).isEmpty();
     }
-
     private static boolean canInsertAmountIntoOutputSlot(SimpleContainer inventory) {
         return inventory.getItem(2).getMaxStackSize() > inventory.getItem(2).getCount();
     }
-
     private static final RawAnimation CRAFTING = RawAnimation.begin().then("crafting.idle", Animation.LoopType.LOOP);
     private static final RawAnimation IDLE = RawAnimation.begin().then("normal.idle", Animation.LoopType.LOOP);
     private static final RawAnimation FINISH = RawAnimation.begin().then("crafting.finish2", Animation.LoopType.PLAY_ONCE);
-
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
-
+    }
+    private PlayState predicate(AnimationState<GeoAnimatable> state) {
+        AnimationController<GeoAnimatable> controller = state.getController();
+        controller.triggerableAnim("craft", CRAFTING);
+        controller.triggerableAnim("idle", IDLE);
+        controller.triggerableAnim("finish", FINISH);
+        return PlayState.CONTINUE;
     }
 
     @Nullable
@@ -348,19 +382,9 @@ public class Soul_Breeder_Tile extends BlockEntity implements MenuProvider, GeoB
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
+
     @Override
     public CompoundTag getUpdateTag() {
         return saveWithoutMetadata();
     }
-
-    private PlayState predicate(AnimationState<GeoAnimatable> state) {
-        AnimationController<GeoAnimatable> controller = state.getController();
-        controller.triggerableAnim("craft", CRAFTING);
-        controller.triggerableAnim("idle", IDLE);
-        controller.triggerableAnim("finish", FINISH);
-
-        return PlayState.CONTINUE;
-    }
-
-
 }

@@ -1,26 +1,20 @@
 {
-  "type": "neoforge:conditional",
-  "recipes": [
+  "conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:mod_loaded",
-          "modid": "allthemodium"
-        }
-      ],
-      "recipe": {
+      "type": "forge:mod_loaded",
+      "modid": "allthemodium"
+    }
+  ],
         "type": "chicken_roost:roost_output",
         "food": {
-            "tag": "forge:seeds/tier9orup"
+            "tag": "c:seeds/tier9orup"
           },
           "chicken": {
             "item": "chicken_roost:c_unobtainium"
           },
+        "time": 20,
         "output": {
           "item": "allthemodium:unobtainium_ingot"
         }
 
       }
-    }
-  ]
-}

@@ -1,5 +1,5 @@
 {
   "values": [
-    "chicken_roost:ingot_tungsten"
+    { "id":"chicken_roost:ingot_tungsten", "required": false }
   ]
 }

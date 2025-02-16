@@ -18,8 +18,9 @@ import net.tarantel.chickenroost.block.blocks.Roost_Block;
 import net.tarantel.chickenroost.block.tile.Soul_Extractor_Tile;
 
 public class ExtractorChickenRender implements BlockEntityRenderer<Soul_Extractor_Tile> {
-    public ExtractorChickenRender(BlockEntityRendererProvider.Context context) {
 
+
+    public ExtractorChickenRender(BlockEntityRendererProvider.Context context) {
     }
 
     @Override
@@ -55,12 +56,11 @@ public class ExtractorChickenRender implements BlockEntityRenderer<Soul_Extracto
                 pPoseStack.mulPose(Axis.YP.rotationDegrees(+90));
             }
         }
-
+        float alpha = 1;
         itemRenderer.renderStatic(itemStack, ItemDisplayContext.FIXED, pPackedLight,
                 OverlayTexture.NO_OVERLAY, pPoseStack, pBufferSource, pBlockEntity.getLevel(), 0);
         pPoseStack.popPose();
     }
-
     private int getLightLevel(Level level, BlockPos pos) {
         int bLight = level.getBrightness(LightLayer.BLOCK, pos);
         int sLight = level.getBrightness(LightLayer.SKY, pos);

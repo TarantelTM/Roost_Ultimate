@@ -1,6 +1,7 @@
 
 package net.tarantel.chickenroost.item.base;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,7 +19,7 @@ import net.tarantel.chickenroost.util.WrenchTool;
 
 public class ChickenStickItem extends Item {
 	public ChickenStickItem() {
-		super(new Properties().durability(16).rarity(Rarity.COMMON));
+		super(new Item.Properties().durability(16).rarity(Rarity.COMMON));
 	}
 
 
@@ -34,7 +35,10 @@ public class ChickenStickItem extends Item {
 				context.getClickedPos().getZ());
 		return InteractionResult.SUCCESS;
 	}
-
+	@Override
+	public boolean canAttackBlock(BlockState p_41441_, Level p_41442_, BlockPos p_41443_, Player p_41444_) {
+		return false;
+	}
 	public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity entity, InteractionHand hand) {
 		super.interactLivingEntity(stack, player, entity, hand);
 		Level level = entity.level();

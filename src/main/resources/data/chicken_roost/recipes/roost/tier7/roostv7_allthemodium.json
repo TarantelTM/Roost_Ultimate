@@ -1,26 +1,20 @@
 {
-  "type": "neoforge:conditional",
-  "recipes": [
+  "conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:mod_loaded",
-          "modid": "allthemodium"
-        }
-      ],
-      "recipe": {
+      "type": "forge:mod_loaded",
+      "modid": "allthemodium"
+    }
+  ],
         "type": "chicken_roost:roost_output",
         "food": {
-            "tag": "forge:seeds/tier7orup"
+            "tag": "c:seeds/tier7orup"
           },
           "chicken": {
             "item": "chicken_roost:c_allthemodium"
           },
+        "time": 20,
         "output": {
           "item": "allthemodium:allthemodium_ingot"
         }
 
       }
-    }
-  ]
-}

@@ -1,11 +1,12 @@
 {
   "type": "chicken_roost:roost_output",
   "food": { 
-    "tag": "forge:seeds/tier5orup" 
+    "tag": "c:seeds/tier5orup"
   },
   "chicken": {
       "item": "chicken_roost:c_silver"
   },
+  "time": 20,
   "output": {
     "item": "chicken_roost:ingot_silver"
   }

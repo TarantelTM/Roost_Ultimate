@@ -1,25 +1,23 @@
 package net.tarantel.chickenroost.api.jade;
 
-import java.util.List;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.tarantel.chickenroost.block.tile.Soul_Breeder_Tile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import snownee.jade.api.*;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
 import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.view.ClientViewGroup;
-import snownee.jade.api.view.IClientExtensionProvider;
-import snownee.jade.api.view.IServerExtensionProvider;
-import snownee.jade.api.view.ProgressView;
-import snownee.jade.api.view.ViewGroup;
+import snownee.jade.api.view.*;
+
+import java.util.List;
 
 public enum SoulBreederProgressProvider implements IServerExtensionProvider<Soul_Breeder_Tile, CompoundTag>,
         IClientExtensionProvider<CompoundTag, ProgressView>, IServerDataProvider<BlockAccessor> , IBlockComponentProvider {
@@ -38,9 +36,9 @@ public enum SoulBreederProgressProvider implements IServerExtensionProvider<Soul
 
 
     @Override
-    public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor, Soul_Breeder_Tile target) {
-        Level world = accessor.getLevel();
-        float period = (float) target.getScaledProgress();
+    public @Nullable List<ViewGroup<CompoundTag>> getGroups(ServerPlayer serverPlayer, ServerLevel serverLevel, Soul_Breeder_Tile tile, boolean b) {
+        //Level world = accessor.getLevel();
+        float period = (float) tile.getScaledProgress();
         var progress1 = ProgressView.create(period / 200);
         period = 200;
         var group = new ViewGroup<>(List.of(progress1));
@@ -58,7 +56,7 @@ public enum SoulBreederProgressProvider implements IServerExtensionProvider<Soul
             IElement icon = IElementHelper.get().item(new ItemStack(Items.CLOCK), 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
             icon.message(null);
             tooltip.add(icon);
-            tooltip.append(Component.translatable("mymsssod.fuel", accessor.getServerData().getInt("soul_breeder.progress")));
+            tooltip.append(Component.translatable("soulbreeder.fuel", accessor.getServerData().getInt("soul_breeder.progress")));
         }
 
         Component test1 = Component.literal("1");

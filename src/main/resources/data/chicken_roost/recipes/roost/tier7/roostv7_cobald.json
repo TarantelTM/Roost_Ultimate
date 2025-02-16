@@ -1,26 +1,20 @@
 {
-  "type": "neoforge:conditional",
-  "recipes": [
+  "conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:mod_loaded",
-          "modid": "tconstruct"
-        }
-      ],
-      "recipe": {
+      "type": "forge:mod_loaded",
+      "modid": "tconstruct"
+    }
+  ],
         "type": "chicken_roost:roost_output",
         "food": {
-            "tag": "forge:seeds/tier7orup"
+            "tag": "c:seeds/tier7orup"
           },
           "chicken": {
             "item": "chicken_roost:c_cobald"
           },
+        "time": 20,
         "output": {
           "item": "tconstruct:cobalt_nugget"
         }
 
       }
-    }
-  ]
-}

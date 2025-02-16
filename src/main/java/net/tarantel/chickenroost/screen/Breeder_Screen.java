@@ -15,7 +15,7 @@ public class Breeder_Screen extends AbstractContainerScreen<Breeder_Handler> {
         this.imageWidth = 176;
         this.imageHeight = 166;
     }
-    private static final ResourceLocation GUI = new ResourceLocation("chicken_roost:textures/screens/breedergui8.png");
+    private static final ResourceLocation GUI = new ResourceLocation("chicken_roost:textures/screens/breedergui2025.png");
     private static final ResourceLocation ARROWBACK = new ResourceLocation("chicken_roost:textures/screens/arrowback.png");
     private static final ResourceLocation ARROW = new ResourceLocation("chicken_roost:textures/screens/arrow.png");
     @Override
@@ -32,15 +32,15 @@ public class Breeder_Screen extends AbstractContainerScreen<Breeder_Handler> {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderTexture(0, GUI);
         ms.blit(GUI, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
-        //RenderSystem.setShaderTexture(0, new ResourceLocation("chicken_roost:textures/screens/arrowback.png"));
+        //RenderSystem.setShaderTexture(0, ChickenRoostMod.ownresource("textures/screens/arrowback.png"));
         ms.blit(ARROWBACK, this.leftPos + 53, this.topPos + 30, 0, 0, 40, 10, 40, 10);
-        //RenderSystem.setShaderTexture(0, new ResourceLocation("chicken_roost:textures/screens/arrow.png"));
+        //RenderSystem.setShaderTexture(0, ChickenRoostMod.ownresource("textures/screens/arrow.png"));
         ms.blit(ARROW, this.leftPos + 53, this.topPos + 30, 0, 0, menu.getScaledProgress(), 10, 40, 10);
         RenderSystem.disableBlend();
     }
     @Override
     public void render(@NotNull GuiGraphics  ms, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(ms, mouseX, mouseY, partialTicks);
+        this.renderBackground(ms);
         super.render(ms, mouseX, mouseY, partialTicks);
         this.renderTooltip(ms, mouseX, mouseY);
     }

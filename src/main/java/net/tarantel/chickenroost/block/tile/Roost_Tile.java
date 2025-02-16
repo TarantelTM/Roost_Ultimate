@@ -3,6 +3,7 @@ package net.tarantel.chickenroost.block.tile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -17,20 +18,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.blocks.Roost_Block;
 import net.tarantel.chickenroost.handler.Roost_Handler;
-///import net.tarantel.chickenroost.network.ModMessages;
-///import net.tarantel.chickenroost.network.RoostItemStackSyncS2CPacket;
+import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.recipes.Breeder_Recipe;
+import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.recipes.Roost_Recipe;
+import net.tarantel.chickenroost.recipes.Soul_Extractor_Recipe;
 import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.WrappedHandler;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 public class Roost_Tile extends BlockEntity implements MenuProvider {
-    private final ItemStackHandler itemHandler = new ItemStackHandler(3) {
+    public final ItemStackHandler itemHandler = new ItemStackHandler(3) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -65,7 +68,7 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case 0 -> (stack.is(ItemTags.create(new ResourceLocation("forge:seeds/tiered"))));
-                case 1 -> (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                case 1 -> (stack.getItem() instanceof AnimatedChicken_1 || stack.getItem() instanceof AnimatedChicken_2 || stack.getItem() instanceof AnimatedChicken_3 || stack.getItem() instanceof AnimatedChicken_4 || stack.getItem() instanceof AnimatedChicken_5 || stack.getItem() instanceof AnimatedChicken_6 || stack.getItem() instanceof AnimatedChicken_7 || stack.getItem() instanceof AnimatedChicken_8 || stack.getItem() instanceof AnimatedChicken_9);
                 case 2 -> false;
                 default -> super.isItemValid(slot, stack);
             };
@@ -143,7 +146,7 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
             new HashMap<>();
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             if(side == null) {
                 return lazyItemHandler.cast();
             }
@@ -179,7 +182,7 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
         if(!level.isClientSide()) {
-          ///  ModMessages.sendToClients(new RoostItemStackSyncS2CPacket(this.itemHandler, worldPosition));
+            ///  ModMessages.sendToClients(new RoostItemStackSyncS2CPacket(this.itemHandler, worldPosition));
         }
         setChanged();
     }
@@ -206,12 +209,36 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
     }
 
     public void drops() {
+        // Create a SimpleContainer to hold the items from the item handler
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
 
-        Containers.dropContents(Objects.requireNonNull(this.level), this.worldPosition, inventory);
+        // Create an ItemStack for the block
+        ItemStack itemStack = new ItemStack(ModBlocks.ROOST.get());
+
+        // Save the inventory contents to the ItemStack's NBT
+        CompoundTag nbt = new CompoundTag();
+        ListTag itemsTag = new ListTag();
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (!stack.isEmpty()) {
+                CompoundTag itemTag = new CompoundTag();
+                itemTag.putInt("Slot", i);
+                stack.save(itemTag);
+                itemsTag.add(itemTag);
+            }
+        }
+        nbt.put("Items", itemsTag);
+        itemStack.setTag(nbt);
+
+        // Create a SimpleContainer to hold the block's ItemStack
+        SimpleContainer block = new SimpleContainer(1);
+        block.setItem(0, itemStack.copy());
+
+        // Drop the contents in the world
+        Containers.dropContents(Objects.requireNonNull(this.level), this.worldPosition, block);
     }
 
 
@@ -220,7 +247,7 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
             return;
         }
         setChanged(level, pos, state);
-       /// ModMessages.sendToClients(new RoostItemStackSyncS2CPacket(pEntity.itemHandler, pEntity.worldPosition));
+        /// ModMessages.sendToClients(new RoostItemStackSyncS2CPacket(pEntity.itemHandler, pEntity.worldPosition));
         if(hasRecipe(pEntity)) {
             pEntity.progress++;
 
@@ -240,801 +267,61 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
 
         this.progress = 0;
     }
-
     public static ItemStack ChickenItem;
-    static ItemStack MyChicken;
+    public static ChickenSeedBase FoodItem;
+    public static ChickenItemBase MyChicken;
+    public static int[] LevelList = {Config.maxlevel_tier_1.get().intValue(), Config.maxlevel_tier_2.get().intValue(), Config.maxlevel_tier_3.get().intValue(),Config.maxlevel_tier_4.get().intValue(),Config.maxlevel_tier_5.get().intValue(),Config.maxlevel_tier_6.get().intValue(),Config.maxlevel_tier_7.get().intValue(),Config.maxlevel_tier_8.get().intValue(),Config.maxlevel_tier_9.get().intValue()};
+    public static int[] XPList = {Config.xp_tier_1.get().intValue(), Config.xp_tier_2.get().intValue(), Config.xp_tier_3.get().intValue(),Config.xp_tier_4.get().intValue(),Config.xp_tier_5.get().intValue(),Config.xp_tier_6.get().intValue(),Config.xp_tier_7.get().intValue(),Config.xp_tier_8.get().intValue(),Config.xp_tier_9.get().intValue()};
+    public static int[] XPAmountList = {Config.food_xp_tier_1.get().intValue(), Config.food_xp_tier_2.get().intValue(), Config.food_xp_tier_3.get().intValue(), Config.food_xp_tier_4.get().intValue(), Config.food_xp_tier_5.get().intValue(), Config.food_xp_tier_6.get().intValue(), Config.food_xp_tier_7.get().intValue(), Config.food_xp_tier_8.get().intValue(), Config.food_xp_tier_9.get().intValue()};
+
+
     private static void craftItem(Roost_Tile pEntity) {
+        MyChicken = (ChickenItemBase) pEntity.itemHandler.getStackInSlot(1).getItem().getDefaultInstance().getItem();
+        ChickenItem = pEntity.itemHandler.getStackInSlot(1);
+        FoodItem = (ChickenSeedBase) pEntity.itemHandler.getStackInSlot(0).getItem().getDefaultInstance().getItem();
         Level level = pEntity.level;
         SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
-        Optional<RecipeHolder<Roost_Recipe>> recipe = level.getRecipeManager()
+        Optional<Roost_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Roost_Recipe.Type.INSTANCE, inventory, level);
-        //System.out.println(2500 / 10);
+        if (level != null) {
+            if (hasRecipe(pEntity)) {
+                int ChickenLevel = (int) (ChickenItem.getOrCreateTag().getInt("roost_lvl") / 2 + recipe.get().output.getCount());
+                int ChickenXP = ChickenItem.getOrCreateTag().getInt("roost_xp");
+                ItemStack itemstack1 = recipe.get().output.copy();
+                itemstack1.setCount(pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel);
 
-        if (hasRecipe(pEntity)) {
-            ChickenItem = pEntity.itemHandler.getStackInSlot(1);
-            int ChickenLevel = (int) (ChickenItem.getOrCreateTag().getInt("roost_lvl") / 2 + recipe.get().value().output.getCount());
-            //if (pEntity.itemHandler.getStackInSlot(1).is((ItemTags.create(new ResourceLocation("forge:roost/tiered")))) &&
-            //       (pEntity.itemHandler.getStackInSlot(0).is((ItemTags.create(new ResourceLocation("forge:seeds/tiered")))) || (pEntity.itemHandler.getStackInSlot(0).is((ItemTags.create(new ResourceLocation("forge:seeds"))))))) {
-            MyChicken = pEntity.itemHandler.getStackInSlot(1);
-            //int ChickenLevel = MyChicken.getOrCreateTag().getInt("roost_lvl");
-            /*if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier1"))) && ChickenLevel >= Config.maxlevel_tier_1.get()) {
-                pEntity.resetProgress();
-            }*/
-            int ChickenXP = MyChicken.getOrCreateTag().getInt("roost_xp");
-            /////TIER 1
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier1")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_1.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10) >= Config.xp_tier_1.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
+                if (pEntity.itemHandler.getStackInSlot(1).getItem() instanceof ChickenItemBase) {
 
-            pEntity.resetProgress();
+                    if (ChickenItem.getOrCreateTag().getInt("roost_lvl") < LevelList[MyChicken.currentchickena]) {
+                        if (pEntity.itemHandler.getStackInSlot(0).getItem() instanceof ChickenSeedBase) {
+                            if ((ChickenXP + (XPAmountList[FoodItem.currentmaxxpp] * Config.roostxp.get()) >= XPList[MyChicken.currentchickena])) {
+                                ChickenItem.getOrCreateTag().putInt("roost_lvl", (ChickenItem.getOrCreateTag().getInt("roost_lvl") + 1));
+                                ChickenItem.getOrCreateTag().putInt("roost_xp", 0);
+
+                            } else {
+
+                                ChickenItem.getOrCreateTag().putInt("roost_xp", (int) ((ChickenXP + ((int) XPAmountList[FoodItem.currentmaxxpp]) * Config.roostxp.get())));
+                            }
+                        }
+                        pEntity.itemHandler.extractItem(0, 1, false);
+                        pEntity.itemHandler.extractItem(1, 0, true);
+                        pEntity.itemHandler.setStackInSlot(1, ChickenItem);
+                        pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
+                        pEntity.resetProgress();
+                    } else {
+                        pEntity.itemHandler.extractItem(0, 1, false);
+                        pEntity.itemHandler.extractItem(1, 0, true);
+                        pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
+                        pEntity.resetProgress();
+                    }
                 }
+
             }
-            /////TIER 2
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier2")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_2.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10)>= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10)>= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10)>= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10)>= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10)>= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10)>= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10)>= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10)>= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10) >= Config.xp_tier_2.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();
-                }
-            }
-            /////TIER 3
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier3")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_3.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10)>= Config.xp_tier_3.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();
-                }
-            }
-            /////TIER 4
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier4")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_4.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10)>= Config.xp_tier_4.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();
-                }
-            }
-            /////TIER 5
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier5")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_5.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10)>= Config.xp_tier_5.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();
-                }
-            }
-            /////TIER 6
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier6")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_6.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10)>= Config.xp_tier_6.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();
-                }
-            }
-            /////TIER 7
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier7")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_7.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10)>= Config.xp_tier_7.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();
-
-                }
-            }
-            /////TIER 8
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier8")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_8.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10)>= Config.xp_tier_8.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();
-                }
-            }
-            /////TIER 9
-            if (pEntity.itemHandler.getStackInSlot(1).is(ItemTags.create(new ResourceLocation("forge:roost/tier9")))) {
-                if (MyChicken.getOrCreateTag().getInt("roost_lvl") <= Config.maxlevel_tier_9.get()) {
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier1")))) {
-                        if (ChickenXP + (Config.food_xp_tier_1.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_1.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier2")))) {
-                        if (ChickenXP + (Config.food_xp_tier_2.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_2.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier3")))) {
-                        if (ChickenXP + (Config.food_xp_tier_3.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_3.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier4")))) {
-                        if (ChickenXP + (Config.food_xp_tier_4.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_4.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier5")))) {
-                        if (ChickenXP + (Config.food_xp_tier_5.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_5.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier6")))) {
-                        if (ChickenXP + (Config.food_xp_tier_6.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_6.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier7")))) {
-                        if (ChickenXP + (Config.food_xp_tier_7.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_7.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier8")))) {
-                        if (ChickenXP + (Config.food_xp_tier_8.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_8.get() * Config.roostxp.get())));
-                        }
-                    }
-                    if (pEntity.itemHandler.getStackInSlot(0).is(ItemTags.create(new ResourceLocation("forge:seeds/tier9")))) {
-                        if (ChickenXP + (Config.food_xp_tier_9.get() / 10)>= Config.xp_tier_9.get()) {
-                            MyChicken.getOrCreateTag().putInt("roost_lvl", (MyChicken.getOrCreateTag().getInt("roost_lvl") + 1));
-                            MyChicken.getOrCreateTag().putInt("roost_xp", 0);
-                        } else {
-                            MyChicken.getOrCreateTag().putInt("roost_xp", (int) (ChickenXP + ((int) Config.food_xp_tier_9.get() * Config.roostxp.get())));
-                        }
-                    }
-                    pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();
-                }
-            }
-
-            /*pEntity.itemHandler.extractItem(0, 1, false);
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(1, MyChicken);
-            pEntity.itemHandler.setStackInSlot(2, new ItemStack(recipe.get().value().output.copy().getItem(),
-                    pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel));
-
-            pEntity.resetProgress();*/
         }
     }
-
-   // }
 
     private static boolean hasRecipe(Roost_Tile entity) {
         Level level = entity.level;
@@ -1043,12 +330,15 @@ public class Roost_Tile extends BlockEntity implements MenuProvider {
             inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
         }
 
-        Optional<RecipeHolder<Roost_Recipe>> recipe = level.getRecipeManager()
+        Optional<Roost_Recipe> recipe = level.getRecipeManager()
                 .getRecipeFor(Roost_Recipe.Type.INSTANCE, inventory, level);
 
+        if(recipe.isPresent()){
+            entity.maxProgress = ( Config.roost_speed_tick.get() * recipe.get().time);
+        }
 
         return recipe.isPresent() && canInsertAmountIntoOutputSlot(inventory) &&
-                canInsertItemIntoOutputSlot(inventory, recipe.get().value().output.copy().getItem().getDefaultInstance());
+                canInsertItemIntoOutputSlot(inventory, recipe.get().output.getItem().getDefaultInstance());
     }
 
 

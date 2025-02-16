@@ -1,8 +1,6 @@
 package net.tarantel.chickenroost.handler;
 
-
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,10 +9,11 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
+import net.minecraftforge.items.SlotItemHandler;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.resources.ResourceLocation;
 import net.tarantel.chickenroost.block.tile.Roost_Tile;
+import net.tarantel.chickenroost.item.base.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class Roost_Handler extends AbstractContainerMenu {
 
 
 
-        this.blockEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
+        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
             this.addSlot(new SlotItemHandler(handler, 0, 11, 15){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
@@ -62,7 +61,7 @@ public class Roost_Handler extends AbstractContainerMenu {
             this.addSlot(new SlotItemHandler(handler, 1, 29, 38){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                    return (stack.getItem() instanceof AnimatedChicken_1 || stack.getItem() instanceof AnimatedChicken_2 || stack.getItem() instanceof AnimatedChicken_3 || stack.getItem() instanceof AnimatedChicken_4 || stack.getItem() instanceof AnimatedChicken_5 || stack.getItem() instanceof AnimatedChicken_6 || stack.getItem() instanceof AnimatedChicken_7 || stack.getItem() instanceof AnimatedChicken_8 || stack.getItem() instanceof AnimatedChicken_9);
                 }
             });
 

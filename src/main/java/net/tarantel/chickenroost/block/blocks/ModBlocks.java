@@ -1,16 +1,18 @@
 package net.tarantel.chickenroost.block.blocks;
 
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.crops.*;
 import net.tarantel.chickenroost.item.ModItems;
@@ -21,6 +23,9 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, ChickenRoostMod.MODID);
 
+    public static final RegistryObject<ChickenStorage_Block> CHICKENSTORAGE = BLOCKS.register("chickenstorage",
+            () -> new ChickenStorage_Block(BlockBehaviour.Properties.copy(Blocks.OBSIDIAN)
+                    .strength(70.0F, 120000.0F).noOcclusion()));
 
     public static final RegistryObject<Soul_Breeder_Block> SOUL_BREEDER = BLOCKS.register("soul_breeder",
             () -> new Soul_Breeder_Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)
@@ -28,7 +33,6 @@ public class ModBlocks {
     public static final RegistryObject<Block> BREEDER = registerBlock("breeder",
             () -> new Breeder_Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)
                     .strength(1f).noOcclusion()));
-
     public static final RegistryObject<Block> SOUL_EXTRACTOR = registerBlock("soul_extractor",
             () -> new Soul_Extractor_Block(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)
                     .strength(1f).noOcclusion()));
@@ -66,8 +70,12 @@ public class ModBlocks {
     }
 
     private static <T extends Block> RegistryObject<Item> registerBlockItem(String name, RegistryObject<T> block) {
-        return ModItems.ITEMS.register(name, () -> new BlockItem(block.get(),
+        return ModItems.ITEMSS.register(name, () -> new BlockItem(block.get(),
                 new Item.Properties()));
+    }
+
+    public static Block registerr(String pKey, Block pBlock) {
+        return Registry.register(BuiltInRegistries.BLOCK, pKey, pBlock);
     }
 
     public static void register(IEventBus eventBus) {

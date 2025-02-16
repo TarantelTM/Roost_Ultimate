@@ -1,18 +1,20 @@
 package net.tarantel.chickenroost.handler;
 
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.SlotItemHandler;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.Breeder_Tile;
+import net.tarantel.chickenroost.item.base.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,89 +33,100 @@ public class Breeder_Handler extends AbstractContainerMenu {
 
 
     public Breeder_Handler(int id, Inventory inv, FriendlyByteBuf extraData) {
-        this(id, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(10));
+        this(id, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
         //this.entity = inv.player;
 
     }
 
     public Breeder_Handler(int id, Inventory inv, BlockEntity entity, ContainerData data) {
         super(ModHandlers.BREEDER_MENU.get(), id);
-        checkContainerSize(inv, 10);
+        checkContainerSize(inv, 11);
         blockEntity = (Breeder_Tile) entity;
         this.level = inv.player.level();
         this.data = data;
 
+        //adding hotbar and inventory to your GUI
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
+        //adding hotbar and inventory to your GUI
 
+        addDataSlots(data);
 
-
-        this.blockEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
-            this.addSlot(new SlotItemHandler(handler, 1, 35, 26){
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:seeds/tiered"))));
-                }
-            });
+        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+             // Debug statement
 
             this.addSlot(new SlotItemHandler(handler, 0, 7, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return (stack.is(ItemTags.create(new ResourceLocation("forge:roost/tiered"))));
+                    return (stack.getItem() instanceof ChickenItemBase);
                 }
             });
 
-            this.addSlot(new SlotItemHandler(handler, 2, 97, 26){
+            this.addSlot(new SlotItemHandler(handler, 1, 21, 45){
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return (stack.is(ItemTags.create(new ResourceLocation("c:seeds/tiered"))));
+                }
+            });
+            this.addSlot(new SlotItemHandler(handler, 2, 34, 26){
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return (stack.getItem() instanceof ChickenItemBase);
+                }
+            });
+
+            this.addSlot(new SlotItemHandler(handler, 3, 97, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 3, 115, 26){
+            this.addSlot(new SlotItemHandler(handler, 4, 115, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 4, 133, 26){
+            this.addSlot(new SlotItemHandler(handler, 5, 133, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 5, 151, 26){
+            this.addSlot(new SlotItemHandler(handler, 6, 151, 26){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 6, 97, 44){
+            this.addSlot(new SlotItemHandler(handler, 7, 97, 44){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 7, 115, 44){
+            this.addSlot(new SlotItemHandler(handler, 8, 115, 44){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 8, 133, 44){
+            this.addSlot(new SlotItemHandler(handler, 9, 133, 44){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
-            this.addSlot(new SlotItemHandler(handler, 9, 151, 44){
+            this.addSlot(new SlotItemHandler(handler, 10, 151, 44){
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
             });
+
 
         });
-        addDataSlots(data);
+
     }
 
     public boolean isCrafting() {
@@ -144,7 +157,7 @@ public class Breeder_Handler extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 10;  // must be the number of slots you have!
+    private static final int TE_INVENTORY_SLOT_COUNT = 11;  // must be the number of slots you have!
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {

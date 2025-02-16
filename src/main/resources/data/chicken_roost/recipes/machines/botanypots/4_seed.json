@@ -1,13 +1,22 @@
-{"bookshelf:load_conditions":[{"type":"bookshelf:item_exists",
-  "values":["chicken_roost:chicken_essence_tier_4",
-    "chicken_roost:chicken_food_tier_4"]}],
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "botanypots"
+    }
+  ],
   "type":"botanypots:crop",
   "seed":{"item":"chicken_roost:chicken_food_tier_4"},
   "categories":["dirt"],
-  "growthTicks":3000,
+  "growthTicks":250,
   "display":{"type":"botanypots:aging",
     "block":"chicken_roost:seed_crop_4"},
   "drops":[{"chance":1.00,
-    "output":{"item":"chicken_roost:chicken_food_tier_4"}},
-    {"chance":0.01,
+    "output":{"item":"chicken_roost:chicken_food_tier_4",
+      "count":  2}},
+    {"chance":0.50,
+      "output":{"item":"chicken_roost:chicken_food_tier_4",
+        "count":  1}},
+    {"chance":0.20,
       "output":{"item":"chicken_roost:chicken_essence_tier_4"}}]}
+

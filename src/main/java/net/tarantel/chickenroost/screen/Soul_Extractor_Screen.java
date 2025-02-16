@@ -27,8 +27,6 @@ public class Soul_Extractor_Screen extends AbstractContainerScreen<SoulExtractor
         //this.entity = menu.entity;
         this.imageWidth = 176;
         this.imageHeight = 166;
-
-
     }
     private static final ResourceLocation GUI = new ResourceLocation("chicken_roost:textures/screens/newsoulextractorgui.png");
     private static final ResourceLocation ARROW = new ResourceLocation("chicken_roost:textures/screens/arrow.png");
@@ -49,7 +47,7 @@ public class Soul_Extractor_Screen extends AbstractContainerScreen<SoulExtractor
     }
     @Override
     public void render(@NotNull GuiGraphics ms, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(ms, mouseX, mouseY, partialTicks);
+        this.renderBackground(ms);
         super.render(ms, mouseX, mouseY, partialTicks);
         this.renderTooltip(ms, mouseX, mouseY);
     }

@@ -1,12 +1,13 @@
 {
   "type": "chicken_roost:roost_output",
   "food": { 
-    "tag": "forge:seeds/tier1orup" 
+    "tag": "c:seeds/tier1orup"
   },
   "chicken": {
       "item": "chicken_roost:c_diorite"
   },
+  "time": 20,
   "output": {
-    "item": "minecraft:diorite"
+    "item": "chicken_roost:stone_essence"
   }
 }

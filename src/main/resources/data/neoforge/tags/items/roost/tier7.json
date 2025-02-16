@@ -1,18 +1,23 @@
 {
   "replace": false,
   "values": [
-    "chicken_roost:c_nickel",
-    "chicken_roost:c_netherite",
-    "chicken_roost:c_diamond",
-    "chicken_roost:c_terrasteel",
-    "chicken_roost:c_tungstensteel",
-    "chicken_roost:c_elementium",
-    "chicken_roost:c_electrum",
-    "chicken_roost:c_invar",
-    "chicken_roost:c_blutonium",
-    "chicken_roost:c_cobald",
-    "chicken_roost:c_allthemodium",
-    "chicken_roost:c_manyullyn",
-    "chicken_roost:c_netherstar"
+    { "id":"chicken_roost:c_cobald", "required": false },
+    { "id":"chicken_roost:c_manyullyn", "required": false },
+    { "id":"chicken_roost:c_chargedcertus", "required": false },
+    { "id":"chicken_roost:c_fluixcrystal", "required": false },
+    { "id":"chicken_roost:c_allthemodium", "required": false },
+    { "id":"chicken_roost:c_amethystshard", "required": false },
+    { "id":"chicken_roost:c_blutonium", "required": false },
+    { "id":"chicken_roost:c_elementium", "required": false },
+    { "id":"chicken_roost:c_terrasteel", "required": false },
+    { "id":"chicken_roost:c_diamond", "required": false },
+    { "id":"chicken_roost:c_electrum", "required": false },
+    { "id":"chicken_roost:c_hottungstensteel", "required": false },
+    { "id":"chicken_roost:c_invar", "required": false },
+    { "id":"chicken_roost:c_netherite", "required": false },
+    { "id":"chicken_roost:c_netherstar", "required": false },
+    { "id":"chicken_roost:c_nickel", "required": false },
+    { "id":"chicken_roost:c_tungstensteel", "required": false }
+
   ]
 }

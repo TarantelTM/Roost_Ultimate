@@ -1,0 +1,32 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "immersiveengineering"
+    }
+  ],
+        "type":"immersiveengineering:cloche",
+        "input":
+        {
+          "item":"chicken_roost:chicken_food_tier_9"
+        },
+        "render":
+        {
+          "type":"crop",
+          "block":"chicken_roost:seed_crop_9"
+        },
+        "results":[
+          {
+            "count":2,
+            "item":"chicken_roost:chicken_food_tier_9"
+          },
+          {
+            "item":"chicken_roost:chicken_food_tier_9"
+          }
+        ]
+      ,"soil":
+        {
+          "item":"minecraft:dirt"
+        }
+      ,"time":250
+      }

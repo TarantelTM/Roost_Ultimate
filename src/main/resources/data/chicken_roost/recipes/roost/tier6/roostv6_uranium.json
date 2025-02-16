@@ -1,11 +1,12 @@
 {
   "type": "chicken_roost:roost_output",
   "food": { 
-    "tag": "forge:seeds/tier6orup" 
+    "tag": "c:seeds/tier6orup"
   },
   "chicken": {
       "item": "chicken_roost:c_uranium"
   },
+  "time": 20,
   "output": {
     "item": "chicken_roost:ingot_uranium"
   }

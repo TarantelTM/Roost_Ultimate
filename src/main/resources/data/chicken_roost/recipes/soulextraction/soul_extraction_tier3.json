@@ -1,8 +1,9 @@
 {
   "type": "chicken_roost:soul_extraction",
   "chicken": { 
-      "tag": "forge:roost/tier3"
+      "tag": "c:roost/tier3"
     },
+  "time": 20,
   "output": {
     "item": "chicken_roost:chicken_essence_tier_3"
   }

@@ -1,0 +1,15 @@
+{
+  "type": "chicken_roost:roost_output",
+  "food": {
+    "tag": "c:seeds/tier2orup"
+  },
+  "chicken": {
+    "item": "chicken_roost:c_water"
+  },
+  "time": 20,
+  "output": {
+    "type": "minecraft:item_nbt",
+    "item": "chicken_roost:water_egg",
+    "nbt": "{Fluid:{FluidName:\"minecraft:water\",Amount:1000}}"
+  }
+}
