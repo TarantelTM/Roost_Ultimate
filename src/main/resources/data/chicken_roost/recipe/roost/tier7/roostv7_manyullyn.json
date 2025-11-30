@@ -1,0 +1,20 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "tconstruct"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "c:seeds/tier7orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_manyullyn"
+          },
+        "time": 20,
+        "output": {
+          "item": "tconstruct:manyullyn_nugget"
+        }
+
+      }

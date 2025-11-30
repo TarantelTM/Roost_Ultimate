@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "nether_wastes",
+  "spawners": {
+    "type": "chicken_roost:c_flint",
+    "maxCount": 6,
+    "minCount": 2,
+    "weight": 12
+  }
+}

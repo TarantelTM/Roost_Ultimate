@@ -1,49 +1,49 @@
 package net.tarantel.chickenroost.api.jade;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.animal.Chicken;
 import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.api.jade.components.*;
+import net.tarantel.chickenroost.block.blocks.*;
 import net.tarantel.chickenroost.block.tile.*;
 import snownee.jade.api.*;
 
-@WailaPlugin
+@WailaPlugin(ChickenRoostMod.MODID)
 public class JadePlugin implements IWailaPlugin {
 
-    public static final ResourceLocation ROOST_PROGRESS = new ResourceLocation(ChickenRoostMod.MODID,"roost.progress");
-    public static final ResourceLocation BREEDER_PROGRESS = new ResourceLocation(ChickenRoostMod.MODID,"breeder.progress");
-    public static final ResourceLocation TRAINER_PROGRESS = new ResourceLocation(ChickenRoostMod.MODID,"trainer.progress");
-    public static final ResourceLocation SOULBREEDER_PROGRESS = new ResourceLocation(ChickenRoostMod.MODID,"soul_breeder.progress");
-    public static final ResourceLocation SOULEXTRACTOR_PROGRESS = new ResourceLocation(ChickenRoostMod.MODID,"soul_extractor.progress");
-    private static IWailaClientRegistration client;
+    public static final ResourceLocation ROOST_PROGRESS = ChickenRoostMod.ownresource("roost.progress");
+    public static final ResourceLocation BREEDER_PROGRESS = ChickenRoostMod.ownresource("breeder.progress");
+    public static final ResourceLocation TRAINER_PROGRESS = ChickenRoostMod.ownresource("trainer.progress");
+    public static final ResourceLocation SOULBREEDER_PROGRESS = ChickenRoostMod.ownresource("soul_breeder.progress");
+    public static final ResourceLocation SOULEXTRACTOR_PROGRESS = ChickenRoostMod.ownresource("soul_extractor.progress");
+    public static final ResourceLocation BASECHICKENENTITY = ChickenRoostMod.ownresource("basechickenentity.data");
+    public static IWailaClientRegistration CLIENT_REGISTRATION;
 
     @Override
     public void register(IWailaCommonRegistration registration) {
-        //TODO register data providers
-        registration.registerBlockDataProvider(RoostComponentProvider.INSTANCE, Roost_Tile.class);
-        registration.registerProgress(RoostComponentProvider.INSTANCE, Roost_Tile.class);
+        registration.registerBlockDataProvider(RoostComponentProvider.INSTANCE, RoostTile.class);
 
-        registration.registerBlockDataProvider(BreederProgressProvider.INSTANCE, Breeder_Tile.class);
-        registration.registerProgress(BreederProgressProvider.INSTANCE, Breeder_Tile.class);
+        registration.registerBlockDataProvider(BreederComponentProvider.INSTANCE, BreederTile.class);
 
-        registration.registerBlockDataProvider(TrainerProgressProvider.INSTANCE, Trainer_Tile.class);
-        registration.registerProgress(TrainerProgressProvider.INSTANCE, Trainer_Tile.class);
+        registration.registerBlockDataProvider(TrainerComponentProvider.INSTANCE, TrainerTile.class);
 
-        registration.registerBlockDataProvider(SoulBreederProgressProvider.INSTANCE, Soul_Breeder_Tile.class);
-        registration.registerProgress(SoulBreederProgressProvider.INSTANCE, Soul_Breeder_Tile.class);
+        registration.registerBlockDataProvider(SoulBreederComponentProvider.INSTANCE, SoulBreederTile.class);
 
-        registration.registerBlockDataProvider(SoulExtractorProgressProvider.INSTANCE, Soul_Extractor_Tile.class);
-        registration.registerProgress(SoulExtractorProgressProvider.INSTANCE, Soul_Extractor_Tile.class);
+        registration.registerBlockDataProvider(SoulExtractorComponentProvider.INSTANCE, SoulExtractorTile.class);
+
+        registration.registerEntityDataProvider(ChickenComponentProvider.INSTANCE, Chicken.class);
     }
 
     @Override
     public void registerClient(IWailaClientRegistration registration) {
-        //TODO register component providers, icon providers, callbacks, and config options here
-        JadePlugin.client = registration;
-        registration.registerProgressClient(RoostComponentProvider.INSTANCE);
-        registration.registerProgressClient(BreederProgressProvider.INSTANCE);
-        registration.registerProgressClient(TrainerProgressProvider.INSTANCE);
-        registration.registerProgressClient(SoulBreederProgressProvider.INSTANCE);
-        registration.registerProgressClient(SoulExtractorProgressProvider.INSTANCE);
-        //registration.registerBlockComponent(RoostComponentProvider.INSTANCE, Roost_Block.class);
+        CLIENT_REGISTRATION = registration;
+
+        registration.registerBlockComponent(RoostComponentProvider.INSTANCE, RoostBlock.class);
+        registration.registerBlockComponent(BreederComponentProvider.INSTANCE, BreederBlock.class);
+        registration.registerBlockComponent(TrainerComponentProvider.INSTANCE, TrainerBlock.class);
+        registration.registerBlockComponent(SoulBreederComponentProvider.INSTANCE, SoulBreederBlock.class);
+        registration.registerBlockComponent(SoulExtractorComponentProvider.INSTANCE, SoulExtractorBlock.class);
+        registration.registerEntityComponent(ChickenComponentProvider.INSTANCE, Chicken.class);
     }
 
 }

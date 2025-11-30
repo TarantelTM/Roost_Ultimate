@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "stony_peaks",
+  "spawners": {
+    "type": "chicken_roost:c_stone",
+    "maxCount": 6,
+    "minCount": 2,
+    "weight": 12
+  }
+}

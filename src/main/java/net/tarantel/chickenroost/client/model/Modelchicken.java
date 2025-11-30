@@ -15,14 +15,10 @@ import net.minecraft.client.model.EntityModel;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import org.jetbrains.annotations.NotNull;
 
-// Made with Blockbench 4.2.4
-// Exported for Minecraft version 1.17 - 1.18 with Mojang mappings
-// Paste this class into your mod and generate all required imports
 public class Modelchicken<T extends Entity> extends EntityModel<T> {
-	// This layer location should be baked with EntityRendererProvider.Context in
-	// the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("chicken_roost", "modelchicken"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("chicken_roost", "modelchicken"), "main");
 	public final ModelPart body;
 	public final ModelPart head;
 	public final ModelPart leg0;
@@ -71,21 +67,20 @@ public class Modelchicken<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green,
-			float blue, float alpha) {
-		body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		leg0.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		leg1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		wing0.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-		wing1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(@NotNull PoseStack var1, @NotNull VertexConsumer var2, int var3, int var4, int var5) {
+		body.render(var1, var2, var3, var4, -1);
+		head.render(var1, var2, var3, var4, -1);
+		leg0.render(var1, var2, var3, var4, -1);
+		leg1.render(var1, var2, var3, var4, -1);
+		wing0.render(var1, var2, var3, var4, -1);
+		wing1.render(var1, var2, var3, var4, -1);
 	}
 
-	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setupAnim(@NotNull T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.head.yRot = netHeadYaw / (180F / (float) Math.PI);
 		this.head.xRot = headPitch / (180F / (float) Math.PI);
-		this.leg0.xRot = Mth.cos(limbSwing * 1.0F) * 1.0F * limbSwingAmount;
-		this.leg1.xRot = Mth.cos(limbSwing * 1.0F) * -1.0F * limbSwingAmount;
+		this.leg0.xRot = Mth.cos(limbSwing) * 1.0F * limbSwingAmount;
+		this.leg1.xRot = Mth.cos(limbSwing) * -1.0F * limbSwingAmount;
 		this.wing1.zRot = Mth.cos(limbSwing * 0.6662F) * limbSwingAmount;
 		this.wing0.zRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * limbSwingAmount;
 	}

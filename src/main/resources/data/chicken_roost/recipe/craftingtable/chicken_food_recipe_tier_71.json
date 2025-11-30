@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "chicken_roost:chicken_essence_tier_7"
+    },
+    "1": {
+      "item": "chicken_roost:chicken_essence_tier_7"
+    },
+    "2": {
+      "item": "chicken_roost:chicken_essence_tier_7"
+    },
+    "3": {
+      "item": "chicken_roost:chicken_essence_tier_7"
+    },
+    "4": {
+      "item": "chicken_roost:chicken_food_tier_6"
+    },
+    "5": {
+      "item": "chicken_roost:chicken_food_tier_6"
+    },
+    "6": {
+      "item": "chicken_roost:chicken_food_tier_6"
+    },
+    "7": {
+      "item": "chicken_roost:chicken_food_tier_6"
+    },
+    "8": {
+      "item": "chicken_roost:chicken_food_tier_6"
+    }
+  },
+  "result": {
+    "id": "chicken_roost:chicken_food_tier_7",
+    "count": 1
+  }
+}

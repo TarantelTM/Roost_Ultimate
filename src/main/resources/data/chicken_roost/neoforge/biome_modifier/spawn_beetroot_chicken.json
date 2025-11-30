@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "flower_forest",
+  "spawners": {
+    "type": "chicken_roost:c_beetroot",
+    "maxCount": 6,
+    "minCount": 2,
+    "weight": 12
+  }
+}

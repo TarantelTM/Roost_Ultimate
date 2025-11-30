@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "01 "
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:egg"
+    },
+    "1": {
+      "item": "minecraft:black_dye"
+    }
+  },
+  "result": {
+    "id": "chicken_roost:black_egg",
+    "count": 1
+  }
+}

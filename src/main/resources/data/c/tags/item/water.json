@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:water_egg", "required": false },
+    { "id":"chicken_roost:testitem", "required": false }
+  ]
+}

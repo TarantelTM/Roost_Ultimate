@@ -1,0 +1,48 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "allthemodium"
+    }
+  ],
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "012",
+          "345",
+          "678"
+        ],
+        "key": {
+          "0": {
+            "item": "allthemodium:vibranium_block"
+          },
+          "1": {
+            "item": "allthemodium:vibranium_block"
+          },
+          "2": {
+            "item": "allthemodium:vibranium_block"
+          },
+          "3": {
+            "item": "allthemodium:vibranium_block"
+          },
+          "4": {
+            "item": "chicken_roost:chicken_essence_tier_8"
+          },
+          "5": {
+            "item": "allthemodium:vibranium_block"
+          },
+          "6": {
+            "item": "allthemodium:vibranium_block"
+          },
+          "7": {
+            "item": "allthemodium:vibranium_block"
+          },
+          "8": {
+            "item": "allthemodium:vibranium_block"
+          }
+        },
+        "result": {
+          "id": "chicken_roost:c_vibranium",
+          "count": 1
+        }
+
+      }

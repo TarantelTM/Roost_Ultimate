@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_birchwood", "required": false },
+    { "id":"chicken_roost:c_oakwood", "required": false },
+    { "id":"chicken_roost:c_darkoak", "required": false },
+    { "id":"chicken_roost:c_acaciawood", "required": false },
+    { "id":"chicken_roost:c_junglewood", "required": false },
+    { "id":"chicken_roost:c_sprucewood", "required": false }
+  ]
+}

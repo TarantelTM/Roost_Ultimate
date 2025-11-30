@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "dark_forest",
+  "spawners": {
+    "type": "chicken_roost:c_bone",
+    "maxCount": 4,
+    "minCount": 1,
+    "weight": 6
+  }
+}

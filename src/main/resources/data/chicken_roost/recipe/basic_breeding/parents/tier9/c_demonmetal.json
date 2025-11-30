@@ -1,0 +1,16 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": {
+    "tag": "c:seeds/tier9orup"
+  },
+  "left-chicken": {
+    "item": "chicken_roost:c_demonmetal"
+  },
+  "right-chicken": {
+    "item": "chicken_roost:c_demonmetal"
+  },
+  "time": 20,
+  "output": {
+    "item": "chicken_roost:c_demonmetal"
+  }
+}
