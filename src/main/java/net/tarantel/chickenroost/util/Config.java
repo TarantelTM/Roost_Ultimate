@@ -2,110 +2,81 @@ package net.tarantel.chickenroost.util;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-
-@SuppressWarnings("ALL")
-
 public class Config {
 
-    public static final ModConfigSpec.Builder mycfg = new ModConfigSpec.Builder();
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static ModConfigSpec SPEC;
+    public static ModConfigSpec.ConfigValue<String> comment1 = BUILDER.define("comment1", "Defines the Roost Production Speed in Seconds:");
+    public static ModConfigSpec.ConfigValue<Integer> roost_speed_tick = BUILDER.define("roostspeed", 10);
+    public static ModConfigSpec.ConfigValue<String> comment12 = BUILDER.define("comment12", "Defines the Level split for output in roost:");
+    public static ModConfigSpec.ConfigValue<Double> leveloutputsplit = BUILDER.define("leveloutputsplit", 2.0);
 
-    static {
-        initmycfg(mycfg);
-        SPEC = mycfg.build();
+    public static ModConfigSpec.ConfigValue<String> comment2 = BUILDER.define("comment2", "Defines the Breeding Speed in Seconds:");
+    public static ModConfigSpec.ConfigValue<Integer> breed_speed_tick = BUILDER.define("breederspeed", 15);
 
-    }
+    public static ModConfigSpec.ConfigValue<String> comment3 = BUILDER.define("comment3", "Defines the Training Speed in Seconds:");
+    public static ModConfigSpec.ConfigValue<Integer> training_speed_tick = BUILDER.define("trainerspeed", 10);
 
-    public static ModConfigSpec.ConfigValue<Integer> roost_speed_tick;
-    public static ModConfigSpec.ConfigValue<Integer> breed_speed_tick;
-    public static ModConfigSpec.ConfigValue<Integer> training_speed_tick;
+    public static ModConfigSpec.ConfigValue<String> comment4 = BUILDER.define("comment4", "Defines the Soul Extraction Speed in Seconds:");
+    public static ModConfigSpec.ConfigValue<Integer> extractor_speedtimer = BUILDER.define("soulextractspeed", 5);
 
-    public static ModConfigSpec.ConfigValue<Integer> extractor_speedtimer;
-    public static ModConfigSpec.ConfigValue<Integer> soulbreed_speedtimer;
-    public static ModConfigSpec.ConfigValue<Integer> trainingxp_perfood;
-    public static ModConfigSpec.ConfigValue<Float> roostxp;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_1;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_2;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_3;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_4;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_5;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_6;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_7;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_8;
-    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_9;
+    public static ModConfigSpec.ConfigValue<String> comment5 = BUILDER.define("comment5", "Defines the Soul Breeding Speed in Seconds:");
+    public static ModConfigSpec.ConfigValue<Integer> soulbreed_speedtimer = BUILDER.define("soulbreedspeed", 10);
 
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_1;
+    public static ModConfigSpec.ConfigValue<String> comment6 = BUILDER.define("comment6", "Defines the passive XP gained while Breeding or inside the Roost in Ratio like 0.1f = 10");
+    public static ModConfigSpec.ConfigValue<Double> roostxp = BUILDER.define("passivexp", 0.1d);
 
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_2;
+    public static ModConfigSpec.ConfigValue<String> comment7 = BUILDER.define("comment7", "Defines the XP Amount per Seed Tier:");
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_1 = BUILDER.define("seeds_tier_1", 50);
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_2 = BUILDER.define("seeds_tier_2", 200);
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_3 = BUILDER.define("seeds_tier_3", 300);
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_4 = BUILDER.define("seeds_tier_4", 500);
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_5 = BUILDER.define("seeds_tier_5", 700);
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_6 = BUILDER.define("seeds_tier_6", 1000);
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_7 = BUILDER.define("seeds_tier_7", 1500);
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_8 = BUILDER.define("seeds_tier_8", 2500);
+    public static ModConfigSpec.ConfigValue<Integer> food_xp_tier_9 = BUILDER.define("seeds_tier_9", 5000);
 
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_3;
+    public static ModConfigSpec.ConfigValue<String> comment8 = BUILDER.define("comment8", "Defines the XP required for a Levelup per Tier:");
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_1 = BUILDER.define("xp_tier_1", 50);
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_2 = BUILDER.define("xp_tier_2", 250);
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_3 = BUILDER.define("xp_tier_3", 1250);
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_4 = BUILDER.define("xp_tier_4", 6250);
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_5 = BUILDER.define("xp_tier_5", 12500);
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_6 = BUILDER.define("xp_tier_6", 25000);
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_7 = BUILDER.define("xp_tier_7", 32500);
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_8 = BUILDER.define("xp_tier_8", 40000);
+    public static ModConfigSpec.ConfigValue<Integer> xp_tier_9 = BUILDER.define("xp_tier_9", 50000);
+    public static ModConfigSpec.ConfigValue<String> comment9 = BUILDER.define("comment9", "Defines the max Level per Tier:");
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_1 = BUILDER.define("level_tier_1", 128);
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_2 = BUILDER.define("level_tier_2", 128);
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_3 = BUILDER.define("level_tier_3", 128);
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_4 = BUILDER.define("level_tier_4", 128);
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_5 = BUILDER.define("level_tier_5", 128);
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_6 = BUILDER.define("level_tier_6", 128);
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_7 = BUILDER.define("level_tier_7", 128);
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_8 = BUILDER.define("level_tier_8", 128);
+    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_9 = BUILDER.define("level_tier_9", 128);
+    public static ModConfigSpec.ConfigValue<String> comment10 = BUILDER.define("comment10", "Enable Breeder Crafting in both ways, this means it dont matter if u put the Chicken right or left.");
+    public static ModConfigSpec.ConfigValue<Boolean> enablebothways = BUILDER.define("enableboth", true);
+    public static ModConfigSpec.ConfigValue<String> comment11 = BUILDER.define("comment11", "Change the Collectors max collecting Range:");
+    public static ModConfigSpec.ConfigValue<Integer> collectorrange = BUILDER.define("collector_maxrange", 30);
+    public static ModConfigSpec.ConfigValue<String> comment13 = BUILDER.define("comment13", "Change the Feeder max feeding Range:");
+    public static ModConfigSpec.ConfigValue<Integer> feederrange = BUILDER.define("feeder_maxrange", 30);
 
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_4;
-
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_5;
-
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_6;
-
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_7;
-
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_8;
-    public static ModConfigSpec.ConfigValue<Integer> xp_tier_9;
-
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_1;
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_2;
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_3;
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_4;
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_5;
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_6;
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_7;
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_8;
-    public static ModConfigSpec.ConfigValue<Integer> maxlevel_tier_9;
+    public static final ModConfigSpec SPEC = BUILDER.build();
 
 
 
+    private static final ModConfigSpec.Builder ClientBUILDER = new ModConfigSpec.Builder();
 
-    public static void initmycfg(ModConfigSpec.Builder mycfg) {
-        mycfg.push("Roost Ultimate Config");
-        mycfg.comment("Production Speed in Seconds");
-        roost_speed_tick = mycfg.define("Roost Speed", 20);
-        breed_speed_tick = mycfg.define("Breeder Speed", 30);
-        training_speed_tick = mycfg.define("Trainer Speed", 25);
-        extractor_speedtimer = mycfg.define("Soul Extractor Speed", 10);
-        soulbreed_speedtimer = mycfg.define("Soul Breeder Speed", 40);
-        mycfg.comment("Roost XP - 0.1F = 10% of Trainer - 0.0F = Disabled");
-        roostxp = mycfg.define("Roost XP", 0.1f);
-        mycfg.comment("Seeds Tier 1-9 and Vanilla is the XP Amount for the tiered Seeds.");
-        trainingxp_perfood = mycfg.define("Vanilla Seeds", 20);
-        food_xp_tier_1 = mycfg.define("Seeds Tier 1", 100);
-        food_xp_tier_2 = mycfg.define("Seeds Tier 2", 125);
-        food_xp_tier_3 = mycfg.define("Seeds Tier 3", 150);
-        food_xp_tier_4 = mycfg.define("Seeds Tier 4", 300);
-        food_xp_tier_5 = mycfg.define("Seeds Tier 5", 350);
-        food_xp_tier_6 = mycfg.define("Seeds Tier 6", 500);
-        food_xp_tier_7 = mycfg.define("Seeds Tier 7", 700);
-        food_xp_tier_8 = mycfg.define("Seeds Tier 8", 1000);
-        food_xp_tier_9 = mycfg.define("Seeds Tier 9", 2500);
-        mycfg.comment("XP Tier 1-9 - is the needed XP Amount for a levelup for each Tier of Chicken.");
-        xp_tier_1 = mycfg.define("XP Tier 1", 500);
-        xp_tier_2 = mycfg.define("XP Tier 2", 2500);
-        xp_tier_3 = mycfg.define("XP Tier 3", 12500);
-        xp_tier_4 = mycfg.define("XP Tier 4", 62500);
-        xp_tier_5 = mycfg.define("XP Tier 5", 125000);
-        xp_tier_6 = mycfg.define("XP Tier 6", 250000);
-        xp_tier_7 = mycfg.define("XP Tier 7", 325000);
-        xp_tier_8 = mycfg.define("XP Tier 8", 400000);
-        xp_tier_9 = mycfg.define("XP Tier 9", 500000);
-        mycfg.comment("Tier 1-9 - sets the maxlevel for each Tier of Chicken.");
-        maxlevel_tier_1 = mycfg.define("Max Level Tier 1", 60);
-        maxlevel_tier_2 = mycfg.define("Max Level Tier 2", 60);
-        maxlevel_tier_3 = mycfg.define("Max Level Tier 3", 60);
-        maxlevel_tier_4 = mycfg.define("Max Level Tier 4", 60);
-        maxlevel_tier_5 = mycfg.define("Max Level Tier 5", 60);
-        maxlevel_tier_6 = mycfg.define("Max Level Tier 6", 60);
-        maxlevel_tier_7 = mycfg.define("Max Level Tier 7", 60);
-        maxlevel_tier_8 = mycfg.define("Max Level Tier 8", 60);
-        maxlevel_tier_9 = mycfg.define("Max Level Tier 9", 60);
-        mycfg.pop();
-    }
+    public static ModConfigSpec.ConfigValue<String> cb = ClientBUILDER.define("cb", "Colorblindmode:");
+    public static ModConfigSpec.ConfigValue<Boolean> breeder_cb = ClientBUILDER.define("breeder_cb", false);
+    public static ModConfigSpec.ConfigValue<Boolean> trainer_cb = ClientBUILDER.define("trainer_cb", false);
+    public static ModConfigSpec.ConfigValue<Boolean> extractor_cb = ClientBUILDER.define("extractor_cb", false);
+    public static ModConfigSpec.ConfigValue<Boolean> roost_cb = ClientBUILDER.define("roost_cb", false);
+
+
+
+    public static final ModConfigSpec ClientSpec = ClientBUILDER.build();
 }

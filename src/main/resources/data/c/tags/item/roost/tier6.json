@@ -1,0 +1,31 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_enderium", "required": false },
+    { "id":"chicken_roost:c_manasteel", "required": false },
+    { "id":"chicken_roost:c_blitz", "required": false },
+    { "id":"chicken_roost:c_amethystbronze", "required": false },
+    { "id":"chicken_roost:c_hepatizon", "required": false },
+    { "id":"chicken_roost:c_rosegold", "required": false },
+    { "id":"chicken_roost:c_ruby", "required": false },
+    { "id":"chicken_roost:c_sapphire", "required": false },
+    { "id":"chicken_roost:c_slimesteel", "required": false },
+    { "id":"chicken_roost:c_brass", "required": false },
+    { "id":"chicken_roost:c_certusquartz", "required": false },
+    { "id":"chicken_roost:c_endereye", "required": false },
+    { "id":"chicken_roost:c_biofuel", "required": false },
+    { "id":"chicken_roost:c_uranium", "required": false },
+    { "id":"chicken_roost:c_tungsten", "required": false },
+    { "id":"chicken_roost:c_yellorium", "required": false },
+    { "id":"chicken_roost:c_cobald", "required": false },
+    { "id":"chicken_roost:c_prismarinecrystal", "required": false },
+    { "id":"chicken_roost:c_emeradiccrystal", "required": false },
+    { "id":"chicken_roost:c_pulsatingiron", "required": false },
+    { "id":"chicken_roost:c_purpleslime", "required": false },
+    { "id":"chicken_roost:c_vibrantalloy", "required": false },
+    { "id":"chicken_roost:c_darkgem", "required": false },
+    { "id":"chicken_roost:c_ardite", "required": false },
+    { "id":"chicken_roost:c_xp", "required": false }
+
+  ]
+}

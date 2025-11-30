@@ -1,33 +1,18 @@
 {
   "variants": {
-    "facing=north,mynewstate=1": {
+    "facing=north": {
       "model": "chicken_roost:block/breeder_mynewstate"
     },
-    "facing=east,mynewstate=1": {
+    "facing=east": {
       "model": "chicken_roost:block/breeder_mynewstate",
       "y": 90
     },
-    "facing=south,mynewstate=1": {
+    "facing=south": {
       "model": "chicken_roost:block/breeder_mynewstate",
       "y": 180
     },
-    "facing=west,mynewstate=1": {
+    "facing=west": {
       "model": "chicken_roost:block/breeder_mynewstate",
-      "y": 270
-    },
-    "facing=north,mynewstate=2": {
-      "model": "chicken_roost:block/breederclosed_mynewstate"
-    },
-    "facing=east,mynewstate=2": {
-      "model": "chicken_roost:block/breederclosed_mynewstate",
-      "y": 90
-    },
-    "facing=south,mynewstate=2": {
-      "model": "chicken_roost:block/breederclosed_mynewstate",
-      "y": 180
-    },
-    "facing=west,mynewstate=2": {
-      "model": "chicken_roost:block/breederclosed_mynewstate",
       "y": 270
     }
   }

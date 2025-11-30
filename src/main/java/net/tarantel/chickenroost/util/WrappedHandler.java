@@ -2,16 +2,10 @@ package net.tarantel.chickenroost.util;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-
 import javax.annotation.Nonnull;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-/*
- * WrappedHandler by noeppi_noeppi
- * under https://github.com/ModdingX/LibX/blob/1.19/LICENSE
- *
- */
 public class WrappedHandler implements IItemHandlerModifiable {
     private final IItemHandlerModifiable handler;
     private final Predicate<Integer> extract;

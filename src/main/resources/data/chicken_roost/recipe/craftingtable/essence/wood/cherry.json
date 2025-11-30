@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0",
+    "0",
+    "0"
+  ],
+  "key": {
+    "0": {
+      "item": "chicken_roost:wood_essence"
+    }
+  },
+  "result": {
+    "id": "minecraft:cherry_log",
+    "count": 6
+  }
+}

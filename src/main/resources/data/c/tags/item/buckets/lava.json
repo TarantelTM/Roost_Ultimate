@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:lava_egg", "required": false }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "chicken_roost:item/gray_egg"
+  }
+}

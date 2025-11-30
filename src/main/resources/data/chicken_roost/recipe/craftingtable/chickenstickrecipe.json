@@ -1,0 +1,24 @@
+{
+  "group": "roost",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0",
+    "1",
+    "2"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:egg"
+    },
+    "1": {
+      "item": "minecraft:stick"
+    },
+    "2": {
+      "item": "minecraft:feather"
+    }
+  },
+  "result": {
+    "id": "chicken_roost:chicken_stick",
+    "count": 1
+  }
+}

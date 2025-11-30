@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "group": "roost",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " 0 ",
+    "010",
+    " 0 "
+  ],
+  "key": {
+    "0": {
+      "item": "ae2:controller"
+    },
+    "1": {
+      "item": "chicken_roost:roost"
+    }
+  },
+  "result": {
+    "id": "chicken_roost:chickenstorage",
+    "count": 1
+  }
+}

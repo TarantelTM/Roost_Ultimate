@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "jungle",
+  "spawners": {
+    "type": "chicken_roost:c_junglewood",
+    "maxCount": 6,
+    "minCount": 2,
+    "weight": 12
+  }
+}
