@@ -558,5 +558,20 @@
   "item.chicken_roost.c_awakeneddraconium": "Awakened Draconium Chicken",
   "entity.chicken_roost.c_awakeneddraconium": "Awakened Draconium Chicken",
   "item.chicken_roost.c_xp": "XP Chicken",
-  "entity.chicken_roost.c_xp": "XP Chicken"
+  "entity.chicken_roost.c_xp": "XP Chicken",
+  "roost_chicken.biomeinfo.nospawn": "Spawns in: No Spawn found, maybe check Recipes",
+  "roost_chicken.biomeinfo.spawn": "Spawns in:",
+  "roost_chicken.chickeninfo.tier": "§1Tier:§9 %s",
+  "roost_chicken.chickeninfo.level": "§eLevel:§9 %s/%s",
+  "roost_chicken.chickeninfo.xp": "§aXP:§9 %s/%s",
+  "roost_chicken.interface.output.name": "Output: %s",
+  "roost_chicken.interface.output.on": "ON",
+  "roost_chicken.interface.output.off": "OFF",
+  "roost_chicken.interface.output.info": "Enable/Disable auto output in any Storage Block below.",
+  "roost_chicken.interface.uiswitch.info": "Vanilla Mode Switch.",
+  "roost_chicken.interface.config": "Config",
+  "roost_chicken.interface.nearbyroosts": "Nearby Roosts (%s)",
+  "roost_chicken.interface.range": "Range: %s",
+  "roost_chicken.interface.name": "Name",
+  "roost_chicken.interface.setname": "Set Name"
 }
