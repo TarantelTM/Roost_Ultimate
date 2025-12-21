@@ -574,5 +574,5 @@
   "roost_chicken.interface.range": "Alcance: %s",
   "roost_chicken.interface.name": "Nome",
   "roost_chicken.interface.setname": "Definir nome",
-  "block.chicken_roost.slime_block": "Galinha de Slime"
+  "block.chicken_roost.slime_block": "Bloco de Slime de Galinha"
 }
