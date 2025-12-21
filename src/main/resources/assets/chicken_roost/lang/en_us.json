@@ -573,5 +573,6 @@
   "roost_chicken.interface.nearbyroosts": "Nearby Roosts (%s)",
   "roost_chicken.interface.range": "Range: %s",
   "roost_chicken.interface.name": "Name",
-  "roost_chicken.interface.setname": "Set Name"
+  "roost_chicken.interface.setname": "Set Name",
+  "block.chicken_roost.slime_block": "Chicken Slime"
 }
