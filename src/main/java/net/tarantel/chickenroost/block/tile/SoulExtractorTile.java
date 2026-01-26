@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -24,11 +25,15 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.tarantel.chickenroost.api.ICollectorTarget;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.handler.SoulExtractorHandler;
 import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.networking.SyncAutoOutputPayload;
 import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.recipes.SoulExtractorRecipe;
 import net.tarantel.chickenroost.util.Config;
@@ -38,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-public class SoulExtractorTile extends BlockEntity implements MenuProvider {
+public class SoulExtractorTile extends BlockEntity implements MenuProvider, ICollectorTarget {
 
     public final ItemStackHandler itemHandler = new ItemStackHandler(2) {
         @Override
@@ -62,6 +67,65 @@ public class SoulExtractorTile extends BlockEntity implements MenuProvider {
             };
         }
     };
+
+    private static final int CHICKEN_SLOT = 0;
+
+    @Override
+    public int getReadSlot() {
+        return CHICKEN_SLOT;
+    }
+    @Override
+    public @Nullable IItemHandler getItemHandler() {
+        return ccView;
+    }
+
+    private final IItemHandler ccView = new IItemHandler() {
+        @Override
+        public int getSlots() {
+            return itemHandler.getSlots();
+        }
+
+        @Override
+        public @NotNull ItemStack getStackInSlot(int slot) {
+            return itemHandler.getStackInSlot(slot);
+        }
+
+        @Override
+        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            return stack;
+        }
+
+        @Override
+        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return itemHandler.getSlotLimit(slot);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return itemHandler.isItemValid(slot, stack);
+        }
+    };
+
+    private String customName = "EXTRACTOR";
+
+    public void setCustomName(String name) {
+        if (name == null) name = "";
+        this.customName = name;
+        setChanged();
+        if (this.level != null && !this.level.isClientSide) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
+    }
+
+    public String getCustomName() {
+        return this.customName;
+    }
+
 
 
     public ItemStack getRenderStack() {
@@ -153,6 +217,10 @@ public class SoulExtractorTile extends BlockEntity implements MenuProvider {
     public void saveAdditional(CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
         nbt.put("inventory", itemHandler.serializeNBT(lookup));
         nbt.putInt("soul_extractor.progress", this.progress);
+        nbt.putBoolean("AutoOutput", autoOutput);
+        nbt.putBoolean("LastRedstonePowered", lastRedstonePowered);
+        nbt.putBoolean("AutoOutputByRedstone", autoOutputByRedstone);
+        nbt.putString("soul_extractor.custom_name", this.customName);
         super.saveAdditional(nbt, lookup);
     }
 
@@ -161,6 +229,24 @@ public class SoulExtractorTile extends BlockEntity implements MenuProvider {
         super.loadAdditional(nbt, lookup);
         itemHandler.deserializeNBT(lookup, nbt.getCompound("inventory"));
         progress = nbt.getInt("soul_extractor.progress");
+        this.customName = nbt.getString("soul_extractor.custom_name");
+        if (nbt.contains("AutoOutput")) {
+            this.autoOutput = nbt.getBoolean("AutoOutput");
+        } else {
+            this.autoOutput = false;
+        }
+        if (nbt.contains("LastRedstonePowered")) {
+            this.lastRedstonePowered = nbt.getBoolean("LastRedstonePowered");
+        } else {
+            this.lastRedstonePowered = false;
+        }
+
+        if(nbt.contains("AutoOutputByRedstone")){
+            this.autoOutputByRedstone = nbt.getBoolean("AutoOutputByRedstone");
+        } else {
+            this.autoOutputByRedstone = false;
+        }
+
     }
 
     public void drops() {
@@ -178,11 +264,70 @@ public class SoulExtractorTile extends BlockEntity implements MenuProvider {
         Containers.dropContents(Objects.requireNonNull(this.level), this.worldPosition, block);
     }
 
+    private boolean autoOutput = false;
+
+
+    private boolean lastRedstonePowered = false;
+    private boolean autoOutputByRedstone = false;
+
+    public boolean isAutoOutputEnabled() {
+        return autoOutput;
+    }
+
+    public void setAutoOutputEnabled(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = false;
+
+        if (level != null && !level.isClientSide) {
+            setChanged(level, worldPosition, getBlockState());
+        }
+    }
+
+    public void setAutoOutputFromGui(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = false;
+        syncToClients();
+    }
+
+
+    private void setAutoOutputFromRedstone(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = enabled;
+        syncToClients();
+    }
+
+    private void syncToClients() {
+        if (level instanceof ServerLevel serverLevel) {
+            PacketDistributor.sendToPlayersTrackingChunk(
+                    serverLevel,
+                    serverLevel.getChunkAt(worldPosition).getPos(),
+                    new SyncAutoOutputPayload(worldPosition, autoOutput)
+            );
+        }
+        setChanged();
+    }
 
     public static void tick(Level level, BlockPos pos, BlockState state, SoulExtractorTile pEntity) {
         if(level.isClientSide()) {
             return;
         }
+
+        boolean powered = level.hasNeighborSignal(pos);
+
+        if (powered && !pEntity.lastRedstonePowered) {
+            if (!pEntity.autoOutput) {
+                pEntity.setAutoOutputFromRedstone(true);
+            }
+        }
+
+        if (!powered && pEntity.lastRedstonePowered) {
+            if (pEntity.autoOutputByRedstone) {
+                pEntity.setAutoOutputFromRedstone(false);
+            }
+        }
+
+        pEntity.lastRedstonePowered = powered;
+
         setChanged(level, pos, state);
         if(hasRecipe(pEntity)) {
             pEntity.progress++;
@@ -193,7 +338,57 @@ public class SoulExtractorTile extends BlockEntity implements MenuProvider {
             pEntity.resetProgress();
             setChanged(level, pos, state);
         }
+
+        if(pEntity.isAutoOutputEnabled()) {
+            tryPushOutputDown(level, pos, state, pEntity);
+        }
     }
+
+    public void setAutoOutputClient(boolean enabled) {
+        this.autoOutput = enabled;
+    }
+
+    private static void tryPushOutputDown(Level level, BlockPos pos, BlockState state, SoulExtractorTile tile) {
+        ItemStack outputStack = tile.itemHandler.getStackInSlot(1);
+        if (outputStack.isEmpty()) {
+            return;
+        }
+
+        IItemHandler belowHandler = level.getCapability(
+                Capabilities.ItemHandler.BLOCK,
+                pos.below(),
+                Direction.UP
+        );
+
+        if (belowHandler == null) {
+            return;
+        }
+
+        ItemStack remaining = outputStack.copy();
+
+        for (int slot = 0; slot < belowHandler.getSlots() && !remaining.isEmpty(); slot++) {
+            remaining = belowHandler.insertItem(slot, remaining, false);
+        }
+
+        if (remaining.getCount() == outputStack.getCount()) {
+            return;
+        }
+
+        int moved = outputStack.getCount() - remaining.getCount();
+
+        ItemStack newStack = outputStack.copy();
+        newStack.shrink(moved);
+
+        if (newStack.isEmpty()) {
+            newStack = ItemStack.EMPTY;
+        }
+
+        tile.itemHandler.setStackInSlot(1, newStack);
+        setChanged(level, pos, state);
+    }
+
+
+
     private void resetProgress() {
         this.progress = 0;
     }

@@ -8,9 +8,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.tarantel.chickenroost.block.tile.CollectorTile;
-import net.tarantel.chickenroost.block.tile.FeederTile;
-import net.tarantel.chickenroost.block.tile.RoostTile;
+import net.tarantel.chickenroost.api.ICollectorTarget;
+import net.tarantel.chickenroost.block.tile.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.tarantel.chickenroost.item.base.ChickenSeedBase;
@@ -43,12 +42,123 @@ public final class ModNetworking {
         registrar.playToServer(SetFeederRoostSeedPayload.TYPE, SetFeederRoostSeedPayload.STREAM_CODEC,
                 ModNetworking::handleSetFeederRoostSeed);
 
+        registrar.playToServer(SetFeederStackModePayload.TYPE, SetFeederStackModePayload.STREAM_CODEC,
+                ModNetworking::handleSetFeederStackMode);
 
         registrar.playToServer(
-                SetRoostNamePayload.TYPE,
-                SetRoostNamePayload.STREAM_CODEC,
-                ModNetworking::handleSetRoostName
+                SetAutoOutputPayload.TYPE,
+                SetAutoOutputPayload.STREAM_CODEC,
+                ModNetworking::handleSetAutoOutput
         );
+
+        registrar.playToServer(
+                SetNamePayload.TYPE,
+                SetNamePayload.STREAM_CODEC,
+                ModNetworking::handleSetName
+        );
+
+        registrar.playToServer(
+                SetFeederRoundRobinPayload.TYPE,
+                SetFeederRoundRobinPayload.STREAM_CODEC,
+                ModNetworking::handleSetFeederRoundRobin
+        );
+
+        registrar.playToClient(
+                SyncAutoOutputPayload.TYPE,
+                SyncAutoOutputPayload.STREAM_CODEC,
+                ModNetworking::handleSyncAutoOutput
+        );
+
+        registrar.playToServer(
+                SetTrainerLevelPayload.TYPE,
+                SetTrainerLevelPayload.STREAM_CODEC,
+                ModNetworking::handleSetTrainerLevel
+        );
+
+        registrar.playToClient(
+                SyncTrainerLevelPayload.TYPE,
+                SyncTrainerLevelPayload.STREAM_CODEC,
+                ModNetworking::handleSyncTrainerLevel
+        );
+    }
+
+    public static void handleSyncTrainerLevel(
+            final SyncTrainerLevelPayload msg,
+            final IPayloadContext ctx
+    ) {
+        ctx.enqueueWork(() -> {
+            if (!(ctx.player().level().isClientSide())) return;
+
+            BlockEntity be = ctx.player().level().getBlockEntity(msg.pos());
+            if (be instanceof TrainerTile trainer) {
+                trainer.setAutoOutputLevelClient(msg.level());
+            }
+        });
+    }
+
+
+    public static void handleSetTrainerLevel(SetTrainerLevelPayload msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            var player = ctx.player();
+            if (player == null) return;
+
+            var level = player.level();
+            var be = level.getBlockEntity(msg.pos());
+            if (be instanceof TrainerTile trainer) {
+                trainer.setAutoOutputLevel(msg.level());
+            }
+        });
+    }
+
+    private static void handleSyncAutoOutput(
+            final SyncAutoOutputPayload msg,
+            final IPayloadContext ctx
+    ) {
+        ctx.enqueueWork(() -> {
+            if (!(ctx.player().level().isClientSide())) return;
+
+            BlockEntity be = ctx.player().level().getBlockEntity(msg.pos());
+            if (be instanceof ICollectorTarget roost) {
+                roost.setAutoOutputClient(msg.enabled());
+            }
+        });
+    }
+
+
+    private static void handleSetFeederStackMode(final SetFeederStackModePayload msg, final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
+            ServerLevel level = player.serverLevel();
+            BlockEntity be = level.getBlockEntity(msg.feederPos());
+            if (be instanceof FeederTile feeder) {
+                feeder.setStackSendModeById(msg.mode());
+            }
+        });
+    }
+
+    private static void handleSetFeederRoundRobin(final SetFeederRoundRobinPayload msg, final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (!(ctx.player() instanceof ServerPlayer sp)) return;
+            if (!(sp.level() instanceof ServerLevel level)) return;
+
+            BlockEntity be = level.getBlockEntity(msg.feederPos());
+            if (!(be instanceof FeederTile feeder)) return;
+
+            feeder.setRoundRobinEnabled(msg.enabled());
+        });
+    }
+
+
+    private static void handleSetAutoOutput(final SetAutoOutputPayload msg, final IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
+            ServerLevel level = player.serverLevel();
+            BlockEntity be = level.getBlockEntity(msg.pos());
+            if (be instanceof ICollectorTarget roost) {
+                roost.setAutoOutputFromGui(msg.enabled());
+
+            }
+        });
     }
 
     private static void handleSetCollectorRoostActive(final SetCollectorRoostActivePayload msg, final IPayloadContext ctx) {
@@ -96,19 +206,17 @@ public final class ModNetworking {
         });
     }
 
-    private static void handleSetRoostName(final SetRoostNamePayload msg, final IPayloadContext ctx) {
+    private static void handleSetName(final SetNamePayload msg, final IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) ctx.player();
 
             ServerLevel level = player.serverLevel();
             BlockEntity be = level.getBlockEntity(msg.pos());
-            if (be instanceof RoostTile roost) {
+            if (be instanceof ICollectorTarget roost) {
                 roost.setCustomName(msg.name());
             }
         });
     }
-
-
 
     private static void handleSetFeederRoostSeed(final SetFeederRoostSeedPayload msg, final IPayloadContext ctx) {
         ctx.enqueueWork(() -> {

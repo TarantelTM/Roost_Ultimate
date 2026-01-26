@@ -44,11 +44,20 @@ public record BreederRecipe(ItemStack output, Ingredient ingredient0, Ingredient
         if (pLevel.isClientSide()) {
             return false;
         }
-        if (Config.enablebothways.get()) {
-            return (ingredient0.test(pContainer.getItem(1)) && ingredient1.test(pContainer.getItem(0)) && ingredient2.test(pContainer.getItem(2))) || (ingredient0.test(pContainer.getItem(1)) && ingredient1.test(pContainer.getItem(2)) && ingredient2.test(pContainer.getItem(0)));
-        } else {
-            return ingredient0.test(pContainer.getItem(1)) && ingredient1.test(pContainer.getItem(0)) && ingredient2.test(pContainer.getItem(2));
+        if (ChickenRoostMod.CONFIG.BreederSeeds) {
+            if (Config.enablebothways.get()) {
+                return (ingredient0.test(pContainer.getItem(1)) && ingredient1.test(pContainer.getItem(0)) && ingredient2.test(pContainer.getItem(2))) || (ingredient0.test(pContainer.getItem(1)) && ingredient1.test(pContainer.getItem(2)) && ingredient2.test(pContainer.getItem(0)));
+            } else {
+                return ingredient0.test(pContainer.getItem(1)) && ingredient1.test(pContainer.getItem(0)) && ingredient2.test(pContainer.getItem(2));
+            }
+        }else {
+            if (Config.enablebothways.get()) {
+                return (ingredient1.test(pContainer.getItem(0)) && ingredient2.test(pContainer.getItem(2))) || (ingredient1.test(pContainer.getItem(2)) && ingredient2.test(pContainer.getItem(0)));
+            } else {
+                return ingredient1.test(pContainer.getItem(0)) && ingredient2.test(pContainer.getItem(2));
+            }
         }
+
 
     }
 

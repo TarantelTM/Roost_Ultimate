@@ -27,8 +27,6 @@ import java.util.List;
 public class JEIPlugin implements IModPlugin {
     public static mezz.jei.api.recipe.RecipeType<ThrowEggRecipe> EGG_TYPE =
             new mezz.jei.api.recipe.RecipeType<>(EggRecipeCategory.UID, ThrowEggRecipe.class);
-    public static mezz.jei.api.recipe.RecipeType<SoulBreederRecipe> BREEDING_TYPE =
-            new mezz.jei.api.recipe.RecipeType<>(SoulBreedingRecipeCategory.UID, SoulBreederRecipe.class);
     public static mezz.jei.api.recipe.RecipeType<BreederRecipe> BASIC_BREEDING_TYPE =
             new mezz.jei.api.recipe.RecipeType<>(BreederRecipeCategory.UID, BreederRecipe.class);
     public static mezz.jei.api.recipe.RecipeType<SoulExtractorRecipe> SOUL_EXTRACTION_TYPE =
@@ -50,7 +48,6 @@ public class JEIPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registration) {
     	var jeiHelpers = registration.getJeiHelpers();
         registration.addRecipeCategories(new EggRecipeCategory(jeiHelpers.getGuiHelper()));
-        registration.addRecipeCategories(new SoulBreedingRecipeCategory(jeiHelpers.getGuiHelper()));
         registration.addRecipeCategories(new BreederRecipeCategory(jeiHelpers.getGuiHelper()));
         registration.addRecipeCategories(new SoulExtractionRecipeCategory(jeiHelpers.getGuiHelper()));
 
@@ -67,8 +64,6 @@ public class JEIPlugin implements IModPlugin {
             var manager = world.getRecipeManager();
             registration.addRecipes(EggRecipeCategory.RECIPE_TYPE,
                     getRecipe(manager, ModRecipes.THROW_EGG_TYPE.get()));
-            registration.addRecipes(SoulBreedingRecipeCategory.RECIPE_TYPE,
-                    getRecipe(manager, ModRecipes.SOUL_BREEDING_TYPE.get()));
             registration.addRecipes(BreederRecipeCategory.RECIPE_TYPE,
                     getRecipe(manager, ModRecipes.BASIC_BREEDING_TYPE.get()));
             registration.addRecipes(SoulExtractionRecipeCategory.RECIPE_TYPE,
@@ -94,8 +89,6 @@ public class JEIPlugin implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration){
         var egg = new ItemStack(ModItems.CHICKEN_STICK.get());
         registration.addRecipeCatalyst(egg, EggRecipeCategory.RECIPE_TYPE);
-    	var soulbreeder = new ItemStack(ModBlocks.SOUL_BREEDER.get());
-    	registration.addRecipeCatalyst(soulbreeder, SoulBreedingRecipeCategory.RECIPE_TYPE);
     	var basicbreeder = new ItemStack(ModBlocks.BREEDER.get());
     	registration.addRecipeCatalyst(basicbreeder, BreederRecipeCategory.RECIPE_TYPE);
     	var soulextractor = new ItemStack(ModBlocks.SOUL_EXTRACTOR.get());
@@ -112,11 +105,10 @@ public class JEIPlugin implements IModPlugin {
     @Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration)
 	{
-        registration.addRecipeClickArea(SoulBreederScreen.class, 59, 41, 40, 10, JEIPlugin.BREEDING_TYPE);
-        registration.addRecipeClickArea(BreederScreen.class, 53, 30, 40, 10, JEIPlugin.BASIC_BREEDING_TYPE);
+        registration.addRecipeClickArea(BreederScreen.class, 53, 41, 40, 10, JEIPlugin.BASIC_BREEDING_TYPE);
         registration.addRecipeClickArea(SoulExtractorScreen.class, 59, 41, 40, 10, JEIPlugin.SOUL_EXTRACTION_TYPE);
         registration.addRecipeClickArea(TrainerScreen.class, 59, 41, 40, 10, JEIPlugin.TRAINER_TYPE);
-        registration.addRecipeClickArea(RoostScreen.class, 59, 41, 40, 10, JEIPlugin.ROOST_TYPE);
+        registration.addRecipeClickArea(RoostScreen.class, 59, 25, 40, 10, JEIPlugin.ROOST_TYPE);
 
 	}
 }

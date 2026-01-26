@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -24,21 +25,25 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.api.ICollectorTarget;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.handler.BreederHandler;
 import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.networking.SyncAutoOutputPayload;
 import net.tarantel.chickenroost.recipes.BreederRecipe;
 import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
+import net.neoforged.neoforge.energy.EnergyStorage;
 import java.util.*;
 
-public class BreederTile extends BlockEntity implements MenuProvider {
+public class BreederTile extends BlockEntity implements MenuProvider, ICollectorTarget {
 
     private boolean migrating = false;
     public int progress = 0;
@@ -76,6 +81,67 @@ public class BreederTile extends BlockEntity implements MenuProvider {
             };
         }
     };
+
+
+    private static final int CHICKEN_SLOT = 0;
+
+    @Override
+    public int getReadSlot() {
+        return CHICKEN_SLOT;
+    }
+
+    @Override
+    public @Nullable IItemHandler getItemHandler() {
+        return ccView;
+    }
+
+    private final IItemHandler ccView = new IItemHandler() {
+        @Override
+        public int getSlots() {
+            return itemHandler.getSlots();
+        }
+
+        @Override
+        public @NotNull ItemStack getStackInSlot(int slot) {
+            return itemHandler.getStackInSlot(slot);
+        }
+
+        @Override
+        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            return stack;
+        }
+
+        @Override
+        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return itemHandler.getSlotLimit(slot);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return itemHandler.isItemValid(slot, stack);
+        }
+    };
+
+    private String customName = "BREEDER";
+
+    public void setCustomName(String name) {
+        if (name == null) name = "";
+        this.customName = name;
+        setChanged();
+        if (this.level != null && !this.level.isClientSide) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
+    }
+
+    public String getCustomName() {
+        return this.customName;
+    }
+
 
 
     public ItemStack currentOutput = ItemStack.EMPTY;
@@ -189,13 +255,17 @@ public class BreederTile extends BlockEntity implements MenuProvider {
     public void saveAdditional(CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
         nbt.put("inventory", itemHandler.serializeNBT(lookup));
         nbt.putInt("breeder.progress", this.progress);
+        nbt.putBoolean("AutoOutput", autoOutput);
+        nbt.putBoolean("LastRedstonePowered", lastRedstonePowered);
+        nbt.putBoolean("AutoOutputByRedstone", autoOutputByRedstone);
+        nbt.putString("breeder.custom_name", this.customName);
         super.saveAdditional(nbt, lookup);
     }
 
     @Override
     public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
         super.loadAdditional(nbt, lookup);
-
+        this.customName = nbt.getString("breeder.custom_name");
         migrating = true;
         try {
             if (nbt.contains("inventory")) {
@@ -217,6 +287,24 @@ public class BreederTile extends BlockEntity implements MenuProvider {
         } finally {
             migrating = false;
         }
+
+        if (nbt.contains("AutoOutput")) {
+            this.autoOutput = nbt.getBoolean("AutoOutput");
+        } else {
+            this.autoOutput = false;
+        }
+        if (nbt.contains("LastRedstonePowered")) {
+            this.lastRedstonePowered = nbt.getBoolean("LastRedstonePowered");
+        } else {
+            this.lastRedstonePowered = false;
+        }
+
+        if(nbt.contains("AutoOutputByRedstone")){
+            this.autoOutputByRedstone = nbt.getBoolean("AutoOutputByRedstone");
+        } else {
+            this.autoOutputByRedstone = false;
+        }
+
     }
 
 
@@ -250,11 +338,69 @@ public class BreederTile extends BlockEntity implements MenuProvider {
         }
         return false;
     }
+    private boolean autoOutput = false;
+
+
+    private boolean lastRedstonePowered = false;
+    private boolean autoOutputByRedstone = false;
+
+    public boolean isAutoOutputEnabled() {
+        return autoOutput;
+    }
+
+    public void setAutoOutputEnabled(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = false;
+
+        if (level != null && !level.isClientSide) {
+            setChanged(level, worldPosition, getBlockState());
+        }
+    }
+
+    public void setAutoOutputFromGui(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = false;
+        syncToClients();
+    }
+
+
+    private void setAutoOutputFromRedstone(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = enabled;
+        syncToClients();
+    }
+
+    private void syncToClients() {
+        if (level instanceof ServerLevel serverLevel) {
+            PacketDistributor.sendToPlayersTrackingChunk(
+                    serverLevel,
+                    serverLevel.getChunkAt(worldPosition).getPos(),
+                    new SyncAutoOutputPayload(worldPosition, autoOutput)
+            );
+        }
+        setChanged();
+    }
 
     public static void tick(Level levelL, BlockPos pos, BlockState state, BreederTile pEntity) {
         if(levelL.isClientSide()) {
             return;
         }
+
+        boolean powered = levelL.hasNeighborSignal(pos);
+
+        if (powered && !pEntity.lastRedstonePowered) {
+            if (!pEntity.autoOutput) {
+                pEntity.setAutoOutputFromRedstone(true);
+            }
+        }
+
+        if (!powered && pEntity.lastRedstonePowered) {
+            if (pEntity.autoOutputByRedstone) {
+                pEntity.setAutoOutputFromRedstone(false);
+            }
+        }
+
+        pEntity.lastRedstonePowered = powered;
 
         setChanged(levelL, pos, state);
 
@@ -293,7 +439,74 @@ public class BreederTile extends BlockEntity implements MenuProvider {
             setChanged(levelL, pos, state);
         }
 
+        if(pEntity.isAutoOutputEnabled()) {
+
+            tryPushBreederOutputsDown(levelL, pos, state, pEntity);
+        }
+
     }
+
+    public void setAutoOutputClient(boolean enabled) {
+        this.autoOutput = enabled;
+    }
+
+
+
+    private static void tryPushBreederOutputsDown(Level level, BlockPos pos, BlockState state, BreederTile tile) {
+
+        IItemHandler belowHandler = level.getCapability(
+                Capabilities.ItemHandler.BLOCK,
+                pos.below(),
+                Direction.UP
+        );
+
+        if (belowHandler == null) {
+            return;
+        }
+
+        boolean changed = false;
+
+
+        for (int outputSlot = 3; outputSlot <= 11; outputSlot++) {
+            ItemStack stackInSlot = tile.itemHandler.getStackInSlot(outputSlot);
+            if (stackInSlot.isEmpty()) {
+                continue;
+            }
+
+            ItemStack remaining = stackInSlot.copy();
+
+
+            for (int targetSlot = 0; targetSlot < belowHandler.getSlots() && !remaining.isEmpty(); targetSlot++) {
+                remaining = belowHandler.insertItem(targetSlot, remaining, false);
+            }
+
+
+            if (remaining.getCount() == stackInSlot.getCount()) {
+                continue;
+            }
+
+
+            int moved = stackInSlot.getCount() - remaining.getCount();
+
+
+            ItemStack newStack = stackInSlot.copy();
+            newStack.shrink(moved);
+
+            if (newStack.isEmpty()) {
+                newStack = ItemStack.EMPTY;
+            }
+
+            tile.itemHandler.setStackInSlot(outputSlot, newStack);
+            changed = true;
+        }
+
+        if (changed) {
+            setChanged(level, pos, state);
+        }
+    }
+
+
+
 
     private void resetProgress() {
 
@@ -341,15 +554,27 @@ public class BreederTile extends BlockEntity implements MenuProvider {
                     int toInsert = Math.min(spaceLeft, chickenOutput.getCount());
 
 
-                    pEntity.itemHandler.extractItem(0, 0, true);
-                    pEntity.itemHandler.extractItem(2, 0, true);
-                    pEntity.itemHandler.extractItem(1, 1, false);
+                    if(ChickenRoostMod.CONFIG.BreederSeeds) {
+                        pEntity.itemHandler.extractItem(0, 0, true);
+                        pEntity.itemHandler.extractItem(2, 0, true);
+                        pEntity.itemHandler.extractItem(1, 1, false);
 
 
-                    stackInSlot.grow(toInsert);
-                    pEntity.itemHandler.setStackInSlot(slot, stackInSlot);
+                        stackInSlot.grow(toInsert);
+                        pEntity.itemHandler.setStackInSlot(slot, stackInSlot);
 
-                    pEntity.resetProgress();
+                        pEntity.resetProgress();
+                    }else {
+                        pEntity.itemHandler.extractItem(0, 0, true);
+                        pEntity.itemHandler.extractItem(2, 0, true);
+
+
+
+                        stackInSlot.grow(toInsert);
+                        pEntity.itemHandler.setStackInSlot(slot, stackInSlot);
+
+                        pEntity.resetProgress();
+                    }
                     return;
                 }
             }
@@ -358,14 +583,24 @@ public class BreederTile extends BlockEntity implements MenuProvider {
             for (int slot = 3; slot <= 11; slot++) {
                 if (pEntity.itemHandler.getStackInSlot(slot).isEmpty()) {
 
-                    pEntity.itemHandler.extractItem(0, 0, true);
-                    pEntity.itemHandler.extractItem(2, 0, true);
-                    pEntity.itemHandler.extractItem(1, 1, false);
+                    if(ChickenRoostMod.CONFIG.BreederSeeds) {
+                        pEntity.itemHandler.extractItem(0, 0, true);
+                        pEntity.itemHandler.extractItem(2, 0, true);
+                        pEntity.itemHandler.extractItem(1, 1, false);
 
 
-                    pEntity.itemHandler.setStackInSlot(slot, chickenOutput);
+                        pEntity.itemHandler.setStackInSlot(slot, chickenOutput);
 
-                    pEntity.resetProgress();
+                        pEntity.resetProgress();
+                    } else {
+                        pEntity.itemHandler.extractItem(0, 0, true);
+                        pEntity.itemHandler.extractItem(2, 0, true);
+
+
+                        pEntity.itemHandler.setStackInSlot(slot, chickenOutput);
+
+                        pEntity.resetProgress();
+                    }
                     return;
                 }
             }

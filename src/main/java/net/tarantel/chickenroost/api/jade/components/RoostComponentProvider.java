@@ -1,5 +1,6 @@
 package net.tarantel.chickenroost.api.jade.components;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,6 +26,7 @@ public enum RoostComponentProvider implements IBlockComponentProvider, IServerDa
     private RoostComponentProvider(){
 
     }
+
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
         CompoundTag data = accessor.getServerData();
@@ -44,6 +46,8 @@ public enum RoostComponentProvider implements IBlockComponentProvider, IServerDa
             int xp = data.getInt("xp");
             int maxlevel = data.getInt("maxlevel");
             int maxxp = data.getInt("maxxp");
+            boolean autooutput = data.getBoolean("autooutput");
+            String CustomName = data.getString("customname");
             IElementHelper helper = IElementHelper.get();
             IElementHelper helper2 = IElementHelper.get();
             tooltip.add(helper.item((ItemStack)inventory.get(0)).align(IElement.Align.LEFT));
@@ -53,10 +57,34 @@ public enum RoostComponentProvider implements IBlockComponentProvider, IServerDa
             tooltip.append(helper.item((ItemStack)inventory.get(2)).align(IElement.Align.LEFT));
             tooltip.add(helper.text(Component.literal("LvL: " + level + "/" + maxlevel)).align(IElement.Align.LEFT));
             tooltip.add(helper.text(Component.literal("XP: " + xp + "/" + maxxp)).align(IElement.Align.LEFT));
+            tooltip.add(
+                    helper2.text(
+                            Component.translatable("roost_chicken.interface.output.name.jade")
+                                    .withStyle(ChatFormatting.WHITE)
+                                    .append(
+                                            Component.translatable(
+                                                    autooutput
+                                                            ? "roost_chicken.interface.output.on"
+                                                            : "roost_chicken.interface.output.off"
+                                            ).withStyle(autooutput ? ChatFormatting.GREEN : ChatFormatting.RED)
+                                    )
+                    ).align(IElement.Align.LEFT)
+            );
+
             tooltip.add(helper2.text(Component.literal("\u00A7o" + "\u00A71" + "Roost Ultimate")).align(IElement.Align.LEFT));
             tooltip.remove(JadeIds.UNIVERSAL_ITEM_STORAGE);
             tooltip.remove(JadeIds.CORE_MOD_NAME);
             tooltip.remove(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE);
+            tooltip.remove(JadeIds.CORE_OBJECT_NAME);
+            Component translation = Component.translatable("block.chicken_roost.roost");
+
+            tooltip.add(0, helper.text(
+                    Component.empty()
+                            .append(translation)
+                            .append(" [" + CustomName + "]")
+                            .withStyle(style -> style.withBold(true))
+            ));
+
 
 
         }
@@ -70,12 +98,13 @@ public enum RoostComponentProvider implements IBlockComponentProvider, IServerDa
         RoostTile breeder = (RoostTile) accessor.getBlockEntity();
         if (breeder instanceof RoostTile furnace) {
 
+            data.putString("customname", breeder.getCustomName());
             ListTag items = new ListTag();
 
             for (int i = 0; i < 3; ++i) {
                 items.add(furnace.itemHandler.getStackInSlot(i).saveOptional(accessor.getLevel().registryAccess()));
             }
-
+            data.putBoolean("autooutput", breeder.isAutoOutputEnabled());
             if (!breeder.itemHandler.getStackInSlot(1).isEmpty()) {
 
 

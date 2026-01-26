@@ -23,7 +23,7 @@ repositories {
 }
 
 base {
-    archivesName = "roostultimate_"+ minecraft_version + "-modrinth"
+    archivesName = "roostultimate_"+ minecraft_version + "-curse"
 }
 //base {
 //    archivesName = "${project.mod_id}-${project.minecraft_version}"
@@ -93,9 +93,9 @@ repositories {
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
+    flatDir {
+        dir 'libs'
+    }
     maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
     maven { url = "https://mvn.devos.one/snapshots" } // Registrate
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
@@ -136,6 +136,17 @@ repositories {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven"
         url = "https://modmaven.dev"
+    }
+
+    maven {
+        url = "https://api.modrinth.com/maven"
+    }
+
+    maven {
+        url "https://maven.squiddev.cc"
+        content {
+            includeGroup("cc.tweaked")
+        }
     }
     mavenCentral()
 }
@@ -184,6 +195,13 @@ dependencies {
     compileOnly "curse.maven:oh-the-trees-youll-grow-962544:6607561"
     compileOnly "curse.maven:terrablender-neoforge-940057:6054947"
 
+
+    // Forge Gradle
+    compileOnly"cc.tweaked:cc-tweaked-${minecraft_version}-core-api:1.117.0"
+    compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:1.117.0"
+    implementation "cc.tweaked:cc-tweaked-${minecraft_version}-forge:1.117.0"
+    //compileOnly "maven.modrinth:cc-tweaked:hAW75xeY"
+    implementation "crlib:crlib:1.0.1"
 
     //implementation "curse.maven:spark-361579:5759671"
     //implementation("curse.maven:bucketlib-560156:5800757")

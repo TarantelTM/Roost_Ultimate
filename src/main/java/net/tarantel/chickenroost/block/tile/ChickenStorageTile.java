@@ -8,12 +8,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
@@ -84,6 +86,12 @@ public class ChickenStorageTile extends BlockEntity {
 
         return itemHandler;
     }
+
+    public static final BlockCapability<IItemHandler, @Nullable Direction> ITEM_HANDLER_BLOCK =
+            BlockCapability.create(
+                    ResourceLocation.fromNamespaceAndPath("mymod", "item_handler"),
+                    IItemHandler.class,
+                    Direction.class);
     @Override
     public void saveAdditional(CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
         nbt.put("inventory", itemHandler.serializeNBT(lookup));

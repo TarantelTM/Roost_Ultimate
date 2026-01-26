@@ -21,8 +21,11 @@ import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,9 +39,11 @@ import net.tarantel.chickenroost.recipes.BreederRecipe;
 import net.tarantel.chickenroost.util.ChickenConfig;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 public class BaseChickenEntity extends Chicken {
+
     private int eggTime;
 
     private final ItemStack dropStack;
@@ -52,14 +57,17 @@ public class BaseChickenEntity extends Chicken {
     private final Boolean IS_WITHER;
     private final int TIER;
 
+    private int newEggTime;
+
     public BaseChickenEntity(EntityType<BaseChickenEntity> type, Level world) {
         super(type, world);
         this.xpReward = 0;
         this.setNoAi(false);
         this.setPersistenceRequired();
         this.dropStack = ChickenConfig.getDropStack(type);
-        this.eggTime = ChickenConfig.getEggTime(type);
-
+        this.eggTime = this.random.nextInt(ChickenConfig.getEggTime(type)) + 6000;
+        this.newEggTime = this.random.nextInt(ChickenConfig.getEggTime(type)) + 6000;
+        this.configuredEggTime = this.random.nextInt(ChickenConfig.getEggTime(type)) + 6000;
         this.IS_FIRE = ChickenConfig.getIsFire(type);
         this.IS_PROJECTILE = ChickenConfig.getIsProjectile(type);
         this.IS_EXPLOSION = ChickenConfig.getIsExplosion(type);
@@ -169,7 +177,6 @@ public class BaseChickenEntity extends Chicken {
     @Override
     protected void dropCustomDeathLoot(@NotNull ServerLevel serverLevel, @NotNull DamageSource source, boolean recentlyHitIn) {
         super.dropCustomDeathLoot(serverLevel, source, recentlyHitIn);
-        this.spawnAtLocation(dropStack);
     }
 
     @Override
@@ -180,6 +187,33 @@ public class BaseChickenEntity extends Chicken {
         }
         return super.getDefaultDimensions(pose);
     }
+
+    @Override
+    public ItemEntity spawnAtLocation(@NotNull ItemStack stack) {
+        if (stack.is(Items.EGG)) {
+            if (!dropStack.isEmpty()) {
+                return super.spawnAtLocation(dropStack.copy());
+            }
+            return null;
+        }
+
+        return super.spawnAtLocation(stack);
+    }
+    @Override
+    public ItemEntity spawnAtLocation(@NotNull ItemLike itemLike) {
+        return this.spawnAtLocation(new ItemStack(itemLike));
+    }
+    private static final Field VANILLA_EGG_TIME;
+    static {
+        try {
+            VANILLA_EGG_TIME = Chicken.class.getDeclaredField("eggTime");
+            VANILLA_EGG_TIME.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("Cannot find Chicken.eggTime field!", e);
+        }
+    }
+
+    private final int configuredEggTime;
     @Override
     public void aiStep() {
         super.aiStep();
@@ -200,9 +234,19 @@ public class BaseChickenEntity extends Chicken {
         this.flap += this.flapping * 2.0F;
         if (!this.level().isClientSide && this.isAlive() && !this.isBaby() && !this.isChickenJockey() && --this.eggTime <= 0) {
             this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-            this.spawnAtLocation(dropStack);
             this.gameEvent(GameEvent.ENTITY_PLACE);
-            this.eggTime = this.random.nextInt(6000) + 6000;
+            this.eggTime = configuredEggTime;
+        }
+
+        if (!this.level().isClientSide && this.isAlive() && !this.isBaby() && !this.isChickenJockey()) {
+            try {
+                int vanillaTime = (int) VANILLA_EGG_TIME.get(this);
+                if (vanillaTime > this.configuredEggTime) {
+                    VANILLA_EGG_TIME.set(this, this.configuredEggTime);
+                }
+            } catch (IllegalAccessException e) {
+                ChickenRoostMod.LOGGER.error("Failed to modify Chicken eggTime", e);
+            }
         }
 
     }
@@ -260,18 +304,15 @@ public class BaseChickenEntity extends Chicken {
         return super.hurt(damageSource, amount);
     }
 
-
     private static boolean isFireLike(DamageSource src) {
         return src.is(DamageTypeTags.IS_FIRE) || isAny(src,
                 DamageTypes.FIREBALL, DamageTypes.UNATTRIBUTED_FIREBALL, DamageTypes.FIREWORKS);
     }
 
-
     private static boolean isProjectileLike(DamageSource src) {
         return src.is(DamageTypeTags.IS_PROJECTILE) || isAny(src,
                 DamageTypes.ARROW, DamageTypes.MOB_PROJECTILE);
     }
-
 
     private static boolean isExplosionLike(DamageSource src) {
         return src.is(DamageTypeTags.IS_EXPLOSION) || isAny(src, DamageTypes.PLAYER_EXPLOSION);

@@ -1,10 +1,13 @@
 package net.tarantel.chickenroost.block.blocks;
 
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -19,8 +22,12 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.tarantel.chickenroost.block.blocks.crops.*;
 import net.tarantel.chickenroost.item.ModItems;
+import net.tarantel.chickenroost.pipe.PipeBlock;
+import net.tarantel.chickenroost.pipe.PipeTier;
+import net.tarantel.chickenroost.util.ModDataComponents;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ModBlocks {
@@ -41,12 +48,85 @@ public class ModBlocks {
             () -> new ChickenStorageBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
                     .strength(70.0F, 120000.0F).noOcclusion()));
 
-    public static final DeferredBlock<SoulBreederBlock> SOUL_BREEDER = BLOCKS.register("soul_breeder",
-            () -> new SoulBreederBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
-                    .strength(1f).noOcclusion()));
     public static final DeferredBlock<Block> BREEDER = registerBlock("breeder",
             () -> new BreederBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
                     .strength(1f).noOcclusion()));
+
+    public static final DeferredBlock<PipeBlock> PIPE_TIER1 =
+            registerBlock("pipe_tier1",
+                    () -> new PipeBlock(
+                            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
+                                    .strength(1.0f)
+                                    .noOcclusion(),
+                            PipeTier.TIER1,
+                            ModItems.CHICKEN_STICK
+                    )
+                    {
+                        @Override
+                        public void appendHoverText(@NotNull ItemStack itemstack, @NotNull Item.TooltipContext context, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
+                            super.appendHoverText(itemstack, context, list, flag);
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.info.tier1"));
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.pipe.tier1"));
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.pipe.modeinfo"));
+                        }
+                    });
+
+    public static final DeferredBlock<PipeBlock> PIPE_TIER2 =
+            registerBlock("pipe_tier2",
+                    () -> new PipeBlock(
+                            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
+                                    .strength(1.0f)
+                                    .noOcclusion(),
+                            PipeTier.TIER2,
+                            ModItems.CHICKEN_STICK
+                    )
+                    {
+                        @Override
+                        public void appendHoverText(@NotNull ItemStack itemstack, @NotNull Item.TooltipContext context, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
+                            super.appendHoverText(itemstack, context, list, flag);
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.info.tier2"));
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.pipe.tier2"));
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.pipe.modeinfo"));
+                        }
+                    });
+
+    public static final DeferredBlock<PipeBlock> PIPE_TIER3 =
+            registerBlock("pipe_tier3",
+                    () -> new PipeBlock(
+                            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
+                                    .strength(1.0f)
+                                    .noOcclusion(),
+                            PipeTier.TIER3,
+                            ModItems.CHICKEN_STICK
+                    )
+                    {
+                        @Override
+                        public void appendHoverText(@NotNull ItemStack itemstack, @NotNull Item.TooltipContext context, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
+                            super.appendHoverText(itemstack, context, list, flag);
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.info.tier3"));
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.pipe.tier3"));
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.pipe.modeinfo"));
+                        }
+                    });
+
+    public static final DeferredBlock<PipeBlock> PIPE_TIER4 =
+            registerBlock("pipe_tier4",
+                    () -> new PipeBlock(
+                            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
+                                    .strength(1.0f)
+                                    .noOcclusion(),
+                            PipeTier.TIER4,
+                            ModItems.CHICKEN_STICK
+                    )
+                    {
+                        @Override
+                        public void appendHoverText(@NotNull ItemStack itemstack, @NotNull Item.TooltipContext context, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
+                            super.appendHoverText(itemstack, context, list, flag);
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.info.tier4"));
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.pipe.tier4"));
+                            list.add(Component.translatable("pipe.chicken_roost.transfer.pipe.modeinfo"));
+                        }
+                    });
 
     public static final DeferredBlock<Block> SOUL_EXTRACTOR = registerBlock("soul_extractor",
             () -> new SoulExtractorBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)

@@ -20,6 +20,7 @@ import net.tarantel.chickenroost.item.base.*;
 import net.tarantel.chickenroost.util.ChickenData;
 import net.tarantel.chickenroost.util.GsonChickenReader;
 import net.tarantel.chickenroost.util.ModDataComponents;
+import net.tarantel.crlib.util.UniversalFluidItem;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -34,7 +35,8 @@ public class ModItems {
 	public static final DeferredRegister.Items ITEMSS = DeferredRegister.createItems("chicken_roost");
 	public static final DeferredRegister.Items CHICKENITEMS = DeferredRegister.createItems("chicken_roost");
 
-
+	public static final DeferredItem<Item> XMAS_HAT =
+			ITEMS.register("xmashat", () -> new Item(new Item.Properties()));
 	public static final DeferredItem<Item> INGOT_ELECTRUM = ITEMS.register("ingot_electrum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_electrum"));
 	public static final DeferredItem<Item> INGOT_SILVER = ITEMS.register("ingot_silver", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_silver"));
 	public static final DeferredItem<Item> INGOT_ZINC = ITEMS.register("ingot_zinc", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_zinc"));
@@ -66,12 +68,11 @@ public class ModItems {
 	public static final DeferredItem<Item> INGOT_SIGNALUM = ITEMS.register("ingot_signalum", () -> new AnimatedIngotItem(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "ingot_signalum"));
 
 
-	public static final DeferredItem<Item> WATER_EGG = ITEMS.register("water_egg", () -> new UniversalFluidItem(new Item.Properties().stacksTo(64), Fluids.WATER, 1000));
-	public static final DeferredItem<Item> LAVA_EGG = ITEMS.register("lava_egg", () -> new UniversalFluidItem(new Item.Properties().stacksTo(64), Fluids.LAVA, 1000));
+	public static final DeferredItem<Item> WATER_EGG = ITEMS.register("water_egg", () -> new UniversalFluidItem(new Item.Properties().stacksTo(64), () -> Fluids.WATER, 1000));
+	public static final DeferredItem<Item> LAVA_EGG = ITEMS.register("lava_egg", () -> new UniversalFluidItem(new Item.Properties().stacksTo(64), () -> Fluids.LAVA, 1000));
 
 	public static final DeferredItem<Item> STONE_ESSENCE = ITEMS.register("stone_essence", () -> new Item(new Item.Properties().stacksTo(64).rarity(Rarity.COMMON)));
 	public static final DeferredItem<Item> WOOD_ESSENCE = ITEMS.register("wood_essence", () -> new Item(new Item.Properties().stacksTo(64).rarity(Rarity.COMMON)));
-	public static final DeferredItem<Item> CHICKENCHICKEN = CHICKENITEMS.register("c_vanilla", () -> new AnimatedChicken(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON), "saltchicken", 0));
 
 
 	public static final DeferredItem<Item> RED_EGG = ITEMS.register("red_egg", () -> new RoostEgg(ResourceLocation.fromNamespaceAndPath(ChickenRoostMod.MODID, "c_red"), new RoostEgg.Properties().stacksTo(64).rarity(Rarity.COMMON)));
@@ -90,10 +91,7 @@ public class ModItems {
 	public static final DeferredItem<Item> BROWN_EGG = ITEMS.register("brown_egg", () -> new RoostEgg(ResourceLocation.fromNamespaceAndPath(ChickenRoostMod.MODID, "c_brown"), new RoostEgg.Properties().stacksTo(64).rarity(Rarity.COMMON)));
 	public static final DeferredItem<Item> GREEN_EGG = ITEMS.register("green_egg", () -> new RoostEgg(ResourceLocation.fromNamespaceAndPath(ChickenRoostMod.MODID, "c_green"), new RoostEgg.Properties().stacksTo(64).rarity(Rarity.COMMON)));
 	public static final DeferredItem<Item> BLACK_EGG = ITEMS.register("black_egg", () -> new RoostEgg(ResourceLocation.fromNamespaceAndPath(ChickenRoostMod.MODID, "c_black"), new RoostEgg.Properties().stacksTo(64).rarity(Rarity.COMMON)));
-	public static final DeferredItem<Item> E_CHICKEN_LAVA = CHICKENITEMS.register("c_lava", () -> new AnimatedChicken(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON).component(ModDataComponents.CHICKENLEVEL.value(), 0).component(ModDataComponents.CHICKENXP.value(), 0), "lavachicken", 1));
-	public static final DeferredItem<Item> E_CHICKEN_WATER = CHICKENITEMS.register("c_water", () -> new AnimatedChicken(new Item.Properties().stacksTo(64).fireResistant().rarity(Rarity.COMMON).component(ModDataComponents.CHICKENLEVEL.value(), 0).component(ModDataComponents.CHICKENXP.value(), 0), "waterchicken", 1));
 
-	public static final DeferredItem<Item> CHICKEN_SCANNER = ITEMS.register("chicken_scanner", ChickenScannerItem::new);
 	public static final DeferredItem<Item> CHICKEN_STICK = ITEMS.register("chicken_stick", () -> new AnimatedChickenStick(new Item.Properties()));
 
 	public static final DeferredItem<Item> CHICKEN_ESSENCE_TIER_1 = ITEMS.register("chicken_essence_tier_1", EssenceSoul::new);
@@ -115,12 +113,6 @@ public class ModItems {
 	public static final DeferredItem<Item> CHICKEN_FOOD_TIER_7 = ITEMS.register("chicken_food_tier_7", () -> new CropBlockItem(ModBlocks.SEED_CROP_7.get(), new Item.Properties(), 6));
 	public static final DeferredItem<Item> CHICKEN_FOOD_TIER_8 = ITEMS.register("chicken_food_tier_8", () -> new CropBlockItem(ModBlocks.SEED_CROP_8.get(), new Item.Properties(), 7));
 	public static final DeferredItem<Item> CHICKEN_FOOD_TIER_9 = ITEMS.register("chicken_food_tier_9", () -> new CropBlockItem(ModBlocks.SEED_CROP_9.get(), new Item.Properties(), 8));
-
-
-
-	public static final DeferredHolder<Item, BlockItem> SOUL_BREEDER = ITEMSS.register("soul_breeder",
-			() -> new AnimatedSoulBreederBlockItem(ModBlocks.SOUL_BREEDER.get(),
-					new Item.Properties()));
 
 
 	public static final DeferredHolder<Item, BlockItem> TRAINER = ITEMSS.register("trainer",
@@ -150,13 +142,16 @@ public class ModItems {
 
 	public static void readthis() {
 
-		List<ChickenData> readItems = GsonChickenReader.readItemsFromFile();
+		List<ChickenData> readItems = ChickenRoostMod.chickens;
         assert readItems != null;
         if(!readItems.isEmpty()){
 			for(ChickenData etherItem : readItems){
 
 				String id = etherItem.getId();
 				String itemtexture = etherItem.getItemtexture();
+				String mobtexture = etherItem.getMobtexture();
+				String dropitem = etherItem.getDropitem();
+				float eggtime = etherItem.getEggtime();
                 int tierr = etherItem.getTier();
 
 				extrachickens(id, itemtexture, tierr);
@@ -187,7 +182,8 @@ public class ModItems {
 				.fireResistant()
 				.rarity(Rarity.COMMON)
 				.component(ModDataComponents.CHICKENLEVEL.value(), 0)
-				.component(ModDataComponents.CHICKENXP.value(), 0);
+				.component(ModDataComponents.CHICKENXP.value(), 0)
+				.component(ModDataComponents.MAXLEVEL.value(), false);
 	}
 
 

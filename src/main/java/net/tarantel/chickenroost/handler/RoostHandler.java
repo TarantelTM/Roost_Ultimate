@@ -12,6 +12,7 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.RoostTile;
 import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -71,12 +72,22 @@ public class RoostHandler extends AbstractContainerMenu {
         return data.get(0) > 0;
     }
 
-    public int getScaledProgress() {
-        int progress = this.data.get(0);
-        int maxProgress = this.data.get(1);
-        int progressArrowSize = 54;
+    public int getProgress() {
+        return this.data.get(0);
+    }
 
-        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
+    public int getMaxProgress() {
+        return this.data.get(1);
+    }
+    public int getScaledProgress(int arrowWidth) {
+        int progress = getProgress();
+        int maxProgress = getMaxProgress();
+
+        if (maxProgress == 0 || progress == 0) {
+            return 0;
+        }
+
+        return progress * arrowWidth / maxProgress;
     }
 
     private static final int HOTBAR_SLOT_COUNT = 9;

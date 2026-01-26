@@ -7,12 +7,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.tarantel.chickenroost.client.model.Modelchicken;
 import net.tarantel.chickenroost.entity.BaseChickenEntity;
 import org.jetbrains.annotations.NotNull;
+import net.tarantel.chickenroost.client.model.SantaHatLayer;
+
+import java.time.LocalDate;
+import java.time.Month;
 
 public class BaseChickenRenderer extends MobRenderer<BaseChickenEntity, Modelchicken<BaseChickenEntity>> {
     public String texture;
     public BaseChickenRenderer(EntityRendererProvider.Context context, String texture) {
         super(context, new Modelchicken<>(context.bakeLayer(Modelchicken.LAYER_LOCATION)), 0.5f);
         this.texture = texture;
+
+        if (LocalDate.now().getMonth().equals(Month.DECEMBER)) {
+            this.addLayer(new SantaHatLayer<>(this));
+        }
+
     }
 
     @Override

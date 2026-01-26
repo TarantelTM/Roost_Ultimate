@@ -3,6 +3,7 @@ package net.tarantel.chickenroost.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,13 +17,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.tarantel.chickenroost.api.ICollectorTarget;
+import net.tarantel.chickenroost.block.tile.BreederTile;
 import net.tarantel.chickenroost.block.tile.FeederTile;
 import net.tarantel.chickenroost.block.tile.RoostTile;
+import net.tarantel.chickenroost.block.tile.TrainerTile;
 import net.tarantel.chickenroost.handler.FeederHandler;
 import net.tarantel.chickenroost.item.base.ChickenSeedBase;
-import net.tarantel.chickenroost.networking.SetFeederRangePayload;
-import net.tarantel.chickenroost.networking.SetFeederRoostActivePayload;
-import net.tarantel.chickenroost.networking.SetFeederRoostSeedPayload;
+import net.tarantel.chickenroost.networking.*;
 import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +48,11 @@ public class FeederScreen extends AbstractContainerScreen<FeederHandler> {
     private boolean draggingScrollbar = false;
     private int dragStartMouseY = 0;
     private int dragStartTopIndex = 0;
+    private boolean roundRobinClient = false;
+    private Button roundRobinButton;
 
+    private boolean roundRobinPending = false;
+    private boolean stackModePending = false;
 
     private static final int PANEL_W = 164;
     private static final int PANEL_H = 120;
@@ -67,13 +73,92 @@ public class FeederScreen extends AbstractContainerScreen<FeederHandler> {
 
     private int overlayX() { return this.leftPos + (this.imageWidth - PANEL_W) / 2; }
     private int overlayY() { return this.topPos - 40 + (this.imageHeight - PANEL_H) / 2; }
+    private Component roundRobinLabel() {
+        return Component.literal("R: " + (this.roundRobinClient ? "ON" : "OFF"));
+    }
+
+
+    private int stackModeClient = 0;
+    private Button stackModeButton;
+
+    private Component stackModeLabel() {
+        return switch (this.stackModeClient) {
+            case 1 -> Component.translatable("roost_chicken.interface.stackmode.half");
+            case 2 -> Component.translatable("roost_chicken.interface.stackmode.full");
+            default -> Component.translatable("roost_chicken.interface.stackmode.single");
+        };
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+
+        BlockEntity be = this.menu.getBlockEntity();
+        if (!(be instanceof FeederTile ct)) return;
+
+
+        int serverMode = ct.getStackSendModeId();
+        if (!stackModePending && serverMode != this.stackModeClient) {
+            this.stackModeClient = serverMode;
+            this.stackModeButton.setMessage(stackModeLabel());
+        } else if (stackModePending && serverMode == this.stackModeClient) {
+            stackModePending = false;
+        }
+
+
+        boolean rr = ct.isRoundRobinEnabled();
+        if (!roundRobinPending && rr != this.roundRobinClient) {
+            this.roundRobinClient = rr;
+            this.roundRobinButton.setMessage(roundRobinLabel());
+        } else if (roundRobinPending && rr == this.roundRobinClient) {
+            roundRobinPending = false;
+        }
+    }
+
+
 
     @Override
     protected void init() {
         super.init();
+        BlockEntity beInit = this.menu.getBlockEntity();
+        if (beInit instanceof FeederTile ctInit) {
+            this.roundRobinClient = ctInit.isRoundRobinEnabled();
+            this.stackModeClient = ctInit.getStackSendModeId();
+        }
+        this.stackModeButton = this.addRenderableWidget(
+                Button.builder(stackModeLabel(), btn -> {
+                    this.stackModeClient = (this.stackModeClient + 1) % 3;
+                    this.stackModePending = true;
+                    btn.setMessage(stackModeLabel());
 
+                    BlockEntity be2 = this.menu.getBlockEntity();
+                    if (be2 instanceof FeederTile ct2) {
+                        net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+                                new SetFeederStackModePayload(ct2.getBlockPos(), this.stackModeClient)
+                        );
+                    }
+                }).bounds(this.leftPos + 110, this.topPos + 4, 50, 12).build()
+        );
+        this.stackModeButton.setTooltip(Tooltip.create(Component.translatable("roost_chicken.interface.stackmode.info")));
+        int btnX = this.leftPos + 70;
+        int btnY = this.topPos + 4;
 
-        addRenderableWidget(Button.builder(Component.literal("Config"), btn -> {
+        this.roundRobinButton = this.addRenderableWidget(
+                Button.builder(roundRobinLabel(), btn -> {
+                    this.roundRobinClient = !this.roundRobinClient;
+                    this.roundRobinPending = true;
+                    btn.setMessage(roundRobinLabel());
+
+                    BlockEntity be = this.menu.getBlockEntity();
+                    if (be instanceof FeederTile ct) {
+                        PacketDistributor.sendToServer(
+                                new SetFeederRoundRobinPayload(ct.getBlockPos(), this.roundRobinClient)
+                        );
+                    }
+                }).bounds(btnX, btnY, 36, 12).build()
+        );
+        this.roundRobinButton.setTooltip(Tooltip.create(Component.translatable("roost_chicken.interface.roundrobin.info")));
+        addRenderableWidget(Button.builder(Component.translatable("roost_chicken.interface.config"), btn -> {
             this.showRoostMenu = !this.showRoostMenu;
 
 
@@ -96,6 +181,7 @@ public class FeederScreen extends AbstractContainerScreen<FeederHandler> {
             this.searchRange = ct.getFeedRange();
             this.activeRoostsClient.clear();
             this.activeRoostsClient.addAll(ct.getActiveRoosts());
+            this.stackModeClient = ct.getStackSendModeId();
         }
     }
 
@@ -119,7 +205,10 @@ public class FeederScreen extends AbstractContainerScreen<FeederHandler> {
             assert this.minecraft != null;
             assert this.minecraft.level != null;
             var roostBe = this.minecraft.level.getBlockEntity(p);
-            if (roostBe instanceof RoostTile) {
+            if (roostBe instanceof RoostTile
+                    || roostBe instanceof BreederTile
+                    || roostBe instanceof TrainerTile) {
+
                 this.foundRoosts.add(p.immutable());
             }
         }
@@ -164,19 +253,19 @@ public class FeederScreen extends AbstractContainerScreen<FeederHandler> {
 
         String id = "";
         if (cursor != null && !cursor.isEmpty() && isAllowedGhostItem(cursor.getItem())) {
-                var key = BuiltInRegistries.ITEM.getKey(cursor.getItem());
+            var key = BuiltInRegistries.ITEM.getKey(cursor.getItem());
             id = key.toString();
-            }
-
-            if (id.isEmpty()) this.preferredSeedsClient.remove(roostPos);
-            else this.preferredSeedsClient.put(roostPos, cursor.getItem());
-
-            PacketDistributor.sendToServer(new SetFeederRoostSeedPayload(ct.getBlockPos(), roostPos, id));
         }
 
+        if (id.isEmpty()) this.preferredSeedsClient.remove(roostPos);
+        else this.preferredSeedsClient.put(roostPos, cursor.getItem());
+
+        PacketDistributor.sendToServer(new SetFeederRoostSeedPayload(ct.getBlockPos(), roostPos, id));
+    }
+
     private boolean isAllowedGhostItem(Item item) {
-               return item instanceof ChickenSeedBase;
-            }
+        return item instanceof ChickenSeedBase;
+    }
 
     @Override
     protected void renderBg(@NotNull GuiGraphics g, float partialTick, int mouseX, int mouseY) {
@@ -201,7 +290,10 @@ public class FeederScreen extends AbstractContainerScreen<FeederHandler> {
         g.blit(OVERLAY, x, y, 0, 0, PANEL_W, PANEL_H, PANEL_W, PANEL_H);
 
 
-        g.drawString(this.font, Component.literal("Range: " + this.searchRange), x + PANEL_W - 60, y + 4, 0xAAAAAA, false);
+        g.drawString(this.font, Component.translatable(
+                "roost_chicken.interface.range",
+                this.searchRange
+        ), x + PANEL_W - 60, y + 4, 0xAAAAAA, false);
 
 
         final int listX = x + PADDING;
@@ -275,9 +367,9 @@ public class FeederScreen extends AbstractContainerScreen<FeederHandler> {
         if (level == null) return "";
 
         BlockEntity be = level.getBlockEntity(pos);
-        if (!(be instanceof RoostTile roost)) return "";
+        if (!(be instanceof ICollectorTarget target)) return "";
 
-        String name = roost.getCustomName();
+        String name = target.getCustomName();
         if (isBlank(name)) return "";
 
         String label = scrollOrClamp(name, level.getGameTime());

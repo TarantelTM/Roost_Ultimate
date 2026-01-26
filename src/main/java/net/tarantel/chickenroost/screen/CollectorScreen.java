@@ -2,10 +2,12 @@ package net.tarantel.chickenroost.screen;
 
 import net.minecraft.world.level.Level;
 import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.api.ICollectorTarget;
+import net.tarantel.chickenroost.block.tile.BreederTile;
 import net.tarantel.chickenroost.block.tile.RoostTile;
+import net.tarantel.chickenroost.block.tile.SoulExtractorTile;
 import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -15,9 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.neoforged.neoforge.network.PacketDistributor;
-
 import net.tarantel.chickenroost.handler.CollectorHandler;
 import net.tarantel.chickenroost.block.tile.CollectorTile;
 import net.tarantel.chickenroost.networking.SetCollectorRangePayload;
@@ -68,7 +68,7 @@ public class CollectorScreen extends AbstractContainerScreen<CollectorHandler> {
 
 
         this.addRenderableWidget(
-                Button.builder(Component.literal("Config"), b -> {
+                Button.builder(Component.translatable("roost_chicken.interface.config"), b -> {
                     this.showRoostMenu = !this.showRoostMenu;
                     if (this.showRoostMenu) {
 
@@ -113,7 +113,12 @@ public class CollectorScreen extends AbstractContainerScreen<CollectorHandler> {
 
         return BlockPos.betweenClosedStream(minX, minY, minZ, maxX, maxY, maxZ)
                 .filter(p -> !p.equals(center))
-                .filter(p -> level.getBlockEntity(p) instanceof RoostTile)
+                .filter(p -> {
+                    BlockEntity be = level.getBlockEntity(p);
+                    return be instanceof RoostTile
+                            || be instanceof BreederTile
+                            || be instanceof SoulExtractorTile;
+                })
                 .map(BlockPos::immutable)
                 .collect(Collectors.toList());
     }
@@ -192,7 +197,10 @@ public class CollectorScreen extends AbstractContainerScreen<CollectorHandler> {
 
 
 
-        g.drawString(this.font, Component.literal("Nearby Roosts (" + this.searchRange + ")"),
+        g.drawString(this.font, Component.translatable(
+                        "roost_chicken.interface.nearbyroosts",
+                        this.searchRange
+                ),
                 px + PADDING, py + 6, 0xFFFFFF, false);
 
         int minusX1 = px + PANEL_W - 28, minusX2 = minusX1 + 8;
@@ -226,10 +234,10 @@ public class CollectorScreen extends AbstractContainerScreen<CollectorHandler> {
 
             String label = "(" + p.getX() + "," + p.getY() + "," + p.getZ() + ")";
             var be = this.minecraft != null ? this.minecraft.level.getBlockEntity(p) : null;
-            if (be instanceof RoostTile roost) {
+            if (be instanceof ICollectorTarget target) {
                 try {
-                    String nm = roost.getCustomName();
-                    if (nm != null && !nm.isEmpty()) label = nm + " " + label;
+                    String nm = target.getCustomName();
+                    if (nm != null && !nm.isEmpty()) label = nm + " ";
                 } catch (Throwable ignored) {}
             }
 
@@ -387,7 +395,6 @@ public class CollectorScreen extends AbstractContainerScreen<CollectorHandler> {
         return true;
     }
 
-    /* ---------- utils ---------- */
 
     private static boolean inside(int x1, int y1, int x2, int y2, double mx, double my) {
         return mx >= x1 && mx <= x2 && my >= y1 && my <= y2;

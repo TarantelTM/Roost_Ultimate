@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -26,20 +27,26 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.api.ICollectorTarget;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.handler.RoostHandler;
 import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.networking.SyncAutoOutputPayload;
 import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.recipes.RoostRecipe;
+import net.tarantel.chickenroost.util.ChickenStats;
 import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.ModDataComponents;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import java.util.Objects;
 import java.util.Optional;
 
-public class RoostTile extends BlockEntity implements MenuProvider {
+public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTarget {
     public final ItemStackHandler itemHandler = new ItemStackHandler(3) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -74,7 +81,50 @@ public class RoostTile extends BlockEntity implements MenuProvider {
         }
     };
 
+    @Override
+    public @Nullable IItemHandler getItemHandler() {
+        return ccView;
+    }
 
+    private final IItemHandler ccView = new IItemHandler() {
+        @Override
+        public int getSlots() {
+            return itemHandler.getSlots();
+        }
+
+        @Override
+        public @NotNull ItemStack getStackInSlot(int slot) {
+            return itemHandler.getStackInSlot(slot);
+        }
+
+        @Override
+        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            return stack;
+        }
+
+        @Override
+        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return itemHandler.getSlotLimit(slot);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return itemHandler.isItemValid(slot, stack);
+        }
+    };
+
+    @Override
+    public int getReadSlot() {
+        return CHICKEN_SLOT;
+    }
+
+    private static final int CHICKEN_SLOT = 1;
+    private static final int OUTPUT_SLOT = 2;
     private String customName = "ROOST";
 
     public void setCustomName(String name) {
@@ -231,6 +281,9 @@ public class RoostTile extends BlockEntity implements MenuProvider {
         nbt.put("inventory", itemHandler.serializeNBT(lookup));
         nbt.putInt("roost.progress", this.progress);
         nbt.putString("roost.custom_name", this.customName);
+        nbt.putBoolean("AutoOutput", autoOutput);
+        nbt.putBoolean("LastRedstonePowered", lastRedstonePowered);
+        nbt.putBoolean("AutoOutputByRedstone", autoOutputByRedstone);
         super.saveAdditional(nbt, lookup);
     }
 
@@ -240,6 +293,22 @@ public class RoostTile extends BlockEntity implements MenuProvider {
         itemHandler.deserializeNBT(lookup,nbt.getCompound("inventory"));
         progress = nbt.getInt("roost.progress");
         this.customName = nbt.getString("roost.custom_name");
+        if (nbt.contains("AutoOutput")) {
+            this.autoOutput = nbt.getBoolean("AutoOutput");
+        } else {
+            this.autoOutput = false;
+        }
+        if (nbt.contains("LastRedstonePowered")) {
+            this.lastRedstonePowered = nbt.getBoolean("LastRedstonePowered");
+        } else {
+            this.lastRedstonePowered = false;
+        }
+
+        if(nbt.contains("AutoOutputByRedstone")){
+            this.autoOutputByRedstone = nbt.getBoolean("AutoOutputByRedstone");
+        } else {
+            this.autoOutputByRedstone = false;
+        }
 
     }
 
@@ -258,11 +327,94 @@ public class RoostTile extends BlockEntity implements MenuProvider {
         Containers.dropContents(Objects.requireNonNull(this.level), this.worldPosition, block);
     }
 
+    private boolean autoOutput = false;
+
+
+    private boolean lastRedstonePowered = false;
+    private boolean autoOutputByRedstone = false;
+
+    public boolean isAutoOutputEnabled() {
+        return autoOutput;
+    }
+
+    public void setAutoOutputEnabled(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = false;
+
+        if (level != null && !level.isClientSide) {
+            setChanged(level, worldPosition, getBlockState());
+        }
+    }
+
+    public void setAutoOutputFromGui(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = false;
+        syncToClients();
+    }
+
+
+    private void setAutoOutputFromRedstone(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = enabled;
+        syncToClients();
+    }
+
+    private void syncToClients() {
+        if (level instanceof ServerLevel serverLevel) {
+            PacketDistributor.sendToPlayersTrackingChunk(
+                    serverLevel,
+                    serverLevel.getChunkAt(worldPosition).getPos(),
+                    new SyncAutoOutputPayload(worldPosition, autoOutput)
+            );
+        }
+        setChanged();
+    }
 
     public static void tick(Level level, BlockPos pos, BlockState state, RoostTile pEntity) {
-        if(level.isClientSide()) {
-            return;
+        if (level.isClientSide()) return;
+
+        ItemStack chickenStack = pEntity.itemHandler.getStackInSlot(1);
+        if (!chickenStack.isEmpty() && chickenStack.getItem() instanceof ChickenItemBase chickenItem) {
+
+            if (!chickenStack.has(ModDataComponents.CHICKENLEVEL.value())) {
+                chickenStack.set(ModDataComponents.CHICKENLEVEL.value(), 0);
+            }
+            if (!chickenStack.has(ModDataComponents.CHICKENXP.value())) {
+                chickenStack.set(ModDataComponents.CHICKENXP.value(), 0);
+            }
+
+            int levelNow = chickenStack.get(ModDataComponents.CHICKENLEVEL.value());
+            int maxLevel = pEntity.LevelList[
+                    chickenItem.currentchickena(chickenStack)
+                    ];
+
+            boolean isMax = levelNow >= maxLevel;
+
+            if (!chickenStack.has(ModDataComponents.MAXLEVEL.value())
+                    || chickenStack.get(ModDataComponents.MAXLEVEL.value()) != isMax) {
+
+                chickenStack.set(ModDataComponents.MAXLEVEL.value(), isMax);
+                pEntity.setChanged();
+            }
         }
+
+        boolean powered = level.hasNeighborSignal(pos);
+
+        if (powered && !pEntity.lastRedstonePowered) {
+            if (!pEntity.autoOutput) {
+                pEntity.setAutoOutputFromRedstone(true);
+            }
+        }
+
+        if (!powered && pEntity.lastRedstonePowered) {
+            if (pEntity.autoOutputByRedstone) {
+                pEntity.setAutoOutputFromRedstone(false);
+            }
+        }
+
+        pEntity.lastRedstonePowered = powered;
+
+
         setChanged(level, pos, state);
         if(hasRecipe(pEntity)) {
             pEntity.progress++;
@@ -277,8 +429,56 @@ public class RoostTile extends BlockEntity implements MenuProvider {
 
             setChanged(level, pos, state);
         }
+        if(pEntity.isAutoOutputEnabled()) {
+            tryPushOutputDown(level, pos, state, pEntity);
+        }
 
     }
+
+    public void setAutoOutputClient(boolean enabled) {
+        this.autoOutput = enabled;
+    }
+
+    private static void tryPushOutputDown(Level level, BlockPos pos, BlockState state, RoostTile tile) {
+        ItemStack outputStack = tile.itemHandler.getStackInSlot(OUTPUT_SLOT);
+        if (outputStack.isEmpty()) {
+            return;
+        }
+
+        IItemHandler belowHandler = level.getCapability(
+                Capabilities.ItemHandler.BLOCK,
+                pos.below(),
+                Direction.UP
+        );
+
+        if (belowHandler == null) {
+            return;
+        }
+
+        ItemStack remaining = outputStack.copy();
+
+        for (int slot = 0; slot < belowHandler.getSlots() && !remaining.isEmpty(); slot++) {
+            remaining = belowHandler.insertItem(slot, remaining, false);
+        }
+
+        if (remaining.getCount() == outputStack.getCount()) {
+            return;
+        }
+
+        int moved = outputStack.getCount() - remaining.getCount();
+
+        ItemStack newStack = outputStack.copy();
+        newStack.shrink(moved);
+
+        if (newStack.isEmpty()) {
+            newStack = ItemStack.EMPTY;
+        }
+
+        tile.itemHandler.setStackInSlot(OUTPUT_SLOT, newStack);
+        setChanged(level, pos, state);
+    }
+
+
     private void resetProgress() {
 
         this.progress = 0;
@@ -301,12 +501,15 @@ public class RoostTile extends BlockEntity implements MenuProvider {
         };
     }
 
+
     private static void craftItem(RoostTile pEntity) {
         MyChicken = (ChickenItemBase) pEntity.itemHandler.getStackInSlot(1).getItem().getDefaultInstance().getItem();
         ChickenItem = pEntity.itemHandler.getStackInSlot(1);
-        FoodItem = (ChickenSeedBase) pEntity.itemHandler.getStackInSlot(0).getItem().getDefaultInstance().getItem();
+
         Level level = pEntity.level;
         SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
+        int chickenlvl;
+        int chickenxp;
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
@@ -317,20 +520,21 @@ public class RoostTile extends BlockEntity implements MenuProvider {
         }
 
         if (hasRecipe(pEntity)) {
-            int ChickenLevel;
+            if (ChickenRoostMod.CONFIG.RoostSeeds){
+                FoodItem = (ChickenSeedBase) pEntity.itemHandler.getStackInSlot(0).getItem().getDefaultInstance().getItem();
+                int ChickenLevel;
             int ChickenXP;
-            if(ChickenItem.has(ModDataComponents.CHICKENLEVEL) && ChickenItem.has(ModDataComponents.CHICKENXP)){
+            if (ChickenItem.has(ModDataComponents.CHICKENLEVEL) && ChickenItem.has(ModDataComponents.CHICKENXP)) {
                 ChickenLevel = (ChickenItem.get(ModDataComponents.CHICKENLEVEL.value()) / 2 + recipe.get().value().output().getCount());
                 ChickenXP = ChickenItem.get(ModDataComponents.CHICKENXP.value());
-            }
-            else {
+            } else {
                 ChickenLevel = 0;
                 ChickenXP = 0;
                 ChickenItem.set(ModDataComponents.CHICKENLEVEL.value(), ChickenLevel);
                 ChickenItem.set(ModDataComponents.CHICKENXP.value(), ChickenXP);
             }
 
-            ItemStack itemstack1 = recipe.get().value().assemble( getRecipeInput(inventory),level.registryAccess());
+            ItemStack itemstack1 = recipe.get().value().assemble(getRecipeInput(inventory), level.registryAccess());
             int newCount = (pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel);
             itemstack1.setCount(Math.min(newCount, 64));
 
@@ -339,12 +543,17 @@ public class RoostTile extends BlockEntity implements MenuProvider {
                 if (ChickenItem.get(ModDataComponents.CHICKENLEVEL.value()) < pEntity.LevelList[MyChicken.currentchickena(MyChicken.getDefaultInstance())]) {
                     if (pEntity.itemHandler.getStackInSlot(0).getItem() instanceof ChickenSeedBase) {
                         if ((ChickenXP + (pEntity.XPAmountList[FoodItem.getCurrentMaxXp()] * Config.roostxp.get()) >= pEntity.XPList[MyChicken.currentchickena(MyChicken.getDefaultInstance())])) {
+
                             ChickenItem.set(ModDataComponents.CHICKENLEVEL.value(), (ChickenItem.get(ModDataComponents.CHICKENLEVEL.value()) + 1));
                             ChickenItem.set(ModDataComponents.CHICKENXP.value(), 0);
+                            chickenlvl = ChickenItem.get(ModDataComponents.CHICKENLEVEL.value());
+                            chickenxp = ChickenItem.get(ModDataComponents.CHICKENXP.value());
 
                         } else {
 
                             ChickenItem.set(ModDataComponents.CHICKENXP.value(), (int) ((ChickenXP + pEntity.XPAmountList[FoodItem.getCurrentMaxXp()] * Config.roostxp.get())));
+                            chickenlvl = ChickenItem.get(ModDataComponents.CHICKENLEVEL.value());
+                            chickenxp = ChickenItem.get(ModDataComponents.CHICKENXP.value());
                         }
                     }
                     pEntity.itemHandler.extractItem(0, 1, false);
@@ -353,13 +562,34 @@ public class RoostTile extends BlockEntity implements MenuProvider {
                     pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
 
                     pEntity.resetProgress();
-                }
-                else {
+                } else {
                     pEntity.itemHandler.extractItem(0, 1, false);
                     pEntity.itemHandler.extractItem(1, 0, true);
                     pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
                     pEntity.resetProgress();
                 }
+            }
+        } else {
+
+                int ChickenLevel;
+                int ChickenXP;
+                if (ChickenItem.has(ModDataComponents.CHICKENLEVEL) && ChickenItem.has(ModDataComponents.CHICKENXP)) {
+                    ChickenLevel = (ChickenItem.get(ModDataComponents.CHICKENLEVEL.value()) / 2 + recipe.get().value().output().getCount());
+                    ChickenXP = ChickenItem.get(ModDataComponents.CHICKENXP.value());
+                } else {
+                    ChickenLevel = 0;
+                    ChickenXP = 0;
+                    ChickenItem.set(ModDataComponents.CHICKENLEVEL.value(), ChickenLevel);
+                    ChickenItem.set(ModDataComponents.CHICKENXP.value(), ChickenXP);
+                }
+
+                ItemStack itemstack1 = recipe.get().value().assemble(getRecipeInput(inventory), level.registryAccess());
+                int newCount = (pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel);
+                itemstack1.setCount(Math.min(newCount, 64));
+
+                pEntity.itemHandler.extractItem(1, 0, true);
+                pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
+                pEntity.resetProgress();
             }
 
         }

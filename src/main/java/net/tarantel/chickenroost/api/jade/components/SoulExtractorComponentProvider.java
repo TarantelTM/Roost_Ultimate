@@ -1,5 +1,6 @@
 package net.tarantel.chickenroost.api.jade.components;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -37,16 +38,41 @@ public enum SoulExtractorComponentProvider implements IBlockComponentProvider, I
                 inventory.set(i, ItemStack.parseOptional(accessor.getLevel().registryAccess(), furnaceItems.getCompound(i)));
             }
             int total = data.getInt("total");
+            boolean autooutput = data.getBoolean("autooutput");
+            String CustomName = data.getString("customname");
             IElementHelper helper = IElementHelper.get();
             IElementHelper helper2 = IElementHelper.get();
             tooltip.add(helper.item((ItemStack)inventory.get(0)).align(IElement.Align.LEFT));
             tooltip.append(helper.spacer(4, 0).align(IElement.Align.LEFT));
             tooltip.append(helper.progress((float)progress / (float)total).translate(new Vec2(-2.0F, 0.0F)).align(IElement.Align.LEFT));
             tooltip.append(helper.item((ItemStack)inventory.get(1)).align(IElement.Align.LEFT));
+            tooltip.add(
+                    helper2.text(
+                            Component.translatable("roost_chicken.interface.output.name.jade")
+                                    .withStyle(ChatFormatting.WHITE)
+                                    .append(
+                                            Component.translatable(
+                                                    autooutput
+                                                            ? "roost_chicken.interface.output.on"
+                                                            : "roost_chicken.interface.output.off"
+                                            ).withStyle(autooutput ? ChatFormatting.GREEN : ChatFormatting.RED)
+                                    )
+                    ).align(IElement.Align.LEFT)
+            );
+
             tooltip.add(helper2.text(Component.literal("\u00A7o" + "\u00A71" + "Roost Ultimate")).align(IElement.Align.LEFT));
             tooltip.remove(JadeIds.UNIVERSAL_ITEM_STORAGE);
             tooltip.remove(JadeIds.CORE_MOD_NAME);
             tooltip.remove(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE);
+            tooltip.remove(JadeIds.CORE_OBJECT_NAME);
+            Component translation = Component.translatable("block.chicken_roost.soul_extractor");
+
+            tooltip.add(0, helper.text(
+                    Component.empty()
+                            .append(translation)
+                            .append(" [" + CustomName + "]")
+                            .withStyle(style -> style.withBold(true))
+            ));
 
 
         }
@@ -61,11 +87,11 @@ public enum SoulExtractorComponentProvider implements IBlockComponentProvider, I
         if (breeder instanceof SoulExtractorTile furnace) {
 
             ListTag items = new ListTag();
-
+            data.putString("customname", breeder.getCustomName());
             for (int i = 0; i < 2; ++i) {
                 items.add(furnace.itemHandler.getStackInSlot(i).saveOptional(accessor.getLevel().registryAccess()));
             }
-
+            data.putBoolean("autooutput", breeder.isAutoOutputEnabled());
             data.put("furnace", items);
 
             data.putInt("progress", breeder.progress);

@@ -1,29 +1,80 @@
 package net.tarantel.chickenroost.util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GsonChickenReader {
 
-    public static List<ChickenData> readItemsFromFile() {
-        Gson gson = new Gson();
-        String filePath = FMLPaths.GAMEDIR.get().toString() + "/config/roostultimate/chicken_config_v5.json";
+    private static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
 
-        File file = new File(filePath);
+    private static final String CONFIG_PATH = "/crlib/chicken_config_v4-2-0.json";
+
+    private static List<ChickenData> CACHE = null;
+
+    public static synchronized List<ChickenData> readItemsFromFile() {
+
+        if (CACHE != null) return CACHE;
+
+        List<ChickenData> defaults = new ArrayList<>();
+        addDefaultChickens(defaults);
+
+        File file = new File(FMLPaths.GAMEDIR.get() + CONFIG_PATH);
+
         if (!file.exists()) {
-            System.err.println("File '" + filePath + "' not found.");
-            List<ChickenData> items = new ArrayList<>();
+            GsonChickenWriter.writeItemsToFile(defaults);
+            CACHE = defaults;
+            return CACHE;
+        }
 
-            //region Chicken - Tier 1
+        List<ChickenData> json;
+        try (FileReader reader = new FileReader(file)) {
+            Type type = new TypeToken<List<ChickenData>>() {}.getType();
+            json = GSON.fromJson(reader, type);
+        } catch (Exception e) {
+            CACHE = defaults;
+            return CACHE;
+        }
+
+        if (json == null) {
+            CACHE = defaults;
+            return CACHE;
+        }
+        Map<String, ChickenData> merged = new LinkedHashMap<>();
+        for (ChickenData def : defaults) {
+            merged.put(def.getId(), def);
+        }
+        for (ChickenData cfg : json) {
+
+            ChickenData base = merged.get(cfg.getId());
+
+            if (base != null) {
+                cfg.setId(base.getId());
+                merged.put(base.getId(), cfg);
+            } else {
+                merged.put(cfg.getId(), cfg);
+            }
+        }
+
+        CACHE = new ArrayList<>(merged.values());
+        return CACHE;
+    }
+
+    private static void addDefaultChickens(List<ChickenData> items) {
+
+
             items.add(new ChickenData("Soul Sand Chicken","Monster","c_soulsand", "soulsandchicken", "soulariumchicken", "minecraft:soul_sand", 600, 1, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Ink Chicken","Mob","c_ink", "blackchicken", "blackchicken", "minecraft:ink_sac", 600, 1, true, true, true, false, true, true, true, true));
             items.add(new ChickenData("Bone Meal Chicken","Mob","c_bonemeal", "whitechicken", "whitechicken", "minecraft:bone_meal", 600, 1, true, true, true, false, true, true, true, true));
@@ -55,9 +106,10 @@ public class GsonChickenReader {
             items.add(new ChickenData("Spruce Chicken","Mob","c_sprucewood", "brownchicken", "brownchicken", "chicken_roost:wood_essence", 600, 1, true, true, true, false, true, true, true, true));
             items.add(new ChickenData("Quartz Chicken","Monster","c_quartz", "quartzchicken", "quartzchicken", "minecraft:quartz", 600, 1, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Blue Chicken","Mob","c_blue", "bluechicken", "bluechicken", "minecraft:blue_dye", 600, 1, true, true, true, false, true, true, true, true));
+            items.add(new ChickenData("Vanilla Chicken","Mob","c_vanilla", "saltchicken", "saltchicken", "minecraft:egg", 600, 1, true, true, true, false, true, true, true, true));
+            items.add(new ChickenData("Tuff Chicken","Mob","c_tuff", "graychicken", "cobblestone", "minecraft:tuff", 600, 1, false, true, true, false, true, true, true, true));
 
-            //endregion
-            //region Chicken - Tier 2
+
             items.add(new ChickenData("Glowstone Chicken","Monster","c_glowstone", "glowstonechicken", "glowstonechicken", "minecraft:glowstone_dust", 600, 2, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Iron Chicken","Mob","c_iron", "ironchicken", "ironchicken", "minecraft:iron_ingot", 600, 2, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Redstone Chicken","Mob","c_redstone", "redchicken", "redchicken", "minecraft:redstone", 600, 2, false, true, true, false, true, true, true, true));
@@ -88,9 +140,10 @@ public class GsonChickenReader {
             items.add(new ChickenData("Gunpowder Chicken","Mob","c_tnt", "gunpowderchicken", "gunpowderchicken", "minecraft:gunpowder", 600, 2, true, true, true, false, true, true, true, true));
             items.add(new ChickenData("Nickel Chicken","Mob","c_nickel", "nickelchicken", "nickelchicken", "chicken_roost:ingot_nickel", 600, 2, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Black Quartz Chicken","Mob","c_blackquartz", "blackquartzchicken", "blackquartzchicken", "actuallyadditions:black_quartz", 600, 2, false, true, true, false, true, true, true, true));
+            items.add(new ChickenData("Lava Chicken","Mob","c_lava", "lavachicken", "lavachicken", "chicken_roost:lava_egg", 600, 2, false, true, true, false, true, true, false, true));
+            items.add(new ChickenData("Water Chicken","Mob","c_water", "waterchicken", "waterchicken", "chicken_roost:water_egg", 600, 2, false, true, true, false, false, true, false, true));
 
-            //endregion
-            //region Chicken - Tier 3
+
             items.add(new ChickenData("Glass Chicken","Mob","c_glass", "glasschicken", "glasschicken", "minecraft:glass", 600, 3, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Magenta Chicken","Mob","c_magenta", "magentachicken", "magentachicken", "minecraft:magenta_dye", 600, 3, true, true, true, false, true, true, true, true));
             items.add(new ChickenData("Light Gray Chicken","Mob","c_light_gray", "graychicken", "graychicken", "minecraft:light_gray_dye", 600, 3, true, true, true, false, true, true, true, true));
@@ -125,8 +178,6 @@ public class GsonChickenReader {
 
 
 
-            //endregion
-            //region Chicken - Tier 4
             items.add(new ChickenData("Platinum Chicken","Mob","c_platinum", "platinumchicken", "platinumchicken", "chicken_roost:ingot_platinum", 600, 4, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Obsidian Chicken","Monster","c_obsidian", "obsidianchicken", "obsidianchicken", "minecraft:obsidian", 600, 4, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Slime Chicken","Mob","c_slime", "slimechicken", "slimechicken", "minecraft:slime_ball", 600, 4, true, true, true, false, true, true, true, true));
@@ -155,8 +206,7 @@ public class GsonChickenReader {
             items.add(new ChickenData("Magma Slime Chicken","Mob","c_magmaslime", "magmaslime", "magmaslime", "minecraft:stone", 600, 4, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Prismarine Shard Chicken","Mob","c_prismarineshard", "pshardchicken", "pshard_chicken", "minecraft:prismarine_shard", 600, 4, false, true, true, false, true, true, true, true));
 
-            //endregion
-            //region Chicken - Tier 5
+
             items.add(new ChickenData("Magma Cream Chicken","Monster","c_magmacream", "magmachicken", "magmachicken", "minecraft:magma_cream", 600, 5, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Cinnabar Chicken","Mob","c_cinnabar", "cinnabarchicken", "cinnabarchicken", "thermal:cinnabar", 600, 5, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Basalz Chicken","Mob","c_basalz", "basalzrodchicken", "basalzrodchicken", "thermal:basalz_powder", 600, 5, false, true, true, false, true, true, true, true));
@@ -179,8 +229,7 @@ public class GsonChickenReader {
             items.add(new ChickenData("Funway Chicken","Mob","c_funway", "funwaychicken", "funwaychicken", "minecraft:stone", 600, 5, true, true, true, false, true, true, true, true));
             items.add(new ChickenData("Breeze Chicken","Mob","c_breeze", "breeze", "breeze", "minecraft:breeze_rod", 600, 5, false, true, true, false, true, true, true, true));
 
-            //endregion
-            //region Chicken - Tier 6
+
             items.add(new ChickenData("Enderium Chicken","Mob","c_enderium", "enderiumchicken", "enderiumchicken", "chicken_roost:ingot_enderium", 600, 6, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Manasteel Chicken","Mob","c_manasteel", "manasteelchicken", "manasteelchicken", "botania:manasteel_ingot", 600, 6, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Blitz Chicken","Mob","c_blitz", "blitzrodchicken", "blitzrodchicken", "thermal:blitz_powder", 600, 6, false, true, true, false, true, true, true, true));
@@ -207,9 +256,7 @@ public class GsonChickenReader {
             items.add(new ChickenData("Ardite Chicken","Monster","c_ardite", "arditechicken", "arditechicken", "minecraft:stone", 600, 6, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("XP Chicken","Mob","c_xp", "xpchicken", "xpchicken", "minecraft:experience_bottle", 600, 6, true, true, true, false, true, true, true, true));
 
-            //endregion
 
-            //region Chicken - Tier 7
             items.add(new ChickenData("Pig Iron Chicken","Mob","c_pigiron", "pigironchicken", "pigironchicken", "tconstruct:pig_iron_nugget", 600, 7, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Blizz Chicken","Mob","c_blizz", "blizzrodchicken", "blizzrodchicken", "thermal:blizz_powder", 600, 7, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Manyullyn Chicken","Mob","c_manyullyn", "manyullynchicken", "manyullynchicken", "tconstruct:manyullyn_nugget", 600, 7, false, true, true, false, true, true, true, true));
@@ -238,8 +285,7 @@ public class GsonChickenReader {
             items.add(new ChickenData("Magical Wood Chicken","Mob","c_magicalwood", "magicalwoodchicken", "magicalwoodchicken", "minecraft:stone", 600, 7, true, true, true, false, true, true, true, true));
             items.add(new ChickenData("Redstone Crystal Chicken","Mob","c_redstonecrystal", "redstonecrystalchicken", "redstonecrystalchicken", "minecraft:stone", 600, 7, false, true, true, false, true, true, true, true));
 
-            //endregion
-            //region Chicken - Tier 8
+
             if(ModList.get().isLoaded("biggerreactors"))
             {
                 items.add(new ChickenData("Blutonium Chicken","Mob","c_blutonium", "blutoniumchicken", "blutoniumchicken", "biggerreactors:blutonium_ingot", 600, 8, false, true, true, false, true, true, true, true));
@@ -260,30 +306,15 @@ public class GsonChickenReader {
             items.add(new ChickenData("Draconium Chicken","Monster","c_draconium", "draconiumchicken", "draconiumchicken", "draconicevolution:draconium_ingot", 600, 8, false, true, true, false, true, true, true, true));
 
 
-
-            //endregion
-            //region Chicken - Tier 9
             items.add(new ChickenData("Titanium Chicken","Mob","c_titanium", "titaniumchicken", "titaniumchicken", "chicken_roost:ingot_titanum", 600, 9, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Unobtainium Chicken","Mob","c_unobtainium", "vinteumchicken", "vinteumchicken", "allthemodium:unobtainium_ingot", 600, 9, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Demon Metal Chicken","Mob","c_demonmetal", "demonmetalchicken", "demonmetalchicken", "minecraft:stone", 600, 9, false, true, true, false, true, true, true, true));
-
             items.add(new ChickenData("Moonstone Chicken","Mob","c_moonstone", "moonstonechicken", "moonstonechicken", "arsmagicalegacy:moonstone", 600, 9, false, true, true, false, true, true, true, true));
             items.add(new ChickenData("Mana Infused Chicken","Mob","c_manainfused", "manasteelchicken", "manasteelchicken", "minecraft:stone", 600, 9, true, true, true, false, true, true, true, true));
             items.add(new ChickenData("Awakened Draconium Chicken","Monster","c_awakeneddraconium", "draconiumawakenedchicken", "draconiumawakenedchicken", "draconicevolution:awakened_draconium_ingot", 600, 9, false, true, true, false, true, true, true, true));
 
-            //endregion
 
 
-            GsonChickenWriter.writeItemsToFile(items);
-            return null;
-        }
 
-        try (FileReader reader = new FileReader(filePath)) {
-            Type listType = new TypeToken<List<ChickenData>>() {}.getType();
-            return gson.fromJson(reader, listType);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

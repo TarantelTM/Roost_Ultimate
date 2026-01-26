@@ -1,5 +1,9 @@
 package net.tarantel.chickenroost.item.base;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
+import net.tarantel.chickenroost.client.ClientBreedingCache;
+import net.tarantel.chickenroost.util.*;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -17,11 +21,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import net.tarantel.chickenroost.item.renderer.AnimatedChickenStickRenderer;
-import net.tarantel.chickenroost.util.ChickenStickTool;
-import net.tarantel.chickenroost.util.WrenchTool;
 import software.bernie.geckolib.util.RenderUtil;
 
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @SuppressWarnings("deprecation")
@@ -52,7 +55,25 @@ public class AnimatedChickenStick extends RoostUltimateItem implements GeoItem {
     public double getTick(Object itemStack) {
         return RenderUtil.getCurrentTick();
     }
-
+    @Override
+    public void appendHoverText(@NotNull ItemStack itemstack, @NotNull TooltipContext context, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
+        try {
+            super.appendHoverText(itemstack, context, list, flag);
+            list.add(Component.translatable(
+                    "roost_chicken.chickenstick.info.catch"
+            ));
+            list.add(Component.translatable(
+                    "roost_chicken.chickenstick.info.blocks"
+            ));
+            list.add(Component.translatable(
+                    "roost_chicken.chickenstick.info.pipe"
+            ));
+            list.add(Component.literal("§1 Roost Ultimate"));
+        } catch (Exception e) {
+            System.out.println("Error in Tooltip:");
+            e.printStackTrace();
+        }
+    }
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {

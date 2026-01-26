@@ -20,19 +20,19 @@ public class ModEntityRenderers {
 	@SubscribeEvent
 	public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
 		List<ChickenData> readItems = GsonChickenReader.readItemsFromFile();
-        assert readItems != null;
-        if(!readItems.isEmpty()){
+		assert readItems != null;
+		if(!readItems.isEmpty()){
 			for(ChickenData etherItem : readItems){
 
-				String id = etherItem.getId();
-				String mobtexture = etherItem.getMobtexture();
+				if (!etherItem.getId().equals("c_vanilla")) {
+					String id = etherItem.getId();
+					String mobtexture = etherItem.getMobtexture();
 
-				ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(ChickenRoostMod.MODID, id);
-				EntityType entityType =  EntityType.byString(resourceLocation.toString()).orElse(EntityType.CHICKEN);
-				event.registerEntityRenderer(entityType, context -> new BaseChickenRenderer(context, mobtexture));
+					ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(ChickenRoostMod.MODID, id);
+					EntityType entityType = EntityType.byString(resourceLocation.toString()).orElse(EntityType.CHICKEN);
+					event.registerEntityRenderer(entityType, context -> new BaseChickenRenderer(context, mobtexture));
+				}
 			}
 		}
-		event.registerEntityRenderer(ModEntities.A_CHICKEN_LAVA.get(), context -> new BaseChickenRenderer(context, "lavachicken"));
-		event.registerEntityRenderer(ModEntities.A_CHICKEN_WATER.get(), context -> new BaseChickenRenderer(context, "waterchicken"));
 	}
 }

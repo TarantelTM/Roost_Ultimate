@@ -45,7 +45,12 @@ public record RoostRecipe(ItemStack output, Ingredient ingredient0, Ingredient i
         if (pLevel.isClientSide()) {
             return false;
         }
-        return ingredient0.test(pContainer.getItem(0)) && ingredient1.test(pContainer.getItem(1));
+        if (ChickenRoostMod.CONFIG.RoostSeeds) {
+            return ingredient0.test(pContainer.getItem(0)) && ingredient1.test(pContainer.getItem(1));
+        }else {
+            return ingredient1.test(pContainer.getItem(1));
+        }
+
     }
 
     @Override
@@ -98,7 +103,12 @@ public record RoostRecipe(ItemStack output, Ingredient ingredient0, Ingredient i
         public static final ResourceLocation ID =
                 ChickenRoostMod.ownresource("roost_output");
 
-        private final MapCodec<RoostRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> recipe.output), Ingredient.CODEC_NONEMPTY.fieldOf("food").forGetter((recipe) -> recipe.ingredient0), Ingredient.CODEC_NONEMPTY.fieldOf("chicken").forGetter((recipe) -> recipe.ingredient1), Codec.INT.fieldOf("time").orElse(20).forGetter((recipe) -> recipe.time)).apply(instance, RoostRecipe::new));
+        private final MapCodec<RoostRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) ->
+                instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> recipe.output),
+                        Ingredient.CODEC_NONEMPTY.fieldOf("food").forGetter((recipe) -> recipe.ingredient0),
+                        Ingredient.CODEC_NONEMPTY.fieldOf("chicken").forGetter((recipe) -> recipe.ingredient1),
+                        Codec.INT.fieldOf("time").orElse(20).forGetter((recipe) -> recipe.time)).apply(instance,
+                        RoostRecipe::new));
 
         private final StreamCodec<RegistryFriendlyByteBuf, RoostRecipe> STREAM_CODEC = StreamCodec.of(
                 Serializer::write, Serializer::read);

@@ -30,8 +30,6 @@ public class REIPlugin implements REIClientPlugin {
         registry.addWorkstations(REICategoryIdentifiers.BREEDING, EntryStacks.of(ModBlocks.BREEDER.get()));
         registry.add(new RoostREICategory());
         registry.addWorkstations(REICategoryIdentifiers.ROOST, EntryStacks.of(ModBlocks.ROOST.get()));
-        registry.add(new SoulBreederREICategory());
-        registry.addWorkstations(REICategoryIdentifiers.SOULBREEDING, EntryStacks.of(ModBlocks.SOUL_BREEDER.get()));
         registry.add(new SoulExtractionREICategory());
         registry.addWorkstations(REICategoryIdentifiers.SOULEXTRACTION, EntryStacks.of(ModBlocks.SOUL_EXTRACTOR.get()));
         registry.add(new TrainerREICategory());
@@ -44,16 +42,14 @@ public class REIPlugin implements REIClientPlugin {
         helper.registerRecipeFiller(ThrowEggRecipe.class, ThrowEggRecipe.Type.INSTANCE, EggREIDisplay::new);
         helper.registerRecipeFiller(BreederRecipe.class, BreederRecipe.Type.INSTANCE, BreederREIDisplay::new);
         helper.registerRecipeFiller(RoostRecipe.class, RoostRecipe.Type.INSTANCE, RoostREIDisplay::new);
-        helper.registerRecipeFiller(SoulBreederRecipe.class, SoulBreederRecipe.Type.INSTANCE, SoulBreederREIDisplay::new);
         helper.registerRecipeFiller(SoulExtractorRecipe.class, SoulExtractorRecipe.Type.INSTANCE, SoulExtractionREIDisplay::new);
         helper.registerRecipeFiller(TrainerRecipe.class, TrainerRecipe.Type.INSTANCE, TrainerREIDisplay::new);
     }
 
     @Override
     public void registerScreens(ScreenRegistry registry) {
-        registry.registerContainerClickArea(new Rectangle(53, 30, 40, 10), BreederScreen.class, BreederREIDisplay.ID);
-        registry.registerContainerClickArea(new Rectangle(59, 41, 40, 10), RoostScreen.class, RoostREIDisplay.ID);
-        registry.registerContainerClickArea(new Rectangle(59, 41, 40, 10), SoulBreederScreen.class, SoulBreederREIDisplay.ID);
+        registry.registerContainerClickArea(new Rectangle(53, 41, 40, 10), BreederScreen.class, BreederREIDisplay.ID);
+        registry.registerContainerClickArea(new Rectangle(59, 25, 40, 10), RoostScreen.class, RoostREIDisplay.ID);
         registry.registerContainerClickArea(new Rectangle(59, 41, 40, 10), SoulExtractorScreen.class, SoulExtractionREIDisplay.ID);
         registry.registerContainerClickArea(new Rectangle(59, 41, 40, 10), TrainerScreen.class, TrainerREIDisplay.ID);
     }

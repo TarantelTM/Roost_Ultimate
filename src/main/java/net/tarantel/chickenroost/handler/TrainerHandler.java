@@ -11,6 +11,7 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.TrainerTile;
 import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -18,7 +19,7 @@ public class TrainerHandler extends AbstractContainerMenu {
     public final TrainerTile blockEntity;
     public final Level level;
     private final ContainerData data;
-
+    private final ContainerLevelAccess access;
 
     public TrainerHandler(int id, Inventory inv, FriendlyByteBuf extraData) {
         this(id, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
@@ -29,6 +30,7 @@ public class TrainerHandler extends AbstractContainerMenu {
         super(ModHandlers.TRAINER.get(), id);
         checkContainerSize(inv, 2);
         blockEntity = (TrainerTile) entity;
+        this.access = ContainerLevelAccess.create(entity.getLevel(), entity.getBlockPos());
         this.level = inv.player.level();
         this.data = data;
 
@@ -56,18 +58,28 @@ public class TrainerHandler extends AbstractContainerMenu {
         });
         addDataSlots(data);
     }
-
     public boolean isCrafting() {
         return data.get(0) > 0;
     }
 
-    public int getScaledProgress() {
-        int progress = this.data.get(0);
-        int maxProgress = this.data.get(1);
-        int progressArrowSize = 54;
-
-        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
+    public int getProgress() {
+        return this.data.get(0);
     }
+
+    public int getMaxProgress() {
+        return this.data.get(1);
+    }
+    public int getScaledProgress(int arrowWidth) {
+        int progress = getProgress();
+        int maxProgress = getMaxProgress();
+
+        if (maxProgress == 0 || progress == 0) {
+            return 0;
+        }
+
+        return progress * arrowWidth / maxProgress;
+    }
+
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
     private static final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
@@ -124,5 +136,9 @@ public class TrainerHandler extends AbstractContainerMenu {
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
+    }
+
+    public BlockEntity getBlockEntity() {
+        return blockEntity;
     }
 }

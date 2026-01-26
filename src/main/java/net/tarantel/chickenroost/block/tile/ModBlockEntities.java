@@ -8,6 +8,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
+import net.tarantel.chickenroost.pipe.PipeBlockEntity;
 
 import java.util.function.Supplier;
 
@@ -24,10 +25,6 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(FeederTile::new,
                             ModBlocks.FEEDER.get()).build(null));
 
-    public static final Supplier<BlockEntityType<SoulBreederTile>> SOUL_BREEDER =
-            BLOCK_ENTITIES.register("soul_breeder", () ->
-                    BlockEntityType.Builder.of(SoulBreederTile::new,
-                            ModBlocks.SOUL_BREEDER.get()).build(null));
 
     public static final Supplier<BlockEntityType<BreederTile>> BREEDER =
             BLOCK_ENTITIES.register("breeder", () ->
@@ -44,6 +41,7 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("soul_extractor", () ->
                     BlockEntityType.Builder.of(SoulExtractorTile::new,
                             ModBlocks.SOUL_EXTRACTOR.get()).build(null));
+
     public static final Supplier<BlockEntityType<RoostTile>> ROOST =
             BLOCK_ENTITIES.register("roost", () ->
                     BlockEntityType.Builder.of(RoostTile::new,
@@ -54,6 +52,17 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(TrainerTile::new,
                             ModBlocks.TRAINER.get()).build(null));
 
+
+    public static final Supplier<BlockEntityType<PipeBlockEntity>> PIPE =
+            BLOCK_ENTITIES.register("pipe",
+                    () -> BlockEntityType.Builder.of(
+                            PipeBlockEntity::new,
+                            ModBlocks.PIPE_TIER1.get(),
+                            ModBlocks.PIPE_TIER2.get(),
+                            ModBlocks.PIPE_TIER3.get(),
+                            ModBlocks.PIPE_TIER4.get()
+                    ).build(null)
+            );
 
 
     public static void register(IEventBus eventBus) {
@@ -67,8 +76,7 @@ public class ModBlockEntities {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
                 CHICKENSTORAGE.get(), ChickenStorageTile::getItemHandlerCapability);
 
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                SOUL_BREEDER.get(), SoulBreederTile::getItemHandlerCapability);
+
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
                 BREEDER.get(), BreederTile::getItemHandlerCapability);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
@@ -81,6 +89,8 @@ public class ModBlockEntities {
                 TRAINER.get(), TrainerTile::getItemHandlerCapability);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
                 FEEDER.get(), FeederTile::getItemHandlerCapability);
+
+
 
     }
 }

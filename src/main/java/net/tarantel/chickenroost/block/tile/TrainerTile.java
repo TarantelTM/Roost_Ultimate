@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -19,15 +20,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.tarantel.chickenroost.api.ICollectorTarget;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.handler.TrainerHandler;
 import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.networking.SyncAutoOutputPayload;
+import net.tarantel.chickenroost.networking.SyncTrainerLevelPayload;
+import net.tarantel.chickenroost.util.ChickenStats;
 import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.ModDataComponents;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +49,7 @@ import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.Objects;
 
-public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEntity {
+public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEntity, ICollectorTarget {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     @Override
@@ -89,6 +97,50 @@ public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEn
         }
     };
 
+    private static final int CHICKEN_SLOT = 0;
+
+    @Override
+    public int getReadSlot() {
+        return CHICKEN_SLOT;
+    }
+
+    @Override
+    public @Nullable IItemHandler getItemHandler() {
+        return ccView;
+    }
+
+    private final IItemHandler ccView = new IItemHandler() {
+        @Override
+        public int getSlots() {
+            return itemHandler.getSlots();
+        }
+
+        @Override
+        public @NotNull ItemStack getStackInSlot(int slot) {
+            return itemHandler.getStackInSlot(slot);
+        }
+
+        @Override
+        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            return stack;
+        }
+
+        @Override
+        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return itemHandler.getSlotLimit(slot);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return itemHandler.isItemValid(slot, stack);
+        }
+    };
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate));
@@ -103,6 +155,24 @@ public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEn
 
         return PlayState.CONTINUE;
     }
+    private String customName = "TRAINER";
+
+    public void setCustomName(String name) {
+        if (name == null) name = "";
+        this.customName = name;
+        setChanged();
+        if (this.level != null && !this.level.isClientSide) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
+    }
+
+    public String getCustomName() {
+        return this.customName;
+    }
+
+
+
+
     public ItemStack getRenderStack() {
         ItemStack stack;
 
@@ -232,6 +302,11 @@ public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEn
     public void saveAdditional(CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
         nbt.put("inventory", itemHandler.serializeNBT(lookup));
         nbt.putInt("trainer.progress", this.progress);
+        nbt.putString("trainer.custom_name", this.customName);
+        nbt.putBoolean("AutoOutput", autoOutput);
+        nbt.putBoolean("LastRedstonePowered", lastRedstonePowered);
+        nbt.putBoolean("AutoOutputByRedstone", autoOutputByRedstone);
+        nbt.putInt("TrainerAutoOutputLevel", this.autoOutputLevel);
         super.saveAdditional(nbt, lookup);
     }
 
@@ -240,6 +315,30 @@ public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEn
         super.loadAdditional(nbt, lookup);
         itemHandler.deserializeNBT(lookup, nbt.getCompound("inventory"));
         progress = nbt.getInt("trainer.progress");
+        this.customName = nbt.getString("trainer.custom_name");
+        if (nbt.contains("AutoOutput")) {
+            this.autoOutput = nbt.getBoolean("AutoOutput");
+        } else {
+            this.autoOutput = false;
+        }
+        if (nbt.contains("LastRedstonePowered")) {
+            this.lastRedstonePowered = nbt.getBoolean("LastRedstonePowered");
+        } else {
+            this.lastRedstonePowered = false;
+        }
+
+        if(nbt.contains("AutoOutputByRedstone")){
+            this.autoOutputByRedstone = nbt.getBoolean("AutoOutputByRedstone");
+        } else {
+            this.autoOutputByRedstone = false;
+        }
+
+        if (nbt.contains("TrainerAutoOutputLevel")) {
+            this.autoOutputLevel = nbt.getInt("TrainerAutoOutputLevel");
+        } else {
+            this.autoOutputLevel = 0;
+        }
+
     }
 
     public void drops() {
@@ -261,42 +360,146 @@ public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEn
     public static ChickenSeedBase FoodItem;
     public static ChickenItemBase ChickenItem;
 
+    private boolean autoOutput = false;
+
+
+    private boolean lastRedstonePowered = false;
+    private boolean autoOutputByRedstone = false;
+
+    public boolean isAutoOutputEnabled() {
+        return autoOutput;
+    }
+
+    public void setAutoOutputEnabled(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = false;
+
+        if (level != null && !level.isClientSide) {
+            setChanged(level, worldPosition, getBlockState());
+        }
+    }
+
+    public void setAutoOutputFromGui(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = false;
+        syncToClients();
+    }
+
+
+    private void setAutoOutputFromRedstone(boolean enabled) {
+        this.autoOutput = enabled;
+        this.autoOutputByRedstone = enabled;
+        syncToClients();
+    }
+
+    private void syncToClients() {
+        if (level instanceof ServerLevel serverLevel) {
+            PacketDistributor.sendToPlayersTrackingChunk(
+                    serverLevel,
+                    serverLevel.getChunkAt(worldPosition).getPos(),
+                    new SyncAutoOutputPayload(worldPosition, autoOutput)
+            );
+        }
+        setChanged();
+    }
+
 
     public static void tick(Level level, BlockPos pos, BlockState state, TrainerTile pEntity) {
         if (level.isClientSide()) {
             return;
         }
-        if (pEntity.itemHandler.getStackInSlot(0).getItem().asItem() instanceof ChickenItemBase &&
-                pEntity.itemHandler.getStackInSlot(1).getItem().asItem() instanceof ChickenSeedBase)
-        {
 
-            ChickenItem = (ChickenItemBase) pEntity.itemHandler.getStackInSlot(0).getItem();
-            MyChicken = pEntity.itemHandler.getStackInSlot(0);
-            if (!MyChicken.has(ModDataComponents.CHICKENLEVEL.value())) {
-                MyChicken.set(ModDataComponents.CHICKENLEVEL.value(), 0);
-            }
-            if (!MyChicken.has(ModDataComponents.CHICKENXP.value())) {
-                MyChicken.set(ModDataComponents.CHICKENXP.value(), 0);
-            }
-            FoodItem = (ChickenSeedBase) pEntity.itemHandler.getStackInSlot(1).getItem().getDefaultInstance().getItem();
-            int ChickenLevel = MyChicken.get(ModDataComponents.CHICKENLEVEL);
+        ItemStack chickenStack = pEntity.itemHandler.getStackInSlot(0);
+        ItemStack seedStack = pEntity.itemHandler.getStackInSlot(1);
 
-            if(ChickenLevel < pEntity.LevelList[ChickenItem.currentchickena(ChickenItem.getDefaultInstance())]){
+        boolean hasChicken = chickenStack.getItem() instanceof ChickenItemBase;
+        boolean hasSeed = seedStack.getItem() instanceof ChickenSeedBase;
+
+
+        if (hasChicken) {
+            ChickenItemBase chickenItem = (ChickenItemBase) chickenStack.getItem();
+
+
+            if (!chickenStack.has(ModDataComponents.CHICKENLEVEL.value())) {
+                chickenStack.set(ModDataComponents.CHICKENLEVEL.value(), 0);
+            }
+            if (!chickenStack.has(ModDataComponents.CHICKENXP.value())) {
+                chickenStack.set(ModDataComponents.CHICKENXP.value(), 0);
+            }
+
+            int levelNow = chickenStack.get(ModDataComponents.CHICKENLEVEL.value());
+            int maxLevel = pEntity.LevelList[
+                    chickenItem.currentchickena(chickenStack)
+                    ];
+
+
+            chickenStack.set(
+                    ModDataComponents.MAXLEVEL.value(),
+                    levelNow >= maxLevel
+            );
+
+            pEntity.setChanged();
+        }
+
+
+        if (hasChicken && hasSeed) {
+
+            ChickenItemBase chickenItem = (ChickenItemBase) chickenStack.getItem();
+            int chickenLevel = chickenStack.get(ModDataComponents.CHICKENLEVEL.value());
+            int maxLevel = pEntity.LevelList[
+                    chickenItem.currentchickena(chickenStack)
+                    ];
+
+            if (chickenLevel < maxLevel) {
                 pEntity.progress++;
                 pEntity.triggerAnim("controller", "craft");
+
                 if (pEntity.progress >= pEntity.maxProgress) {
                     craftItem(pEntity);
                 }
+            } else {
+
+                pEntity.resetProgress();
+                pEntity.triggerAnim("controller", "idle");
             }
+
         }
-        else
-        {
+
+        else {
             pEntity.resetProgress();
             pEntity.triggerAnim("controller", "idle");
             setChanged(level, pos, state);
         }
 
+
+
+        boolean powered = level.hasNeighborSignal(pos);
+
+        if (powered && !pEntity.lastRedstonePowered) {
+            if (!pEntity.autoOutput) {
+                pEntity.setAutoOutputFromRedstone(true);
+            }
+        }
+
+        if (!powered && pEntity.lastRedstonePowered) {
+            if (pEntity.autoOutputByRedstone) {
+                pEntity.setAutoOutputFromRedstone(false);
+            }
+        }
+
+        pEntity.lastRedstonePowered = powered;
+
+
+        if (pEntity.isAutoOutputEnabled()) {
+            tryPushChickenDown(level, pos, state, pEntity);
+        }
     }
+
+
+    public void setAutoOutputClient(boolean enabled) {
+        this.autoOutput = enabled;
+    }
+
     private void resetProgress() {
         this.progress = 0;
     }
@@ -310,11 +513,14 @@ public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEn
 
     }
 
+
     private static void craftItem(TrainerTile pEntity) {
         ChickenItem = (ChickenItemBase) pEntity.itemHandler.getStackInSlot(0).getItem();
         MyChicken = pEntity.itemHandler.getStackInSlot(0);
         FoodItem = (ChickenSeedBase) pEntity.itemHandler.getStackInSlot(1).getItem().getDefaultInstance().getItem();
         SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
+        int chickenlvl;
+        int chickenxp;
         for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
             inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
@@ -337,8 +543,15 @@ public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEn
                         if (ChickenXP + (pEntity.XPAmountList[FoodItem.getCurrentMaxXp()]) >= pEntity.XPList[ChickenItem.currentchickena(ChickenItem.getDefaultInstance())]) {
                             MyChicken.set(ModDataComponents.CHICKENLEVEL.value(), (MyChicken.get(ModDataComponents.CHICKENLEVEL.value()) + 1));
                             MyChicken.set(ModDataComponents.CHICKENXP.value(), 0);
+
+                            chickenlvl = MyChicken.get(ModDataComponents.CHICKENLEVEL.value());
+                            chickenxp = MyChicken.get(ModDataComponents.CHICKENXP.value());
+
+
                         } else {
                             MyChicken.set(ModDataComponents.CHICKENXP.value(), ChickenXP + pEntity.XPAmountList[FoodItem.getCurrentMaxXp()]);
+                            chickenlvl = MyChicken.get(ModDataComponents.CHICKENLEVEL.value());
+                            chickenxp = MyChicken.get(ModDataComponents.CHICKENXP.value());
 
                         }
                     }
@@ -367,4 +580,83 @@ public class TrainerTile extends BlockEntity implements MenuProvider, GeoBlockEn
     public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider prov) {
         return saveWithFullMetadata(prov);
     }
+
+
+    private int autoOutputLevel = 128;
+
+    public int getAutoOutputLevel() {
+        return autoOutputLevel;
+    }
+
+
+    public void setAutoOutputLevel(int level) {
+        this.autoOutputLevel = Math.max(0, level);
+        syncTrainerLevelToClients();
+        setChanged();
+        if (this.level != null && !this.level.isClientSide) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
+    }
+
+
+    public void setAutoOutputLevelClient(int level) {
+        this.autoOutputLevel = Math.max(0, level);
+    }
+
+
+
+
+
+    private static void tryPushChickenDown(Level level, BlockPos pos, BlockState state, TrainerTile tile) {
+        ItemStack stack = tile.itemHandler.getStackInSlot(CHICKEN_SLOT);
+        if (stack.isEmpty()) return;
+        if (!(stack.getItem() instanceof ChickenItemBase)) return;
+
+
+        if (!stack.has(ModDataComponents.CHICKENLEVEL.value())) return;
+        Integer chickenLevel = stack.get(ModDataComponents.CHICKENLEVEL.value());
+        if (chickenLevel == null) return;
+
+
+        if (chickenLevel < tile.autoOutputLevel) return;
+
+
+
+        IItemHandler below = level.getCapability(
+                Capabilities.ItemHandler.BLOCK,
+                pos.below(),
+                net.minecraft.core.Direction.UP
+        );
+        if (below == null) return;
+
+        ItemStack remaining = stack.copy();
+
+        for (int s = 0; s < below.getSlots() && !remaining.isEmpty(); s++) {
+            remaining = below.insertItem(s, remaining, false);
+        }
+
+
+        if (remaining.getCount() == stack.getCount()) return;
+
+
+        int moved = stack.getCount() - remaining.getCount();
+        ItemStack newStack = stack.copy();
+        newStack.shrink(moved);
+        if (newStack.isEmpty()) newStack = ItemStack.EMPTY;
+
+        tile.itemHandler.setStackInSlot(CHICKEN_SLOT, newStack);
+        setChanged(level, pos, state);
+    }
+
+    private void syncTrainerLevelToClients() {
+        if (level instanceof ServerLevel serverLevel) {
+            PacketDistributor.sendToPlayersTrackingChunk(
+                    serverLevel,
+                    serverLevel.getChunkAt(worldPosition).getPos(),
+                    new SyncTrainerLevelPayload(worldPosition, autoOutputLevel)
+            );
+        }
+    }
+
+
 }

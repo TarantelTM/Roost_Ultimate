@@ -13,9 +13,10 @@ import java.util.List;
 public class GsonChickenWriter {
     public static void writeItemsToFile(List<ChickenData> items) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String filePath = FMLPaths.GAMEDIR.get().toString() + "/config/roostultimate/chicken_config_v5.json";
+        String filePath = FMLPaths.GAMEDIR.get().toString() + "/crlib/chicken_config_v4-2-0.json";
 
-        File directory = new File(FMLPaths.GAMEDIR.get().toString() + "/config/roostultimate");
+
+        File directory = new File(FMLPaths.GAMEDIR.get().toString() + "/crlib");
         if (!directory.exists()) {
             directory.mkdirs();
         }

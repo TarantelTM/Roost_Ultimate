@@ -1,10 +1,12 @@
 package net.tarantel.chickenroost.item.base;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
@@ -19,6 +21,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -28,7 +31,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.tarantel.chickenroost.ChickenRoostMod;
+import net.tarantel.chickenroost.client.ClientBreedingCache;
+import net.tarantel.chickenroost.client.ClientRoostCache;
+import net.tarantel.chickenroost.client.tooltip.ClientStackLineTooltip;
+import net.tarantel.chickenroost.client.tooltip.StackLineTooltip;
 import net.tarantel.chickenroost.item.renderer.AnimatedChickenRenderer;
+import net.tarantel.chickenroost.recipes.RoostRecipe;
 import net.tarantel.chickenroost.util.ClientBiomeCache;
 import net.tarantel.chickenroost.util.Config;
 import net.tarantel.chickenroost.util.ModDataComponents;
@@ -189,8 +197,7 @@ public class AnimatedChicken extends ChickenItemBase implements GeoItem {
                 case 8 -> Config.xp_tier_9.get();
                 default -> Config.xp_tier_1.get();
             };
-
-
+            Level world = context.level();
         int level = 0;
         int xp = 0;
         if(itemstack.has(ModDataComponents.CHICKENLEVEL)){
@@ -199,30 +206,89 @@ public class AnimatedChicken extends ChickenItemBase implements GeoItem {
         if(itemstack.has(ModDataComponents.CHICKENXP)){
             xp = itemstack.get(ModDataComponents.CHICKENXP.value());
         }
-        list.add(Component.nullToEmpty("§1" + "Tier: " + "§9" + (currentchickena + 1)));
-        list.add(Component.nullToEmpty((("§e") + "Level: " + "§9" + level + "/" + maxLevel)));
-        list.add(Component.nullToEmpty((("§a") + "XP: " + "§9" + xp + "/" +  maxXP)));
+            list.add(Component.translatable(
+                    "roost_chicken.chickeninfo.tier",
+                    currentchickena + 1
+            ));
 
-            String itemId = BuiltInRegistries.ITEM.getKey(itemstack.getItem()).toString();
-            List<String> biomes = ClientBiomeCache.getBiomes(itemId);
-            if (!biomes.isEmpty()) {
-                list.add(Component.literal("Spawns in:"));
-                for (String biome : biomes) {
-                    try {
-                        list.add(Component.translatable(" - %s", Component.translatable("biome." + biome.replace(":", "."))));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            list.add(Component.translatable(
+                    "roost_chicken.chickeninfo.level",
+                    level, maxLevel
+            ));
+
+            list.add(Component.translatable(
+                    "roost_chicken.chickeninfo.xp",
+                    xp, maxXP
+            ));
+
+
+            if (world == null || world.isClientSide) {
+                String itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(itemstack.getItem()).toString();
+                java.util.List<String> biomes = ClientBiomeCache.getBiomes(itemId);
+
+                if (!biomes.isEmpty()) {
+                    list.add(Component.translatable("roost_chicken.biomeinfo.spawn"));
+                    for (String biome : biomes) {
+                        try {
+
+                            String key = "biome." + biome.replace(":", ".");
+                            list.add(Component.literal(" - ").append(Component.translatable(key)));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
+                } else {
+                    list.add(Component.translatable("roost_chicken.biomeinfo.nospawn"));
                 }
-            } else {
-                list.add(Component.literal("Spawns in: No Spawn found, maybe check Recipes"));
             }
-        list.add(Component.nullToEmpty("§1 Roost Ultimate"));
+
+
+            if (world == null || world.isClientSide) {
+
+                var recipes = ClientBreedingCache.getRecipes(itemstack);
+
+                if (!recipes.isEmpty()) {
+                    list.add(Component.translatable("roost_chicken.breedinginfo.title"));
+
+                    for (var recipe : recipes) {
+                        list.add(Component.literal(" §7• ")
+                                .append(Component.translatable("roost_chicken.breedinginfo.recipe")));
+
+                        addIngredientLine(list, recipe.ingredient0());
+                        addIngredientLine(list, recipe.ingredient1());
+                        addIngredientLine(list, recipe.ingredient2());
+                    }
+                } else {
+                    list.add(Component.translatable("roost_chicken.breedinginfo.none"));
+                }
+            }
+
+            list.add(Component.literal("§1 Roost Ultimate"));
         } catch (Exception e) {
             System.out.println("Error in Tooltip:");
             e.printStackTrace();
         }
     }
+
+    private static Component buildRoostOutputLine(RoostRecipe recipe) {
+
+        ItemStack output = recipe.getResultItem(null).copy();
+        output.setCount(1);
+
+        MutableComponent line = Component.literal(" ");
+        line.append(output.getHoverName());
+
+        return line.withStyle(ChatFormatting.GRAY);
+    }
+
+    private static void addIngredientLine(List<Component> list, Ingredient ingredient) {
+        ItemStack[] stacks = ingredient.getItems();
+        if (stacks.length > 0) {
+            list.add(Component.literal("   - ")
+                    .append(stacks[0].getHoverName()));
+        }
+    }
+
 
     private PlayState predicate(AnimationState animationState) {
         animationState.getController().setAnimation(RawAnimation.begin().then("idle", Animation.LoopType.LOOP));

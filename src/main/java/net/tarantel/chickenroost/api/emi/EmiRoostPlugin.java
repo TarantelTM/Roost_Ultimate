@@ -18,7 +18,6 @@ public class EmiRoostPlugin implements EmiPlugin {
     public static final EmiStack ROOST_WORKSTATION = EmiStack.of(ModBlocks.ROOST);
     public static final EmiStack TRAINER_WORKSTATION = EmiStack.of(ModBlocks.TRAINER);
     public static final EmiStack SOUL_EXTRACTOR_WORKSTATION = EmiStack.of(ModBlocks.SOUL_EXTRACTOR);
-    public static final EmiStack SOUL_BREEDER_WORKSTATION = EmiStack.of(ModBlocks.SOUL_BREEDER);
 
 
 
@@ -33,9 +32,6 @@ public class EmiRoostPlugin implements EmiPlugin {
     public static final EmiRecipeCategory SOUL_EXTRACTOR_CATEGORY
             = new EmiRecipeCategory(SOUL_EXTRACTOR_WORKSTATION.getId(), SOUL_EXTRACTOR_WORKSTATION);
 
-    public static final EmiRecipeCategory SOUL_BREEDER_CATEGORY
-            = new EmiRecipeCategory(SOUL_BREEDER_WORKSTATION.getId(), SOUL_BREEDER_WORKSTATION);
-
     @Override
     public void register(EmiRegistry registry) {
         registry.addCategory(EGG_CATEGORY);
@@ -43,14 +39,14 @@ public class EmiRoostPlugin implements EmiPlugin {
         registry.addCategory(ROOST_CATEGORY);
         registry.addCategory(TRAINER_CATEGORY);
         registry.addCategory(SOUL_EXTRACTOR_CATEGORY);
-        registry.addCategory(SOUL_BREEDER_CATEGORY);
+
 
         registry.addWorkstation(EGG_CATEGORY, EGG_WORKSTATION);
         registry.addWorkstation(BREEDER_CATEGORY, BREEDER_WORKSTATION);
         registry.addWorkstation(ROOST_CATEGORY, ROOST_WORKSTATION);
         registry.addWorkstation(TRAINER_CATEGORY, TRAINER_WORKSTATION);
         registry.addWorkstation(SOUL_EXTRACTOR_CATEGORY, SOUL_EXTRACTOR_WORKSTATION);
-        registry.addWorkstation(SOUL_BREEDER_CATEGORY, SOUL_BREEDER_WORKSTATION);
+
 
         RecipeManager manager = registry.getRecipeManager();
         for (RecipeHolder<ThrowEggRecipe> egg : manager.getAllRecipesFor(ModRecipes.THROW_EGG_TYPE.get())) {
@@ -68,10 +64,6 @@ public class EmiRoostPlugin implements EmiPlugin {
         for (RecipeHolder<SoulExtractorRecipe> soul : manager.getAllRecipesFor(ModRecipes.SOUL_EXTRACTION_TYPE.get())) {
             registry.addRecipe(new EmiSoulExtractorRecipe(soul.value()));
         }
-        for (RecipeHolder<SoulBreederRecipe> soulbreed : manager.getAllRecipesFor(ModRecipes.SOUL_BREEDING_TYPE.get())) {
-            registry.addRecipe(new EmiSoulBreederRecipe(soulbreed.value()));
-        }
-
 
     }
 }

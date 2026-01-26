@@ -88,27 +88,28 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
     private int _roostValidationTicker = 0;
 
 
-    private boolean isValidRoost(BlockPos pos) {
+    private boolean isValidCollectorTarget(BlockPos pos) {
         if (this.level == null || pos == null) return false;
 
         BlockEntity be = this.level.getBlockEntity(pos);
-        if (!(be instanceof RoostTile)) return false;
+        if (be == null) return false;
 
-        BlockState state = this.level.getBlockState(pos);
-        return state.getBlock() instanceof RoostBlock;
+        return be instanceof RoostTile
+                || be instanceof BreederTile
+                || be instanceof SoulExtractorTile;
+    }
+
+    private void pruneMissingCollectorTargets() {
+        if (this.level == null || activeRoosts.isEmpty()) return;
+
+        activeRoosts.removeIf(pos -> !isValidCollectorTarget(pos));
     }
 
 
-    private void pruneMissingRoosts() {
-        if (this.level == null || activeRoosts == null || activeRoosts.isEmpty()) return;
-        activeRoosts.removeIf(pos -> !isValidRoost(pos));
-    }
-
-
-    private void maybePruneRoostsPeriodic() {
+    private void maybePruneCollectorTargetsPeriodic() {
 
         if ((++_roostValidationTicker % 20) == 0) {
-            pruneMissingRoosts();
+            pruneMissingCollectorTargets();
         }
     }
 
@@ -135,7 +136,7 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
         for (long l : arr) this.activeRoosts.add(BlockPos.of(l));
 
         this.collectRange = Math.max(5, Math.min(30, nbt.getInt("collector.range")));
-        pruneMissingRoosts();
+        pruneMissingCollectorTargets();
     }
 
 
@@ -152,20 +153,63 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
         }
     }
 
+    private static void pullFromSlot(
+            IItemHandler from,
+            IItemHandler to,
+            int fromSlot
+    ) {
+        ItemStack stack = from.getStackInSlot(fromSlot);
+        if (stack.isEmpty()) return;
+
+        ItemStack moving = stack.copy();
+
+        for (int i = 0; i < to.getSlots() && !moving.isEmpty(); i++) {
+            moving = to.insertItem(i, moving, false);
+        }
+
+        int moved = stack.getCount() - moving.getCount();
+        if (moved > 0) {
+            from.extractItem(fromSlot, moved, false);
+        }
+    }
+
+
+
+    private static void pullFromMultipleSlots(
+            IItemHandler from,
+            IItemHandler to,
+            int[] slots
+    ) {
+        for (int i = 0; i < slots.length; i++) {
+            pullFromSlot(from, to, slots[i]);
+        }
+    }
     private static void collectFromActiveRoosts(Level level, CollectorTile self) {
         if (self.activeRoosts.isEmpty()) return;
-        final int r = self.getCollectRange();
-        final int maxDist2 = r * r;
-        for (BlockPos rpos : new HashSet<>(self.activeRoosts)) {
-            if (rpos.distSqr(self.getBlockPos()) > (double) (maxDist2 * 3)) {
-                continue;
-            }
-            BlockEntity be = level.getBlockEntity(rpos);
-            if(be instanceof RoostTile) {
-                IItemHandler roostInv = level.getCapability(Capabilities.ItemHandler.BLOCK, rpos, (Direction) null);
-                if (roostInv == null) continue;
 
-                moveOneStack(roostInv, self.itemHandler);
+        for (BlockPos pos : new HashSet<>(self.activeRoosts)) {
+
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be == null) continue;
+
+            IItemHandler sourceInv =
+                    level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+
+            if (sourceInv == null) continue;
+
+            if (be instanceof RoostTile) {
+                pullFromSlot(sourceInv, self.itemHandler, 2);
+            }
+
+            else if (be instanceof SoulExtractorTile) {
+                pullFromSlot(sourceInv, self.itemHandler, 1);
+            }
+
+            else if (be instanceof BreederTile) {
+                int[] breederSlots = {
+                        3, 4, 5, 6, 7, 8, 9, 10, 11
+                };
+                pullFromMultipleSlots(sourceInv, self.itemHandler, breederSlots);
             }
         }
     }
@@ -192,7 +236,7 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
 
     public static void tick(Level level, BlockPos pos, BlockState state, CollectorTile tile) {
         if (level.isClientSide()) return;
-        tile.maybePruneRoostsPeriodic();
+        tile.maybePruneCollectorTargetsPeriodic();
         collectFromActiveRoosts(level, tile);
         setChanged(level, pos, state);
     }
