@@ -17,14 +17,20 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -33,149 +39,138 @@ import net.tarantel.chickenroost.block.tile.RoostTile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("deprecation")
 public class RoostBlock extends BaseEntityBlock {
-    public static final MapCodec<RoostBlock> CODEC = simpleCodec(RoostBlock::new);
+   public static final MapCodec<RoostBlock> CODEC = simpleCodec(RoostBlock::new);
+   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+   private static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 
+   public RoostBlock(Properties properties) {
+      super(properties);
+      this.registerDefaultState((BlockState)((BlockState)this.stateDefinition.any()).setValue(FACING, Direction.NORTH));
+   }
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+   @NotNull
+   protected MapCodec<? extends BaseEntityBlock> codec() {
+      return CODEC;
+   }
 
+   @NotNull
+   public VoxelShape getShape(
+      @NotNull BlockState blockState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext
+   ) {
+      return SHAPE;
+   }
 
-    public RoostBlock(Properties properties) {
-        super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
-    @Override
-    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
-    private static final VoxelShape SHAPE =
-            Block.box(0, 0, 0, 16, 16, 16);
+   public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+      return (BlockState)this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+   }
 
-    @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
-        return SHAPE;
-    }
+   @NotNull
+   public BlockState rotate(BlockState pState, Rotation pRotation) {
+      return (BlockState)pState.setValue(FACING, pRotation.rotate((Direction)pState.getValue(FACING)));
+   }
 
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
-    }
+   @NotNull
+   public BlockState mirror(BlockState pState, Mirror pMirror) {
+      return pState.rotate(pMirror.getRotation((Direction)pState.getValue(FACING)));
+   }
 
-    @Override
-    public @NotNull BlockState rotate(BlockState pState, Rotation pRotation) {
-        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
-    }
+   protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
+      builder.add(new Property[]{FACING});
+   }
 
-    @Override
-    public @NotNull BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
-    }
+   public void setPlacedBy(@NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack) {
+      super.setPlacedBy(world, pos, state, placer, stack);
+      if (stack.getComponents().has(DataComponents.CONTAINER)) {
+         ItemContainerContents itemContainerContents = (ItemContainerContents)stack.get(DataComponents.CONTAINER);
+         if (itemContainerContents != null) {
+            if (world.getBlockEntity(pos) instanceof RoostTile tile) {
+               int slots = itemContainerContents.getSlots();
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
-    }
-
-    @Override
-    public void setPlacedBy(@NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack) {
-        super.setPlacedBy(world, pos, state, placer, stack);
-
-
-        if (!stack.getComponents().has(DataComponents.CONTAINER)) {
-            return;
-        }
-
-
-        ItemContainerContents itemContainerContents = stack.get(DataComponents.CONTAINER);
-        if (itemContainerContents == null) {
-            return;
-        }
-
-
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (!(blockEntity instanceof RoostTile tile)) {
-            return;
-        }
-
-        int slots = itemContainerContents.getSlots();
-        for (int i = 0; i < slots; i++) {
-            ItemStack itemStack = itemContainerContents.getStackInSlot(i);
-            if (!itemStack.isEmpty()) {
-                tile.itemHandler.setStackInSlot(i, itemStack);
+               for (int i = 0; i < slots; i++) {
+                  ItemStack itemStack = itemContainerContents.getStackInSlot(i);
+                  if (!itemStack.isEmpty()) {
+                     tile.itemHandler.setStackInSlot(i, itemStack);
+                  }
+               }
             }
-        }
-    }
-    @Override
-    public void onPlace(@NotNull BlockState blockstate, @NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean moving) {
-        super.onPlace(blockstate, world, pos, oldState, moving);
-        world.scheduleTick(pos, this, 20);
+         }
+      }
+   }
 
+   public void onPlace(@NotNull BlockState blockstate, @NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean moving) {
+      super.onPlace(blockstate, world, pos, oldState, moving);
+      world.scheduleTick(pos, this, 20);
+   }
 
-    }
+   @NotNull
+   public RenderShape getRenderShape(@NotNull BlockState blockState) {
+      return RenderShape.MODEL;
+   }
 
-    @Override
-    public @NotNull RenderShape getRenderShape(@NotNull BlockState blockState) {
-        return RenderShape.MODEL;
-    }
+   public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+      if (pState.getBlock() != pNewState.getBlock()) {
+         BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+         if (blockEntity instanceof RoostTile) {
+            ((RoostTile)blockEntity).drops();
+         }
+      }
 
-    @Override
-    public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pState.getBlock() != pNewState.getBlock()) {
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof RoostTile) {
-                ((RoostTile) blockEntity).drops();
-            }
-        }
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-    }
-    @Override
-    public void tick(@NotNull BlockState blockstate, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource random) {
-        super.tick(blockstate, world, pos, random);
-        world.scheduleTick(pos, this, 20);
-    }
+      super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+   }
 
+   public void tick(@NotNull BlockState blockstate, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource random) {
+      super.tick(blockstate, world, pos, random);
+      world.scheduleTick(pos, this, 20);
+   }
 
-    @Override
-    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            BlockEntity entity = level.getBlockEntity(pos);
-            ServerPlayer theplayer = (ServerPlayer) player;
-            if(entity instanceof RoostTile) {
-                theplayer.openMenu((RoostTile)entity, pos);
-            } else {
-                throw new IllegalStateException("Our Container provider is missing!");
-            }
-        }
+   @NotNull
+   protected InteractionResult useWithoutItem(
+      @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult
+   ) {
+      if (!level.isClientSide()) {
+         BlockEntity entity = level.getBlockEntity(pos);
+         ServerPlayer theplayer = (ServerPlayer)player;
+         if (!(entity instanceof RoostTile)) {
+            throw new IllegalStateException("Our Container provider is missing!");
+         }
 
-        return InteractionResult.PASS;
-    }
-    @Override
-    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            BlockEntity entity = level.getBlockEntity(pos);
-            ServerPlayer theplayer = (ServerPlayer) player;
-            if(entity instanceof RoostTile) {
-                theplayer.openMenu((RoostTile)entity, pos);
-            } else {
-                throw new IllegalStateException("Our Container provider is missing!");
-            }
-        }
+         theplayer.openMenu((RoostTile)entity, pos);
+      }
 
-        return ItemInteractionResult.sidedSuccess(true);
-    }
+      return InteractionResult.PASS;
+   }
 
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new RoostTile(pos, state);
-    }
+   @NotNull
+   protected ItemInteractionResult useItemOn(
+      @NotNull ItemStack stack,
+      @NotNull BlockState state,
+      Level level,
+      @NotNull BlockPos pos,
+      @NotNull Player player,
+      @NotNull InteractionHand hand,
+      @NotNull BlockHitResult hitResult
+   ) {
+      if (!level.isClientSide()) {
+         BlockEntity entity = level.getBlockEntity(pos);
+         ServerPlayer theplayer = (ServerPlayer)player;
+         if (!(entity instanceof RoostTile)) {
+            throw new IllegalStateException("Our Container provider is missing!");
+         }
 
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state,
-                                                                  @NotNull BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlockEntities.ROOST.get(),
-                RoostTile::tick);
-    }
+         theplayer.openMenu((RoostTile)entity, pos);
+      }
+
+      return ItemInteractionResult.sidedSuccess(true);
+   }
+
+   @Nullable
+   public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+      return new RoostTile(pos, state);
+   }
+
+   @Nullable
+   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> type) {
+      return createTickerHelper(type, ModBlockEntities.ROOST.get(), RoostTile::tick);
+   }
 }

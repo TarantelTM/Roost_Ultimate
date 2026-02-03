@@ -1,0 +1,16 @@
+{
+  "parent": "chicken_roost:block/pipe_center",
+  "elements": [
+    {
+      "from": [6, 12, 6],
+      "to":   [10, 16, 10],
+      "faces": {
+        "up":    { "texture": "#up" },
+        "north": { "texture": "#north" },
+        "south": { "texture": "#south" },
+        "west":  { "texture": "#west" },
+        "east":  { "texture": "#east" }
+      }
+    }
+  ]
+}
