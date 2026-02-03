@@ -49,9 +49,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTarget {
+   private RecipeHolder<RoostRecipe> cachedRecipe = null;
+   private boolean recipeDirty = true;
+
    public final ItemStackHandler itemHandler = new ItemStackHandler(3) {
       protected void onContentsChanged(int slot) {
          RoostTile.this.setChanged();
+         if (slot == 0 || slot == 1) {
+            RoostTile.this.recipeDirty = true;
+            RoostTile.this.cachedRecipe = null;
+         }
          if (slot == 1) {
             RoostTile.this.resetProgress();
          }
@@ -382,15 +389,23 @@ public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTa
          }
 
          pEntity.lastRedstonePowered = powered;
-         setChanged(level, pos, state);
-         if (hasRecipe(pEntity)) {
+
+         if (chickenStack.isEmpty()) {
+            if (pEntity.progress != 0) {
+               pEntity.resetProgress();
+               setChanged(level, pos, state);
+            }
+         } else if (hasRecipe(pEntity)) {
             pEntity.progress++;
+            setChanged(level, pos, state);
             if (pEntity.progress >= pEntity.maxProgress) {
                craftItem(pEntity);
             }
          } else {
-            pEntity.resetProgress();
-            setChanged(level, pos, state);
+            if (pEntity.progress != 0) {
+               pEntity.resetProgress();
+               setChanged(level, pos, state);
+            }
          }
 
          if (pEntity.isAutoOutputEnabled()) {
@@ -438,7 +453,7 @@ public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTa
       return new RecipeInput() {
          @NotNull
          public ItemStack getItem(int index) {
-            return inventory.getItem(index).copy();
+            return inventory.getItem(index);
          }
 
          public int size() {
@@ -448,124 +463,119 @@ public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTa
    }
 
    private static void craftItem(RoostTile pEntity) {
+      if (pEntity.cachedRecipe == null) return;
+      RoostRecipe recipe = pEntity.cachedRecipe.value();
+
       MyChicken = (ChickenItemBase)pEntity.itemHandler.getStackInSlot(1).getItem().getDefaultInstance().getItem();
       ChickenItem = pEntity.itemHandler.getStackInSlot(1);
       Level level = pEntity.level;
-      SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
+      if (level == null) return;
 
+      SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
       for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
          inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
       }
 
-      Optional<RecipeHolder<RoostRecipe>> recipe = Optional.empty();
-      if (level != null) {
-         recipe = level.getRecipeManager().getRecipeFor(ModRecipes.ROOST_TYPE.get(), getRecipeInput(inventory), level);
-      }
-
-      if (hasRecipe(pEntity)) {
-         if (ChickenRoostMod.CONFIG.RoostSeeds) {
-            FoodItem = (ChickenSeedBase)pEntity.itemHandler.getStackInSlot(0).getItem().getDefaultInstance().getItem();
-            int ChickenLevel;
-            int ChickenXP;
-            if (ChickenItem.has(ModDataComponents.CHICKENLEVEL) && ChickenItem.has(ModDataComponents.CHICKENXP)) {
-               ChickenLevel = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value()) / 2
-                  + ((RoostRecipe)recipe.get().value()).output().getCount();
-               ChickenXP = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENXP.value());
-            } else {
-               ChickenLevel = 0;
-               ChickenXP = 0;
-               ChickenItem.set((DataComponentType)ModDataComponents.CHICKENLEVEL.value(), ChickenLevel);
-               ChickenItem.set((DataComponentType)ModDataComponents.CHICKENXP.value(), ChickenXP);
-            }
-
-            ItemStack itemstack1 = ((RoostRecipe)recipe.get().value()).assemble(getRecipeInput(inventory), level.registryAccess());
-            int newCount = pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel;
-            itemstack1.setCount(Math.min(newCount, 64));
-            if (pEntity.itemHandler.getStackInSlot(1).getItem() instanceof ChickenItemBase) {
-               if ((Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value())
-                  < pEntity.LevelList[MyChicken.currentchickena(MyChicken.getDefaultInstance())]) {
-                  if (pEntity.itemHandler.getStackInSlot(0).getItem() instanceof ChickenSeedBase) {
-                     if (ChickenXP + pEntity.XPAmountList[FoodItem.getCurrentMaxXp()] * (Double)Config.roostxp.get()
-                        >= pEntity.XPList[MyChicken.currentchickena(MyChicken.getDefaultInstance())]) {
-                        ChickenItem.set(
-                           (DataComponentType)ModDataComponents.CHICKENLEVEL.value(),
-                           (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value()) + 1
-                        );
-                        ChickenItem.set((DataComponentType)ModDataComponents.CHICKENXP.value(), 0);
-                        int chickenlvl = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value());
-                        int chickenxp = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENXP.value());
-                     } else {
-                        ChickenItem.set(
-                           (DataComponentType)ModDataComponents.CHICKENXP.value(),
-                           (int)(ChickenXP + pEntity.XPAmountList[FoodItem.getCurrentMaxXp()] * (Double)Config.roostxp.get())
-                        );
-                        int chickenlvl = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value());
-                        int var11 = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENXP.value());
-                     }
-                  }
-
-                  pEntity.itemHandler.extractItem(0, 1, false);
-                  pEntity.itemHandler.extractItem(1, 0, true);
-                  pEntity.itemHandler.setStackInSlot(1, ChickenItem);
-                  pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
-                  pEntity.resetProgress();
-               } else {
-                  pEntity.itemHandler.extractItem(0, 1, false);
-                  pEntity.itemHandler.extractItem(1, 0, true);
-                  pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
-                  pEntity.resetProgress();
-               }
-            }
+      if (ChickenRoostMod.CONFIG.RoostSeeds) {
+         FoodItem = (ChickenSeedBase)pEntity.itemHandler.getStackInSlot(0).getItem().getDefaultInstance().getItem();
+         int ChickenLevel;
+         int ChickenXP;
+         if (ChickenItem.has(ModDataComponents.CHICKENLEVEL) && ChickenItem.has(ModDataComponents.CHICKENXP)) {
+            ChickenLevel = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value()) / 2
+               + recipe.output().getCount();
+            ChickenXP = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENXP.value());
          } else {
-            int ChickenLevelx;
-            if (ChickenItem.has(ModDataComponents.CHICKENLEVEL) && ChickenItem.has(ModDataComponents.CHICKENXP)) {
-               ChickenLevelx = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value()) / 2
-                  + ((RoostRecipe)recipe.get().value()).output().getCount();
-               int ChickenXPx = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENXP.value());
-            } else {
-               ChickenLevelx = 0;
-               int ChickenXPx = 0;
-               ChickenItem.set((DataComponentType)ModDataComponents.CHICKENLEVEL.value(), ChickenLevelx);
-               ChickenItem.set((DataComponentType)ModDataComponents.CHICKENXP.value(), ChickenXPx);
-            }
-
-            ItemStack itemstack1 = ((RoostRecipe)recipe.get().value()).assemble(getRecipeInput(inventory), level.registryAccess());
-            int newCount = pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevelx;
-            itemstack1.setCount(Math.min(newCount, 64));
-            pEntity.itemHandler.extractItem(1, 0, true);
-            pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
-            pEntity.resetProgress();
+            ChickenLevel = 0;
+            ChickenXP = 0;
+            ChickenItem.set((DataComponentType)ModDataComponents.CHICKENLEVEL.value(), ChickenLevel);
+            ChickenItem.set((DataComponentType)ModDataComponents.CHICKENXP.value(), ChickenXP);
          }
+
+         ItemStack itemstack1 = recipe.assemble(getRecipeInput(inventory), level.registryAccess());
+         int newCount = pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevel;
+         itemstack1.setCount(Math.min(newCount, 64));
+         if (pEntity.itemHandler.getStackInSlot(1).getItem() instanceof ChickenItemBase) {
+            if ((Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value())
+               < pEntity.LevelList[MyChicken.currentchickena(MyChicken.getDefaultInstance())]) {
+               if (pEntity.itemHandler.getStackInSlot(0).getItem() instanceof ChickenSeedBase) {
+                  if (ChickenXP + pEntity.XPAmountList[FoodItem.getCurrentMaxXp()] * (Double)Config.roostxp.get()
+                     >= pEntity.XPList[MyChicken.currentchickena(MyChicken.getDefaultInstance())]) {
+                     ChickenItem.set(
+                        (DataComponentType)ModDataComponents.CHICKENLEVEL.value(),
+                        (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value()) + 1
+                     );
+                     ChickenItem.set((DataComponentType)ModDataComponents.CHICKENXP.value(), 0);
+                  } else {
+                     ChickenItem.set(
+                        (DataComponentType)ModDataComponents.CHICKENXP.value(),
+                        (int)(ChickenXP + pEntity.XPAmountList[FoodItem.getCurrentMaxXp()] * (Double)Config.roostxp.get())
+                     );
+                  }
+               }
+
+               pEntity.itemHandler.extractItem(0, 1, false);
+               pEntity.itemHandler.extractItem(1, 0, true);
+               pEntity.itemHandler.setStackInSlot(1, ChickenItem);
+               pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
+               pEntity.resetProgress();
+            } else {
+               pEntity.itemHandler.extractItem(0, 1, false);
+               pEntity.itemHandler.extractItem(1, 0, true);
+               pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
+               pEntity.resetProgress();
+            }
+         }
+      } else {
+         int ChickenLevelx;
+         if (ChickenItem.has(ModDataComponents.CHICKENLEVEL) && ChickenItem.has(ModDataComponents.CHICKENXP)) {
+            ChickenLevelx = (Integer)ChickenItem.get((DataComponentType)ModDataComponents.CHICKENLEVEL.value()) / 2
+               + recipe.output().getCount();
+         } else {
+            ChickenLevelx = 0;
+            ChickenItem.set((DataComponentType)ModDataComponents.CHICKENLEVEL.value(), ChickenLevelx);
+            ChickenItem.set((DataComponentType)ModDataComponents.CHICKENXP.value(), 0);
+         }
+
+         ItemStack itemstack1 = recipe.assemble(getRecipeInput(inventory), level.registryAccess());
+         int newCount = pEntity.itemHandler.getStackInSlot(2).getCount() + ChickenLevelx;
+         itemstack1.setCount(Math.min(newCount, 64));
+         pEntity.itemHandler.extractItem(1, 0, true);
+         pEntity.itemHandler.setStackInSlot(2, itemstack1.copy());
+         pEntity.resetProgress();
       }
    }
 
    private static boolean hasRecipe(RoostTile entity) {
       Level level = entity.level;
-      SimpleContainer inventory = new SimpleContainer(entity.itemHandler.getSlots());
+      if (level == null) return false;
 
-      for (int i = 0; i < entity.itemHandler.getSlots(); i++) {
-         inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
+      if (entity.recipeDirty) {
+         entity.recipeDirty = false;
+         SimpleContainer inventory = new SimpleContainer(entity.itemHandler.getSlots());
+         for (int i = 0; i < entity.itemHandler.getSlots(); i++) {
+            inventory.setItem(i, entity.itemHandler.getStackInSlot(i));
+         }
+         Optional<RecipeHolder<RoostRecipe>> found = level.getRecipeManager()
+            .getRecipeFor(ModRecipes.ROOST_TYPE.get(), getRecipeInput(inventory), level);
+         entity.cachedRecipe = found.orElse(null);
+         if (entity.cachedRecipe != null) {
+            entity.maxProgress = (Integer)Config.roost_speed_tick.get() * entity.cachedRecipe.value().time();
+         }
       }
 
-      Optional<RecipeHolder<RoostRecipe>> recipe = Optional.empty();
-      if (level != null) {
-         recipe = level.getRecipeManager().getRecipeFor(ModRecipes.ROOST_TYPE.get(), getRecipeInput(inventory), level);
-         recipe.ifPresent(
-            roostRecipeRecipeHolder -> entity.maxProgress = (Integer)Config.roost_speed_tick.get() * ((RoostRecipe)roostRecipeRecipeHolder.value()).time()
-         );
-      }
-
-      if (recipe.isEmpty()) {
+      if (entity.cachedRecipe == null) {
          return false;
-      } else {
-         ItemStack planned = ((RoostRecipe)recipe.get().value()).assemble(getRecipeInput(inventory), level.registryAccess());
-         int fullPlanned = computePlannedCountWithChickenLevel(entity, (RoostRecipe)recipe.get().value());
-         int maxStack = planned.getMaxStackSize();
-         int batch = Math.min(Math.max(1, fullPlanned), maxStack);
-         ItemStack out = inventory.getItem(2);
-         int placeable = getPlaceableAmount(out, planned);
-         return placeable >= batch;
       }
+
+      RoostRecipe recipe = entity.cachedRecipe.value();
+      ItemStack planned = recipe.output().getItem().getDefaultInstance();
+      planned.applyComponents(recipe.output().getComponentsPatch());
+      int fullPlanned = computePlannedCountWithChickenLevel(entity, recipe);
+      int maxStack = planned.getMaxStackSize();
+      int batch = Math.min(Math.max(1, fullPlanned), maxStack);
+      ItemStack out = entity.itemHandler.getStackInSlot(2);
+      int placeable = getPlaceableAmount(out, planned);
+      return placeable >= batch;
    }
 
    private static int getPlaceableAmount(ItemStack out, ItemStack planned) {
