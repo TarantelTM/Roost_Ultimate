@@ -400,7 +400,10 @@ public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTa
 
          pEntity.lastRedstonePowered = powered;
 
-         if (chickenStack.isEmpty()) {
+         ItemStack outputStack = pEntity.itemHandler.getStackInSlot(2);
+         boolean outputFull = !outputStack.isEmpty() && outputStack.getCount() >= outputStack.getMaxStackSize();
+
+         if (chickenStack.isEmpty() || outputFull) {
             if (pEntity.progress != 0) {
                pEntity.resetProgress();
                setChanged(level, pos, state);
