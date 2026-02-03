@@ -124,6 +124,7 @@ public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTa
    private boolean autoOutput = false;
    private boolean lastRedstonePowered = false;
    private boolean autoOutputByRedstone = false;
+   private boolean cachedPowered = false;
    public static ItemStack ChickenItem;
    public static ChickenSeedBase FoodItem;
    public static ChickenItemBase MyChicken;
@@ -265,8 +266,17 @@ public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTa
 
    public void onLoad() {
       super.onLoad();
+      if (this.level != null) {
+         this.cachedPowered = this.level.hasNeighborSignal(this.worldPosition);
+      }
       this.setChanged();
       this.getRenderStack();
+   }
+
+   public void updateRedstoneSignal() {
+      if (this.level != null) {
+         this.cachedPowered = this.level.hasNeighborSignal(this.worldPosition);
+      }
    }
 
    public void saveAdditional(CompoundTag nbt, @NotNull Provider lookup) {
@@ -379,7 +389,7 @@ public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTa
             }
          }
 
-         boolean powered = level.hasNeighborSignal(pos);
+         boolean powered = pEntity.cachedPowered;
          if (powered && !pEntity.lastRedstonePowered && !pEntity.autoOutput) {
             pEntity.setAutoOutputFromRedstone(true);
          }

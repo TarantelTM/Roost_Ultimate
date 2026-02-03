@@ -98,6 +98,14 @@ public class RoostBlock extends BaseEntityBlock {
       }
    }
 
+   @Override
+   protected void neighborChanged(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Block neighborBlock, @Nullable net.minecraft.core.BlockPos neighborPos, boolean movedByPiston) {
+      super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
+      if (!level.isClientSide() && level.getBlockEntity(pos) instanceof RoostTile tile) {
+         tile.updateRedstoneSignal();
+      }
+   }
+
    public void onPlace(@NotNull BlockState blockstate, @NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean moving) {
       super.onPlace(blockstate, world, pos, oldState, moving);
       world.scheduleTick(pos, this, 20);
