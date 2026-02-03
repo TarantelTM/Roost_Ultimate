@@ -23,7 +23,7 @@ repositories {
 }
 
 base {
-    archivesName = "roostultimate_"+ minecraft_version + "-modrinth"
+    archivesName = "roostultimate_"+ minecraft_version + "_opt"
 }
 //base {
 //    archivesName = "${project.mod_id}-${project.minecraft_version}"
