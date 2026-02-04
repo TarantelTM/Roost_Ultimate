@@ -23,7 +23,7 @@ repositories {
 }
 
 base {
-    archivesName = "roostultimate_"+ minecraft_version + "-modrinth"
+    archivesName = "roostultimate_"+ minecraft_version + "_opt"
 }
 //base {
 //    archivesName = "${project.mod_id}-${project.minecraft_version}"
@@ -137,6 +137,15 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
+
+    maven {
+        name = "SquidDev"
+        url = "https://maven.squiddev.cc"
+        content {
+            includeGroup "cc.tweaked"
+        }
+    }
+
     mavenCentral()
 }
 
@@ -174,6 +183,11 @@ dependencies {
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     compileOnly("com.tterrag.registrate:Registrate:${registrate_version}")
+
+    implementation "curse.maven:crlib-1425648:7531340"
+
+    compileOnly("cc.tweaked:cc-tweaked-1.21.1-core-api:1.117.0")
+    compileOnly("cc.tweaked:cc-tweaked-1.21.1-forge-api:1.117.0")
 
     compileOnly "curse.maven:silent-lib-242998:6565251"
     compileOnly "curse.maven:silents-gems-220311:6684027"

@@ -18,15 +18,21 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -36,153 +42,138 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CollectorBlock extends BaseEntityBlock {
-    public static final MapCodec<CollectorBlock> CODEC = simpleCodec(CollectorBlock::new);
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
+   public static final MapCodec<CollectorBlock> CODEC = simpleCodec(CollectorBlock::new);
+   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+   public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
+   private static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 
+   public CollectorBlock(Properties properties) {
+      super(properties);
+      this.registerDefaultState((BlockState)((BlockState)this.stateDefinition.any()).setValue(FACING, Direction.NORTH));
+   }
 
-    public CollectorBlock(Properties properties) {
-        super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
+   @NotNull
+   protected MapCodec<? extends BaseEntityBlock> codec() {
+      return CODEC;
+   }
 
-    @Override
-    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
+   @NotNull
+   public VoxelShape getShape(
+      @NotNull BlockState blockState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext
+   ) {
+      return SHAPE;
+   }
 
+   public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+      return (BlockState)this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+   }
 
-    private static final VoxelShape SHAPE =
-            Block.box(0, 0, 0, 16, 16, 16);
+   public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+      if (pState.getBlock() != pNewState.getBlock()) {
+         BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+         if (blockEntity instanceof CollectorTile) {
+            ((CollectorTile)blockEntity).drops();
+         }
+      }
 
+      super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+   }
 
+   public void setPlacedBy(@NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack) {
+      super.setPlacedBy(world, pos, state, placer, stack);
+      if (stack.getComponents().has(DataComponents.CONTAINER)) {
+         ItemContainerContents itemContainerContents = (ItemContainerContents)stack.get(DataComponents.CONTAINER);
+         if (itemContainerContents != null) {
+            if (world.getBlockEntity(pos) instanceof CollectorTile tile) {
+               int slots = itemContainerContents.getSlots();
 
-    @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
-        return SHAPE;
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
-    }
-
-    @Override
-    public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pState.getBlock() != pNewState.getBlock()) {
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof CollectorTile) {
-                ((CollectorTile) blockEntity).drops();
+               for (int i = 0; i < slots; i++) {
+                  ItemStack itemStack = itemContainerContents.getStackInSlot(i);
+                  if (!itemStack.isEmpty()) {
+                     tile.itemHandler.setStackInSlot(i, itemStack);
+                  }
+               }
             }
-        }
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-    }
+         }
+      }
+   }
 
-    @Override
-    public void setPlacedBy(@NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack) {
-        super.setPlacedBy(world, pos, state, placer, stack);
+   @NotNull
+   public BlockState rotate(BlockState pState, Rotation pRotation) {
+      return (BlockState)pState.setValue(FACING, pRotation.rotate((Direction)pState.getValue(FACING)));
+   }
 
+   @NotNull
+   public BlockState mirror(BlockState pState, Mirror pMirror) {
+      return pState.rotate(pMirror.getRotation((Direction)pState.getValue(FACING)));
+   }
 
-        if (!stack.getComponents().has(DataComponents.CONTAINER)) {
-            return;
-        }
+   protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
+      builder.add(new Property[]{FACING, ACTIVE});
+   }
 
+   public void onPlace(@NotNull BlockState blockstate, @NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean moving) {
+      super.onPlace(blockstate, world, pos, oldState, moving);
+      world.scheduleTick(pos, this, 20);
+   }
 
-        ItemContainerContents itemContainerContents = stack.get(DataComponents.CONTAINER);
-        if (itemContainerContents == null) {
-            return;
-        }
+   @NotNull
+   public RenderShape getRenderShape(@NotNull BlockState blockState) {
+      return RenderShape.MODEL;
+   }
 
+   public void tick(@NotNull BlockState blockstate, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource random) {
+      super.tick(blockstate, world, pos, random);
+      world.scheduleTick(pos, this, 20);
+   }
 
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (!(blockEntity instanceof CollectorTile tile)) {
-            return;
-        }
+   @NotNull
+   protected InteractionResult useWithoutItem(
+      @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult
+   ) {
+      if (!level.isClientSide()) {
+         BlockEntity entity = level.getBlockEntity(pos);
+         ServerPlayer theplayer = (ServerPlayer)player;
+         if (!(entity instanceof CollectorTile)) {
+            throw new IllegalStateException("Our Container provider is missing!");
+         }
 
-        int slots = itemContainerContents.getSlots();
-        for (int i = 0; i < slots; i++) {
-            ItemStack itemStack = itemContainerContents.getStackInSlot(i);
-            if (!itemStack.isEmpty()) {
-                tile.itemHandler.setStackInSlot(i, itemStack);
-            }
-        }
-    }
+         theplayer.openMenu((MenuProvider)entity, pos);
+      }
 
-    @Override
-    public @NotNull BlockState rotate(BlockState pState, Rotation pRotation) {
-        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
-    }
+      return InteractionResult.PASS;
+   }
 
-    @Override
-    public @NotNull BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
-    }
+   @NotNull
+   protected ItemInteractionResult useItemOn(
+      @NotNull ItemStack stack,
+      @NotNull BlockState state,
+      Level level,
+      @NotNull BlockPos pos,
+      @NotNull Player player,
+      @NotNull InteractionHand hand,
+      @NotNull BlockHitResult hitResult
+   ) {
+      if (!level.isClientSide()) {
+         BlockEntity entity = level.getBlockEntity(pos);
+         ServerPlayer theplayer = (ServerPlayer)player;
+         if (!(entity instanceof CollectorTile)) {
+            throw new IllegalStateException("Our Container provider is missing!");
+         }
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, ACTIVE);
-    }
-    @Override
-    public void onPlace(@NotNull BlockState blockstate, @NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean moving) {
-        super.onPlace(blockstate, world, pos, oldState, moving);
-        world.scheduleTick(pos, this, 20);
+         theplayer.openMenu((MenuProvider)entity, pos);
+      }
 
+      return ItemInteractionResult.sidedSuccess(true);
+   }
 
-    }
+   @Nullable
+   public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+      return new CollectorTile(pos, state);
+   }
 
-
-    @Override
-    public @NotNull RenderShape getRenderShape(@NotNull BlockState blockState) {
-        return RenderShape.MODEL;
-    }
-
-
-    @Override
-    public void tick(@NotNull BlockState blockstate, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource random) {
-        super.tick(blockstate, world, pos, random);
-        world.scheduleTick(pos, this, 20);
-
-    }
-    @Override
-    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            BlockEntity entity = level.getBlockEntity(pos);
-            ServerPlayer theplayer = (ServerPlayer) player;
-            if(entity instanceof CollectorTile) {
-                theplayer.openMenu((MenuProvider) entity, pos);
-            } else {
-                throw new IllegalStateException("Our Container provider is missing!");
-            }
-        }
-
-        return InteractionResult.PASS;
-    }
-    @Override
-    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            BlockEntity entity = level.getBlockEntity(pos);
-            ServerPlayer theplayer = (ServerPlayer) player;
-            if(entity instanceof CollectorTile) {
-                theplayer.openMenu((MenuProvider) entity, pos);
-            } else {
-                throw new IllegalStateException("Our Container provider is missing!");
-            }
-        }
-
-        return ItemInteractionResult.sidedSuccess(true);
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new CollectorTile(pos, state);
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state,
-                                                                  @NotNull BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlockEntities.COLLECTOR.get(),
-                CollectorTile::tick);
-    }
+   @Nullable
+   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> type) {
+      return createTickerHelper(type, ModBlockEntities.COLLECTOR.get(), CollectorTile::tick);
+   }
 }
