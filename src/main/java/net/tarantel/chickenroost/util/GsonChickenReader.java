@@ -5,17 +5,24 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GsonChickenReader {
+   private static final Logger LOGGER = LoggerFactory.getLogger("ChickenRoost");
    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
    private static final String CONFIG_PATH = "/crlib/chicken_config_v4-2-0.json";
+   private static final String CUSTOM_DIR = "/crlib/custom/";
    private static List<ChickenData> CACHE = null;
 
    public static synchronized List<ChickenData> readItemsFromFile() {
@@ -27,6 +34,7 @@ public class GsonChickenReader {
          File file = new File(FMLPaths.GAMEDIR.get() + "/crlib/chicken_config_v4-2-0.json");
          if (!file.exists()) {
             GsonChickenWriter.writeItemsToFile(defaults);
+            mergeCustomChickens(defaults);
             CACHE = defaults;
             return CACHE;
          } else {
@@ -60,9 +68,90 @@ public class GsonChickenReader {
                }
 
                CACHE = new ArrayList<>(merged.values());
+               mergeCustomChickens(CACHE);
                return CACHE;
             }
          }
+      }
+   }
+
+   private static void mergeCustomChickens(List<ChickenData> target) {
+      List<ChickenData> custom = readCustomDirectory();
+      if (custom.isEmpty()) {
+         return;
+      }
+      Map<String, ChickenData> existing = new LinkedHashMap<>();
+      for (ChickenData c : target) {
+         existing.put(c.getId(), c);
+      }
+      int added = 0;
+      for (ChickenData c : custom) {
+         if (!existing.containsKey(c.getId())) {
+            target.add(c);
+            existing.put(c.getId(), c);
+            added++;
+         } else {
+            LOGGER.warn("[ChickenRoost] Custom chicken '{}' skipped — already exists in config", c.getId());
+         }
+      }
+      if (added > 0) {
+         LOGGER.info("[ChickenRoost] Loaded {} custom chicken(s) from crlib/custom/", added);
+      }
+   }
+
+   private static List<ChickenData> readCustomDirectory() {
+      File customDir = new File(FMLPaths.GAMEDIR.get() + CUSTOM_DIR);
+      if (!customDir.exists()) {
+         customDir.mkdirs();
+      }
+      writeExampleFile(customDir);
+      File[] files = customDir.listFiles((dir, name) -> name.endsWith(".json") && !name.startsWith("_"));
+      if (files == null || files.length == 0) {
+         return Collections.emptyList();
+      }
+      List<ChickenData> result = new ArrayList<>();
+      Type type = (new TypeToken<List<ChickenData>>() {}).getType();
+      for (File f : files) {
+         try (FileReader reader = new FileReader(f)) {
+            List<ChickenData> entries = GSON.fromJson(reader, type);
+            if (entries == null) continue;
+            for (ChickenData entry : entries) {
+               if (entry.validateAndApplyDefaults()) {
+                  result.add(entry);
+                  LOGGER.debug("[ChickenRoost] Custom chicken '{}' ({}) loaded from {}", entry.getId(), entry.getChickenName(), f.getName());
+               } else {
+                  LOGGER.warn("[ChickenRoost] Invalid custom chicken entry in {} — missing 'id' or 'dropitem'", f.getName());
+               }
+            }
+         } catch (Exception e) {
+            LOGGER.error("[ChickenRoost] Failed to parse custom chicken file: {}", f.getName(), e);
+         }
+      }
+      return result;
+   }
+
+   private static void writeExampleFile(File customDir) {
+      File example = new File(customDir, "_example_chickens.json");
+      if (example.exists()) {
+         return;
+      }
+      String content = "[\n"
+         + "  { \"id\": \"c_neutron\", \"tier\": 9, \"dropitem\": \"avaritia:neutron_pile\" },\n"
+         + "  {\n"
+         + "    \"ChickenName\": \"Antimatter Chicken\",\n"
+         + "    \"MobOrMonster\": \"Monster\",\n"
+         + "    \"id\": \"c_antimatter\",\n"
+         + "    \"itemtexture\": \"whitechicken\",\n"
+         + "    \"mobtexture\": \"whitechicken\",\n"
+         + "    \"dropitem\": \"mekanism:pellet_antimatter\",\n"
+         + "    \"eggtime\": 600,\n"
+         + "    \"tier\": 9\n"
+         + "  }\n"
+         + "]";
+      try (FileWriter writer = new FileWriter(example)) {
+         writer.write(content);
+      } catch (IOException e) {
+         LOGGER.error("[ChickenRoost] Failed to write example file: {}", example.getAbsolutePath(), e);
       }
    }
 

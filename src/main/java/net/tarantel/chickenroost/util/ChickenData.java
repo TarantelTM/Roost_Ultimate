@@ -31,6 +31,58 @@ public class ChickenData {
    public boolean CanGetWitherDamage;
    public transient ChickenData.DamageFlags damageFlags;
 
+   public ChickenData() {
+   }
+
+   public boolean validateAndApplyDefaults() {
+      if (this.id == null || this.id.isEmpty() || this.dropitem == null || this.dropitem.isEmpty()) {
+         return false;
+      }
+      if (this.ChickenName == null || this.ChickenName.isEmpty()) {
+         String raw = this.id;
+         if (raw.startsWith("c_")) {
+            raw = raw.substring(2);
+         }
+         StringBuilder sb = new StringBuilder();
+         boolean capitalize = true;
+         for (char ch : raw.toCharArray()) {
+            if (ch == '_') {
+               sb.append(' ');
+               capitalize = true;
+            } else {
+               sb.append(capitalize ? Character.toUpperCase(ch) : ch);
+               capitalize = false;
+            }
+         }
+         this.ChickenName = sb.toString() + " Chicken";
+      }
+      if (this.itemtexture == null || this.itemtexture.isEmpty()) {
+         this.itemtexture = "whitechicken";
+      }
+      if (this.mobtexture == null || this.mobtexture.isEmpty()) {
+         this.mobtexture = "whitechicken";
+      }
+      if (this.MobOrMonster == null || this.MobOrMonster.isEmpty()) {
+         this.MobOrMonster = "Mob";
+      }
+      if (this.eggtime <= 0) {
+         this.eggtime = 600;
+      }
+      if (this.tier <= 0) {
+         this.tier = 1;
+      }
+      this.CanGetFireDamage = true;
+      this.CanGetProjectileDamage = true;
+      this.CanGetExplosionDamage = true;
+      this.CanGetFallDamage = false;
+      this.CanGetDrowningDamage = true;
+      this.CanGetFreezingDamage = true;
+      this.CanGetLightningDamage = true;
+      this.CanGetWitherDamage = true;
+      this.rebuildDamageFlags();
+      return true;
+   }
+
    public ChickenData(
       String ChickenName,
       String MobOrMonster,
