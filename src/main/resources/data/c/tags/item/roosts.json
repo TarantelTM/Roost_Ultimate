@@ -1,6 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    { "id":"chicken_roost:roost", "required": false }
-  ]
-}
