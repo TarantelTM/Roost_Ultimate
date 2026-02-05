@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "010",
+    "020",
+    "000"
+  ],
+  "key": {
+    "0": "minecraft:redstone_block",
+    "1": "minecraft:ender_pearl",
+    "2": "minecraft:diamond_block"
+  },
+  "result": {
+    "id": "chicken_roost:feeder",
+    "count": 1
+  }
+}

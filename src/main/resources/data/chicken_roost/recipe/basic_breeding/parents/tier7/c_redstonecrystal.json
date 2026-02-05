@@ -1,0 +1,10 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": "#c:seeds/tier7orup",
+  "left-chicken": "chicken_roost:c_redstonecrystal",
+  "right-chicken": "chicken_roost:c_redstonecrystal",
+  "time": 20,
+  "output": {
+    "item": "chicken_roost:c_redstonecrystal"
+  }
+}

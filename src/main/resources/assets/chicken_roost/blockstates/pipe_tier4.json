@@ -1,0 +1,12 @@
+{
+  "multipart": [
+    { "apply": { "model": "chicken_roost:block/pipe_center_4" } },
+
+    { "when": { "up": true },    "apply": { "model": "chicken_roost:block/pipe_up_4" } },
+    { "when": { "down": true },  "apply": { "model": "chicken_roost:block/pipe_down_4" } },
+    { "when": { "north": true }, "apply": { "model": "chicken_roost:block/pipe_north_4" } },
+    { "when": { "south": true }, "apply": { "model": "chicken_roost:block/pipe_south_4" } },
+    { "when": { "east": true },  "apply": { "model": "chicken_roost:block/pipe_east_4" } },
+    { "when": { "west": true },  "apply": { "model": "chicken_roost:block/pipe_west_4" } }
+  ]
+}

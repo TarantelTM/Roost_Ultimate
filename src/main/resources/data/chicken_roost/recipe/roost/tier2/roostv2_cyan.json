@@ -1,0 +1,9 @@
+{
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier2orup",
+  "chicken": "chicken_roost:c_cyan",
+  "time": 20,
+  "output": {
+    "item": "minecraft:cyan_dye"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "010",
+    "222",
+    "343"
+  ],
+  "key": {
+    "0":  "minecraft:blaze_rod",
+    "1":  "minecraft:clock",
+    "2":  "chicken_roost:breeder",
+    "3":  "minecraft:golden_carrot",
+    "4":  "minecraft:anvil"
+  },
+  "result": {
+    "id": "chicken_roost:trainer",
+    "count": 1
+  }
+}

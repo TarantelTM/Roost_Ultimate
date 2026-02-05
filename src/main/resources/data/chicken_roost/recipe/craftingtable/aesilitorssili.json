@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "refinedstorage"
+    }
+  ],
+        "type": "minecraft:crafting_shapeless",
+        "ingredients": [
+           "ae2:silicon"
+        ],
+        "result": {
+          "id": "refinedstorage:silicon",
+          "count": 1
+        }
+      }

@@ -1,0 +1,9 @@
+{
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier3orup",
+  "chicken": "chicken_roost:c_clay",
+  "time": 20,
+  "output": {
+    "item": "minecraft:clay_ball"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": ["stony_shore", "stony_peaks", "beach"],
+  "spawners": {
+    "type": "chicken_roost:c_tuff",
+    "maxCount": 6,
+    "minCount": 2,
+    "weight": 12
+  }
+}

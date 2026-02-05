@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+              "type": "neoforge:mod_loaded",
+              "modid": "ae2"
+            }
+        ],
+        "type": "chicken_roost:roost_output",
+        "food": "#c:seeds/tier4orup",
+          "chicken": "chicken_roost:c_silicon",
+        "time": 20,
+        "output": {
+          "item": "ae2:silicon"
+        }
+
+      }

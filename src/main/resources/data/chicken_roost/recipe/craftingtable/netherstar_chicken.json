@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "010",
+    "121",
+    "010"
+  ],
+  "key": {
+    "0":  "chicken_roost:c_netherite",
+    "1":  "minecraft:nether_star",
+    "2":  "chicken_roost:chicken_essence_tier_7"
+  },
+  "result": {
+    "id": "chicken_roost:c_netherstar",
+    "count": 1
+  }
+}

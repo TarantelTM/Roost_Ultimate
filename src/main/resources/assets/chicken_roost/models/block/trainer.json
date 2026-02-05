@@ -1,0 +1,125 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "render_type": "cutout",
+  "texture_size": [
+    64,
+    64
+  ],
+  "textures": {
+    "particle": "chicken_roost:block/trainer"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        69.78,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        -1
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        73,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        -1.75
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        -180,
+        26.75,
+        -180
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        -180,
+        51.5,
+        180
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        -2.25,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "gui": {
+      "rotation": [
+        -144.75,
+        38.5,
+        -180
+      ],
+      "translation": [
+        0,
+        -2.25,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        6.25,
+        0
+      ]
+    },
+    "fixed": {
+      "translation": [
+        0,
+        -5,
+        -7
+      ]
+    }
+  }
+}

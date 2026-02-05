@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0":  "minecraft:crafting_table",
+    "1":  "minecraft:glass_bottle",
+    "2":  "minecraft:crafting_table",
+    "3":  "minecraft:bone",
+    "4":  "chicken_roost:chicken_stick",
+    "5":  "minecraft:bone",
+    "6":  "minecraft:furnace",
+    "7":  "minecraft:glass_bottle",
+    "8":  "minecraft:furnace"
+  },
+  "result": {
+    "id": "chicken_roost:soul_extractor",
+    "count": 1
+  }
+}

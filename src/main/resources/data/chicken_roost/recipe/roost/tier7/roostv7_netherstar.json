@@ -1,0 +1,9 @@
+{
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier7orup",
+  "chicken": "chicken_roost:c_netherstar",
+  "time": 20,
+  "output": {
+    "item": "minecraft:nether_star"
+  }
+}

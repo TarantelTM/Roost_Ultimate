@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "000",
+    "0 0",
+    "111"
+  ],
+  "key": {
+    "0": "#minecraft:planks",
+    "1": "minecraft:composter"
+  },
+  "result": {
+    "id": "chicken_roost:roost",
+    "count": 1
+  }
+}

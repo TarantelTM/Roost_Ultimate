@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "arsmagicalegacy"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier9orup",
+  "chicken": "chicken_roost:c_moonstone",
+  "time": 20,
+  "output": {
+    "item": "arsmagicalegacy:moonstone"
+  }
+}

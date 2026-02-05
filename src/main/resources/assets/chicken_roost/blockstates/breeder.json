@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "chicken_roost:block/breeder_mynewstate"
+    },
+    "facing=east": {
+      "model": "chicken_roost:block/breeder_mynewstate",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "chicken_roost:block/breeder_mynewstate",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "chicken_roost:block/breeder_mynewstate",
+      "y": 270
+    }
+  }
+}

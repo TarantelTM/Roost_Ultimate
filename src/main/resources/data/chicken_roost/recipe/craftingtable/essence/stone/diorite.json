@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "00 ",
+    "0  "
+  ],
+  "key": {
+    "0":  "chicken_roost:stone_essence"
+  },
+  "result": {
+    "id": "minecraft:diorite",
+    "count": 6
+  }
+}

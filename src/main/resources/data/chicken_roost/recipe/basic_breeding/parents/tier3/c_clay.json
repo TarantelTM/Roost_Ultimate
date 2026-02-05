@@ -1,0 +1,10 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": "#c:seeds/tier3orup",
+  "left-chicken": "chicken_roost:c_clay",
+  "right-chicken": "chicken_roost:c_clay",
+  "time": 20,
+  "output": {
+    "item": "chicken_roost:c_clay"
+  }
+}

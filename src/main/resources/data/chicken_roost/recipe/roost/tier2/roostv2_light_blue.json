@@ -1,0 +1,9 @@
+{
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier2orup",
+  "chicken": "chicken_roost:c_light_blue",
+  "time": 20,
+  "output": {
+    "item": "minecraft:light_blue_dye"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thermal"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": "#c:seeds/tier5orup",
+          "chicken": "chicken_roost:c_basalz",
+        "time": 20,
+        "output": {
+          "item": "thermal:basalz_powder"
+        }
+
+      }

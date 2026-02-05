@@ -1,0 +1,9 @@
+{
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier4orup",
+  "chicken": "chicken_roost:c_slime",
+  "time": 20,
+  "output": {
+    "item": "minecraft:slime_ball"
+  }
+}

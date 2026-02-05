@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mekanism"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": "#c:seeds/tier6orup",
+          "chicken": "chicken_roost:c_biofuel",
+        "time": 20,
+        "output": {
+          "item": "mekanism:bio_fuel"
+        }
+
+      }

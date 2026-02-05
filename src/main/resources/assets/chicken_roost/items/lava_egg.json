@@ -1,0 +1,6 @@
+{
+  "model": {
+  "type": "minecraft:model",
+    "model": "chicken_roost:item/lava_egg"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": "#c:seeds/tier7orup",
+  "left-chicken": "chicken_roost:c_cyanite",
+  "right-chicken": "chicken_roost:c_cyanite",
+  "time": 20,
+  "output": {
+    "item": "chicken_roost:c_cyanite"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "chicken_roost:soul_extraction",
+  "chicken": "#c:roost/tier2",
+  "time": 20,
+  "output": {
+    "item": "chicken_roost:chicken_essence_tier_2"
+  }
+}

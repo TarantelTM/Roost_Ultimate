@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  0",
+    " 00"
+  ],
+  "key": {
+    "0": "chicken_roost:stone_essence"
+  },
+  "result": {
+    "id": "minecraft:granite",
+    "count": 6
+  }
+}

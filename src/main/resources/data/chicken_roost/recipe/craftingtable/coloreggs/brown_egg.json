@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "01 "
+  ],
+  "key": {
+    "0": "minecraft:egg",
+    "1": "minecraft:cocoa_beans"
+  },
+  "result": {
+    "id": "chicken_roost:brown_egg",
+    "count": 1
+  }
+}

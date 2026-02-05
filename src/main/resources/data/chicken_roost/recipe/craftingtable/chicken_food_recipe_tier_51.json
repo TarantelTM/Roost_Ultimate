@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+      "chicken_roost:chicken_essence_tier_5",
+      "chicken_roost:chicken_essence_tier_5",
+      "chicken_roost:chicken_food_tier_4",
+      "chicken_roost:chicken_food_tier_4",
+      "chicken_roost:chicken_food_tier_4",
+      "chicken_roost:chicken_food_tier_4",
+      "chicken_roost:chicken_food_tier_4",
+      "chicken_roost:chicken_food_tier_4",
+      "chicken_roost:chicken_food_tier_4"
+  ],
+  "result": {
+    "id": "chicken_roost:chicken_food_tier_5",
+    "count": 1
+  }
+}

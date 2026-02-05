@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "actuallyadditions"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier3orup",
+  "chicken": "chicken_roost:c_paliscrystal",
+  "time": 20,
+  "output": {
+    "item": "actuallyadditions:palis_crystal"
+  }
+}

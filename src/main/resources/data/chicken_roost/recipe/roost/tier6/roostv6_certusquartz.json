@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ae2"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier6orup",
+  "chicken": "chicken_roost:c_certusquartz",
+  "time": 20,
+  "output": {
+    "item": "ae2:certus_quartz_crystal"
+  }
+}

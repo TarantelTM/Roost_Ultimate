@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier4orup",
+  "chicken": "chicken_roost:c_saltpeter",
+  "time": 20,
+  "output": {
+    "item": "gtceu:raw_saltpeter"
+  }
+}

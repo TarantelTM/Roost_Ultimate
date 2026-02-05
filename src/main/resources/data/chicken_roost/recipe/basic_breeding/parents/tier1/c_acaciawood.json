@@ -1,0 +1,10 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": "#c:seeds/tier1orup",
+  "left-chicken": "chicken_roost:c_acaciawood",
+  "right-chicken": "chicken_roost:c_acaciawood",
+  "time": 20,
+  "output": {
+    "item": "chicken_roost:c_acaciawood"
+  }
+}

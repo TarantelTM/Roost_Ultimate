@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_cobble", "required": false },
+    { "id":"chicken_roost:c_granit", "required": false },
+    { "id":"chicken_roost:c_andesite", "required": false },
+    { "id":"chicken_roost:c_diorite", "required": false },
+    { "id":"chicken_roost:c_stone", "required": false }
+  ]
+}

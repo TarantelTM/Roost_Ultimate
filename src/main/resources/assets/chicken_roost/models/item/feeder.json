@@ -1,0 +1,11 @@
+{
+  "parent": "chicken_roost:block/feeder",
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "chicken_roost:block/feeder"
+    }
+  ]
+}

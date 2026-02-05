@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "basalt_deltas",
+  "spawners": {
+    "type": "chicken_roost:c_apple",
+    "maxCount": 6,
+    "minCount": 2,
+    "weight": 12
+  }
+}

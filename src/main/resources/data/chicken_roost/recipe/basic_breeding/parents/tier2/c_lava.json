@@ -1,0 +1,10 @@
+{
+  "type": "chicken_roost:basic_breeding",
+  "food": "#c:seeds/tier2orup",
+  "left-chicken": "chicken_roost:c_lava",
+  "right-chicken": "chicken_roost:c_lava",
+  "time": 20,
+  "output": {
+    "item": "chicken_roost:c_lava"
+  }
+}

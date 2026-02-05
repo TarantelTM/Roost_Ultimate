@@ -1,0 +1,9 @@
+{
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier6orup",
+  "chicken": "chicken_roost:c_prismarinecrystal",
+  "time": 20,
+  "output": {
+    "item": "minecraft:prismarine_crystals"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "0  ",
+    "00 "
+  ],
+  "key": {
+    "0": "chicken_roost:wood_essence"
+  },
+  "result": {
+    "id": "minecraft:mangrove_log",
+    "count": 6
+  }
+}

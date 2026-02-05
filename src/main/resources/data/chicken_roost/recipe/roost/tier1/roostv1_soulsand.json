@@ -1,0 +1,9 @@
+{
+  "type": "chicken_roost:roost_output",
+  "food": "#c:seeds/tier1orup",
+  "chicken": "chicken_roost:c_soulsand",
+  "time": 20,
+  "output": {
+    "item": "minecraft:soul_sand"
+  }
+}
