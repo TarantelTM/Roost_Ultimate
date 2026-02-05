@@ -5,7 +5,7 @@ import me.shedaniel.rei.api.common.display.basic.BasicDisplay;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeHolder;
+
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.recipes.ThrowEggRecipe;
 
@@ -23,8 +23,8 @@ public class EggREIDisplay extends BasicDisplay {
     public static final CategoryIdentifier<EggREIDisplay> ID = CategoryIdentifier.of(ChickenRoostMod.MODID, "throwegg");
 
 
-    public EggREIDisplay(RecipeHolder<ThrowEggRecipe> recipe){
-        super(getInputList(recipe.value()), List.of(EntryIngredient.of(EntryIngredients.of(recipe.value().getResultItem(null)))));
+    public EggREIDisplay(ThrowEggRecipe recipe){
+        super(getInputList(recipe), List.of(EntryIngredient.of(EntryIngredients.of(recipe.getResultItem(null)))));
     }
 
     public EggREIDisplay(List<EntryIngredient> input, List<EntryIngredient> output, Optional<ResourceLocation> location) {

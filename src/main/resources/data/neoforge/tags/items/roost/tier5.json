@@ -1,0 +1,26 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_magmacream", "required": false },
+    { "id":"chicken_roost:c_cinnabar", "required": false },
+    { "id":"chicken_roost:c_basalz", "required": false },
+    { "id":"chicken_roost:c_blood", "required": false },
+    { "id":"chicken_roost:c_lumium", "required": false },
+    { "id":"chicken_roost:c_chorusfruit", "required": false },
+    { "id":"chicken_roost:c_chrome", "required": false },
+    { "id":"chicken_roost:c_enderpearl", "required": false },
+    { "id":"chicken_roost:c_endstone", "required": false },
+    { "id":"chicken_roost:c_refinediron", "required": false },
+    { "id":"chicken_roost:c_bronze", "required": false },
+    { "id":"chicken_roost:c_emerald", "required": false },
+    { "id":"chicken_roost:c_ghasttear", "required": false },
+    { "id":"chicken_roost:c_enoricrystal", "required": false },
+    { "id":"chicken_roost:c_blueslime", "required": false },
+    { "id":"chicken_roost:c_redstonealloy", "required": false },
+    { "id":"chicken_roost:c_electricalsteel", "required": false },
+    { "id":"chicken_roost:c_darksteel", "required": false },
+    { "id":"chicken_roost:c_chickenosto", "required": false },
+    { "id":"chicken_roost:c_funway", "required": false }
+
+  ]
+}

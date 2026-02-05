@@ -6,9 +6,8 @@ import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.tarantel.chickenroost.ChickenRoostMod;
-import net.tarantel.chickenroost.recipes.BreederRecipe;
+import net.tarantel.chickenroost.recipes.Breeder_Recipe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,15 +22,15 @@ public class BreederREIDisplay extends BasicDisplay {
 
     public static final CategoryIdentifier<BreederREIDisplay> ID = CategoryIdentifier.of(ChickenRoostMod.MODID, "basic_breeding");
 
-    public BreederREIDisplay(RecipeHolder<BreederRecipe> recipe){
-        super(getInputList(recipe.value()), List.of(EntryIngredient.of(EntryIngredients.of(recipe.value().getResultItem(null)))));
+    public BreederREIDisplay(Breeder_Recipe recipe){
+        super(getInputList(recipe), List.of(EntryIngredient.of(EntryIngredients.of(recipe.getResultItem(null)))));
     }
 
     public BreederREIDisplay(List<EntryIngredient> input, List<EntryIngredient> output, Optional<ResourceLocation> location) {
         super(input, output, location);
     }
 
-    private static List<EntryIngredient> getInputList(BreederRecipe recipe) {
+    private static List<EntryIngredient> getInputList(Breeder_Recipe recipe) {
         if(recipe == null) return Collections.emptyList();
         List<EntryIngredient> list = new ArrayList<>();
         list.add(EntryIngredients.ofIngredient(recipe.getIngredients().get(0)));

@@ -1,41 +1,44 @@
 package net.tarantel.chickenroost.handler;
 
-import net.minecraft.core.registries.Registries;
+import net.tarantel.chickenroost.ChickenRoostMod;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.network.IContainerFactory;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.tarantel.chickenroost.ChickenRoostMod;
+import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.network.IContainerFactory;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
 public class ModHandlers {
-    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, ChickenRoostMod.MODID);
+    public static final DeferredRegister<MenuType<?>> MENUS =
+            DeferredRegister.create(ForgeRegistries.MENU_TYPES, ChickenRoostMod.MODID);
 
-    public static final Supplier<MenuType<SoulBreederHandler>> SOUL_BREEDER_MENU =
-            registerMenuType(SoulBreederHandler::new, "new_soul_breeder_menu");
-    public static final Supplier<MenuType<BreederHandler>> BREEDER_MENU =
-            registerMenuType(BreederHandler::new, "breeder_menu");
-    public static final Supplier<MenuType<SoulExtractorHandler>> SOUL_EXTRACTOR_MENU =
-            registerMenuType(SoulExtractorHandler::new, "soul_extractor_menu");
-    public static final Supplier<MenuType<RoostHandler>> ROOST_MENU_V1 =
-            registerMenuType(RoostHandler::new, "roost_menu_v1");
-    public static final Supplier<MenuType<TrainerHandler>> TRAINER =
-            registerMenuType(TrainerHandler::new, "trainer");
-    public static final Supplier<MenuType<CollectorHandler>> COLLECTOR_MENU =
-            registerMenuType(CollectorHandler::new, "collector_menu");
-    public static final Supplier<MenuType<FeederHandler>> FEEDER_MENU =
-            registerMenuType(FeederHandler::new, "feeder_menu");
+    public static final RegistryObject<MenuType<Breeder_Handler>> BREEDER_MENU =
+            registerMenuType(Breeder_Handler::new, "breeder_menu");
 
+    public static final RegistryObject<MenuType<SoulExtractor_Handler>> SOUL_EXTRACTOR_MENU =
+            registerMenuType(SoulExtractor_Handler::new, "soul_extractor_menu");
 
-    private static <T extends AbstractContainerMenu> Supplier<MenuType<T>> registerMenuType(IContainerFactory<T> factory,
+    public static final RegistryObject<MenuType<Roost_Handler>> ROOST_MENU_V1 =
+            registerMenuType(Roost_Handler::new, "roost_menu_v1");
+
+    public static final RegistryObject<MenuType<Trainer_Handler>> TRAINER =
+            registerMenuType(Trainer_Handler::new, "trainer");
+
+    public static final RegistryObject<MenuType<Collector_Handler>> COLLECTOR_MENU =
+            registerMenuType(Collector_Handler::new, "collector_menu");
+    public static final RegistryObject<MenuType<Feeder_Handler>> FEEDER_MENU =
+            registerMenuType(Feeder_Handler::new, "feeder_menu");
+
+    private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(IContainerFactory<T> factory,
                                                                                                   String name) {
-        return MENU_TYPES.register(name, () -> IMenuTypeExtension.create(factory));
+        return MENUS.register(name, () -> IForgeMenuType.create(factory));
     }
 
     public static void register(IEventBus eventBus) {
-        MENU_TYPES.register(eventBus);
+        MENUS.register(eventBus);
     }
 }

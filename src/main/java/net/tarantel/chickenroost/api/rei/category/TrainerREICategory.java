@@ -42,7 +42,26 @@ public class TrainerREICategory implements DisplayCategory<TrainerREIDisplay> {
         return Component.literal("Trainer");
     }
 
+    /*@Override
+    public List<Widget> setupDisplay(TrainerREIDisplay display, Rectangle bounds) {
+        // Setup background
+        Point startPoint = new Point(bounds.getCenterX() - 36, bounds.getCenterY() - 13);
+        List<Widget> widgets = Lists.newArrayList();
+        widgets.add(Widgets.createRecipeBase(bounds));
 
+        // Add arrow
+        widgets.add(createAnimatedArrow(startPoint.x + 27, startPoint.y + 4));
+
+        //Add output slot
+        widgets.add(Widgets.createResultSlotBackground(new Point(startPoint.x + -14, startPoint.y + -5)));
+        widgets.add(createInputSlot(display, 0, startPoint.x + 61, startPoint.y + 5));
+
+        // Add input slots
+        int x = startPoint.x-14;
+        int y = startPoint.y - 5;
+        widgets.add(createOutputSlotTrainer(display, 0, x, y));
+        return widgets;
+    }*/
 
     @Override
     public List<Widget> setupDisplay(TrainerREIDisplay display, Rectangle bounds) {

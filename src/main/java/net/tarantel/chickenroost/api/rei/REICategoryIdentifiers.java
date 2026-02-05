@@ -6,11 +6,10 @@ import net.tarantel.chickenroost.recipes.*;
 
 public class REICategoryIdentifiers {
     public static final CategoryIdentifier<EggREIDisplay> EGG = CategoryIdentifier.of(ThrowEggRecipe.Type.ID);
-    public static final CategoryIdentifier<BreederREIDisplay> BREEDING = CategoryIdentifier.of(BreederRecipe.Type.ID);
-    public static final CategoryIdentifier<SoulBreederREIDisplay> SOULBREEDING = CategoryIdentifier.of(SoulBreederRecipe.Type.ID);
-    public static final CategoryIdentifier<SoulExtractionREIDisplay> SOULEXTRACTION = CategoryIdentifier.of(SoulExtractorRecipe.Type.ID);
-    public static final CategoryIdentifier<RoostREIDisplay> ROOST = CategoryIdentifier.of(RoostRecipe.Type.ID);
-    public static final CategoryIdentifier<TrainerREIDisplay> TRAINER = CategoryIdentifier.of(TrainerRecipe.Type.ID);
+    public static final CategoryIdentifier<BreederREIDisplay> BREEDING = CategoryIdentifier.of(Breeder_Recipe.Type.ID);
+    public static final CategoryIdentifier<SoulExtractionREIDisplay> SOULEXTRACTION = CategoryIdentifier.of(Soul_Extractor_Recipe.Type.ID);
+    public static final CategoryIdentifier<RoostREIDisplayV1> ROOST = CategoryIdentifier.of(Roost_Recipe.Type.ID);
+    public static final CategoryIdentifier<RoostREIDisplayV1> TRAINER = CategoryIdentifier.of(Trainer_Recipe.Type.ID);
 
     private REICategoryIdentifiers() {
 

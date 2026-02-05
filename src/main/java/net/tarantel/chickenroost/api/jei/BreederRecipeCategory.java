@@ -13,19 +13,18 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.tarantel.chickenroost.recipes.BreederRecipe;
+import net.tarantel.chickenroost.recipes.Breeder_Recipe;
 import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("ALL")
-public class BreederRecipeCategory implements IRecipeCategory<BreederRecipe> {
-    public final static ResourceLocation UID = ChickenRoostMod.ownresource("basic_breeding");
-    public final static ResourceLocation ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
-    public final static ResourceLocation SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
-    public static final RecipeType<BreederRecipe> RECIPE_TYPE = RecipeType.create(ChickenRoostMod.MODID, "basic_breeding", BreederRecipe.class);
+public class BreederRecipeCategory implements IRecipeCategory<Breeder_Recipe> {
+    public final static ResourceLocation UID = new ResourceLocation("chicken_roost:basic_breeding");
+    public final static ResourceLocation ARROWBACK = new ResourceLocation("chicken_roost:textures/screens/arrowback.png");
+    public final static ResourceLocation SLOT = new ResourceLocation("chicken_roost:textures/screens/slot.png");
+    public static final RecipeType<Breeder_Recipe> RECIPE_TYPE = RecipeType.create(ChickenRoostMod.MODID, "basic_breeding", Breeder_Recipe.class);
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawableAnimated progress;
@@ -37,7 +36,7 @@ public class BreederRecipeCategory implements IRecipeCategory<BreederRecipe> {
     private final IDrawableStatic arrowbacki;
 
     public BreederRecipeCategory(IGuiHelper helper) {
-        ResourceLocation ARROW = ChickenRoostMod.ownresource( "textures/screens/arrow.png");
+        ResourceLocation ARROW = new ResourceLocation("chicken_roost:textures/screens/arrow.png");
         this.background = helper.createBlankDrawable(130, 20);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.BREEDER.get()));
 
@@ -55,7 +54,7 @@ public class BreederRecipeCategory implements IRecipeCategory<BreederRecipe> {
     }
 
     @Override
-    public RecipeType<BreederRecipe> getRecipeType() {
+    public RecipeType<Breeder_Recipe> getRecipeType() {
         return JEIPlugin.BASIC_BREEDING_TYPE;
     }
 
@@ -70,7 +69,7 @@ public class BreederRecipeCategory implements IRecipeCategory<BreederRecipe> {
     }
 
     @Override
-    public void draw(BreederRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
+    public void draw(Breeder_Recipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
                      double mouseY) {
 
         this.slot_1.draw(guiGraphics);
@@ -86,7 +85,8 @@ public class BreederRecipeCategory implements IRecipeCategory<BreederRecipe> {
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, BreederRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, Breeder_Recipe recipe, @NotNull IFocusGroup focuses) {
+        //super.setRecipe(builder, recipe, focuses);
         builder.addSlot(RecipeIngredientRole.INPUT, 21, 1)
                 .addIngredients(recipe.getIngredients().get(0));
         builder.addSlot(RecipeIngredientRole.INPUT, 0, 1)

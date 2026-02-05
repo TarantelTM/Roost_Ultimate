@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:chicken_essence_tier_7", "required": false },
+    { "id":"chicken_roost:chicken_essence_tier_8", "required": false },
+    { "id":"chicken_roost:chicken_essence_tier_9", "required": false }
+  ]
+}

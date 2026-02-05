@@ -3,6 +3,7 @@ package net.tarantel.chickenroost.item.base;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
@@ -22,17 +23,18 @@ public class CropBlockItem extends ChickenSeedBase {
         return this.getOrCreateDescriptionId();
     }
     @Override
-    public void appendHoverText(@NotNull ItemStack itemstack, @NotNull TooltipContext world, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
+    public void appendHoverText(ItemStack itemstack, @org.jetbrains.annotations.Nullable Level world,
+                                List<Component> list, TooltipFlag flag) {
         int maxLevel = switch (currentmaxxpp) {
-            case 1 -> Config.food_xp_tier_2.get();
-            case 2 -> Config.food_xp_tier_3.get();
-            case 3 -> Config.food_xp_tier_4.get();
-            case 4 -> Config.food_xp_tier_5.get();
-            case 5 -> Config.food_xp_tier_6.get();
-            case 6 -> Config.food_xp_tier_7.get();
-            case 7 -> Config.food_xp_tier_8.get();
-            case 8 -> Config.food_xp_tier_9.get();
-            default -> Config.food_xp_tier_1.get();
+            case 1 -> Config.ServerConfig.food_xp_tier_2.get();
+            case 2 -> Config.ServerConfig.food_xp_tier_3.get();
+            case 3 -> Config.ServerConfig.food_xp_tier_4.get();
+            case 4 -> Config.ServerConfig.food_xp_tier_5.get();
+            case 5 -> Config.ServerConfig.food_xp_tier_6.get();
+            case 6 -> Config.ServerConfig.food_xp_tier_7.get();
+            case 7 -> Config.ServerConfig.food_xp_tier_8.get();
+            case 8 -> Config.ServerConfig.food_xp_tier_9.get();
+            default -> Config.ServerConfig.food_xp_tier_1.get();
         };
 
         super.appendHoverText(itemstack, world, list, flag);

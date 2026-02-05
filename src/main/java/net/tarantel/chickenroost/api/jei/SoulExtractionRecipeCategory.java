@@ -17,14 +17,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.tarantel.chickenroost.recipes.SoulExtractorRecipe;
+import net.tarantel.chickenroost.recipes.Soul_Extractor_Recipe;
 import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("deprecation")
-public class SoulExtractionRecipeCategory implements IRecipeCategory<SoulExtractorRecipe> {
-    public final static ResourceLocation UID = ChickenRoostMod.ownresource("soul_extraction");
-    public final static ResourceLocation ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
-    public final static ResourceLocation SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
-    public static final RecipeType<SoulExtractorRecipe> RECIPE_TYPE = RecipeType.create(ChickenRoostMod.MODID, "soul_extraction", SoulExtractorRecipe.class);
+public class SoulExtractionRecipeCategory implements IRecipeCategory<Soul_Extractor_Recipe> {
+    public final static ResourceLocation UID = new ResourceLocation("chicken_roost:soul_extraction");
+    public final static ResourceLocation ARROWBACK = new ResourceLocation("chicken_roost:textures/screens/arrowback.png");
+    public final static ResourceLocation SLOT = new ResourceLocation("chicken_roost:textures/screens/slot.png");
+    public static final RecipeType<Soul_Extractor_Recipe> RECIPE_TYPE = RecipeType.create(ChickenRoostMod.MODID, "soul_extraction", Soul_Extractor_Recipe.class);
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawableAnimated progress;
@@ -35,7 +35,7 @@ public class SoulExtractionRecipeCategory implements IRecipeCategory<SoulExtract
     private final IDrawableStatic arrowbacki;
 
     public SoulExtractionRecipeCategory(IGuiHelper helper) {
-        ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/arrow.png");
+        ResourceLocation ARROW = new ResourceLocation("chicken_roost:textures/screens/arrow.png");
         this.background = helper.createBlankDrawable(130, 20);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.SOUL_EXTRACTOR.get()));
 
@@ -51,7 +51,7 @@ public class SoulExtractionRecipeCategory implements IRecipeCategory<SoulExtract
     }
 
     @Override
-    public RecipeType<SoulExtractorRecipe> getRecipeType() {
+    public RecipeType<Soul_Extractor_Recipe> getRecipeType() {
         return JEIPlugin.SOUL_EXTRACTION_TYPE;
     }
 
@@ -66,7 +66,7 @@ public class SoulExtractionRecipeCategory implements IRecipeCategory<SoulExtract
     }
 
     @Override
-    public void draw(SoulExtractorRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
+    public void draw(Soul_Extractor_Recipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
                      double mouseY) {
 
         this.slot_2.draw(guiGraphics);
@@ -81,10 +81,11 @@ public class SoulExtractionRecipeCategory implements IRecipeCategory<SoulExtract
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, SoulExtractorRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, Soul_Extractor_Recipe recipe, @NotNull IFocusGroup focuses) {
+        //super.setRecipe(builder, recipe, focuses);
         builder.addSlot(RecipeIngredientRole.INPUT, 25, 1)
                 .addIngredients(recipe.getIngredients().get(0));
 
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1).addItemStack(recipe.output());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1).addItemStack(recipe.output);
     }
 }

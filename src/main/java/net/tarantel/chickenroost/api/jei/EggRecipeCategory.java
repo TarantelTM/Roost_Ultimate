@@ -22,9 +22,10 @@ import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
 public class EggRecipeCategory implements IRecipeCategory<ThrowEggRecipe> {
-    public final static ResourceLocation UID = ChickenRoostMod.ownresource("throwegg");
-    public final static ResourceLocation ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
-    public final static ResourceLocation SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
+    public final static ResourceLocation UID = new ResourceLocation("chicken_roost:throwegg");
+    public final static ResourceLocation ARROWBACK = new ResourceLocation("chicken_roost:textures/screens/arrowback.png");
+    public final static ResourceLocation SLOT = new ResourceLocation("chicken_roost:textures/screens/slot.png");
+    //public static final RecipeType<Soul_Breeder_Recipe> RECIPE_TYPE = RecipeType.create(ChickenRoostMod.MODID, "soul_breeding", Soul_Breeder_Recipe.class);
     public static final RecipeType<ThrowEggRecipe> RECIPE_TYPE = new RecipeType<>(UID, ThrowEggRecipe.class);
     private final IDrawable background;
     private final IDrawable icon;
@@ -35,7 +36,7 @@ public class EggRecipeCategory implements IRecipeCategory<ThrowEggRecipe> {
     private final IDrawableStatic arrowbacki;
 
     public EggRecipeCategory(IGuiHelper helper) {
-        ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/arrow.png");
+        ResourceLocation ARROW = new ResourceLocation("chicken_roost:textures/screens/arrow.png");
         this.background = helper.createBlankDrawable(130, 20);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.CHICKEN_STICK.get()));
 
@@ -81,8 +82,9 @@ public class EggRecipeCategory implements IRecipeCategory<ThrowEggRecipe> {
 
     @Override
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, ThrowEggRecipe recipe, @NotNull IFocusGroup focuses) {
+    	//super.setRecipe(builder, recipe, focuses);
         builder.addSlot(RecipeIngredientRole.INPUT, 11, 1)
                 .addIngredients(recipe.getIngredients().get(0));
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1).addItemStack(recipe.output());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1).addItemStack(recipe.output);
     }
 }

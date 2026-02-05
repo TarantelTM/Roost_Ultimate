@@ -1,0 +1,36 @@
+{
+  "replace": false,
+  "values": [
+    { "id":"chicken_roost:c_glowstone", "required": false },
+    { "id":"chicken_roost:c_iron", "required": false },
+    { "id":"chicken_roost:c_redstone", "required": false },
+    { "id":"chicken_roost:c_lapis", "required": false },
+    { "id":"chicken_roost:c_string", "required": false },
+    { "id":"chicken_roost:c_orange", "required": false },
+    { "id":"chicken_roost:c_light_blue", "required": false },
+    { "id":"chicken_roost:c_lime", "required": false },
+    { "id":"chicken_roost:c_pink", "required": false },
+    { "id":"chicken_roost:c_gray", "required": false },
+    { "id":"chicken_roost:c_cyan", "required": false },
+    { "id":"chicken_roost:c_purple", "required": false },
+    { "id":"chicken_roost:c_brown", "required": false },
+    { "id":"chicken_roost:c_crimstonstem", "required": false },
+    { "id":"chicken_roost:c_warpedstem", "required": false },
+    { "id":"chicken_roost:c_netherrack", "required": false },
+    { "id":"chicken_roost:c_paper", "required": false },
+    { "id":"chicken_roost:c_sugar", "required": false },
+    { "id":"chicken_roost:c_coal", "required": false },
+    { "id":"chicken_roost:c_charcoal", "required": false },
+    { "id":"chicken_roost:c_snow", "required": false },
+    { "id":"chicken_roost:c_apple", "required": false },
+    { "id":"chicken_roost:c_melon", "required": false },
+    { "id":"chicken_roost:c_glowberries", "required": false },
+    { "id":"chicken_roost:c_sweetberries", "required": false },
+    { "id":"chicken_roost:c_beetroot", "required": false },
+    { "id":"chicken_roost:c_carrot", "required": false },
+    { "id":"chicken_roost:c_tnt", "required": false },
+    { "id":"chicken_roost:c_nickel", "required": false },
+    { "id":"chicken_roost:c_blackquartz", "required": false }
+
+  ]
+}

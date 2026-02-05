@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slime_block",
-  "render_type": "translucent",
-  "textures": {
-    "particle": "chicken_roost:block/slime_block",
-    "texture": "chicken_roost:block/slime_block"
-  }
-}

@@ -1,0 +1,19 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "enderio"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": { 
+    "tag": "c:seeds/tier4orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_energeticalloy"
+  },
+  "time": 20,
+  "output": {
+    "item": "enderio:energetic_alloy_ingot"
+  }
+}

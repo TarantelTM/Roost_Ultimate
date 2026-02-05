@@ -1,6 +1,6 @@
 {
   "parent": "chicken_roost:custom/breeder",
-  "render_type": "cutout",
+  "render_type": "minecraft:cutout",
   "textures": {
     "all": "chicken_roost:block/slat_side",
     "particle": "chicken_roost:block/slat_side",

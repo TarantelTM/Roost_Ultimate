@@ -1,0 +1,19 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "actuallyadditions"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": { 
+    "tag": "c:seeds/tier2orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_blackquartz"
+  },
+  "time": 20,
+  "output": {
+    "item": "actuallyadditions:black_quartz"
+  }
+}

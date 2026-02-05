@@ -1,0 +1,19 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "enderio"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": { 
+    "tag": "c:seeds/tier5orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_redstonealloy"
+  },
+  "time": 20,
+  "output": {
+    "item": "enderio:redstone_alloy_ingot"
+  }
+}

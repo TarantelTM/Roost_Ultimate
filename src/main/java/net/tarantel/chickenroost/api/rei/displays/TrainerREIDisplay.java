@@ -5,9 +5,12 @@ import me.shedaniel.rei.api.common.display.basic.BasicDisplay;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.tarantel.chickenroost.ChickenRoostMod;
-import net.tarantel.chickenroost.recipes.TrainerRecipe;
+import net.tarantel.chickenroost.item.base.AnimatedChicken;
+import net.tarantel.chickenroost.recipes.Trainer_Recipe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,18 +25,23 @@ public class TrainerREIDisplay extends BasicDisplay {
 
     public static final CategoryIdentifier<TrainerREIDisplay> ID = CategoryIdentifier.of(ChickenRoostMod.MODID, "trainer_output");
 
-    public TrainerREIDisplay(RecipeHolder<TrainerRecipe> recipe){
-        super(getInputList(recipe.value()), List.of(EntryIngredient.of(EntryIngredients.of(recipe.value().getResultItem(null)))));
+    public TrainerREIDisplay(Trainer_Recipe recipe){
+        super(getInputList(recipe), List.of(EntryIngredient.of(EntryIngredients.of(recipe.getResultItem(null)))));
     }
 
     public TrainerREIDisplay(List<EntryIngredient> input, List<EntryIngredient> output, Optional<ResourceLocation> location) {
         super(input, output, location);
     }
 
-    private static List<EntryIngredient> getInputList(TrainerRecipe recipe) {
+    private static List<EntryIngredient> getInputList(Trainer_Recipe recipe) {
         if(recipe == null) return Collections.emptyList();
         List<EntryIngredient> list = new ArrayList<>();
-        list.add(EntryIngredients.ofIngredient(recipe.getIngredients().get(0)));
+        Ingredient ingredient = Ingredient.of(
+                ForgeRegistries.ITEMS.getValues().stream()
+                        .filter(item -> item instanceof AnimatedChicken)
+                        .map(ItemStack::new)
+        );
+        list.add(EntryIngredients.ofIngredient(ingredient));
         return list;
     }
 

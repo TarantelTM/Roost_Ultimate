@@ -1,86 +1,59 @@
 package net.tarantel.chickenroost.block.tile;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
 public class ModBlockEntities {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ChickenRoostMod.MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, ChickenRoostMod.MODID);
 
-    public static final Supplier<BlockEntityType<CollectorTile>> COLLECTOR =
-            BLOCK_ENTITIES.register("collector", () ->
-                    BlockEntityType.Builder.of(CollectorTile::new,
-                            ModBlocks.COLLECTOR.get()).build(null));
 
-    public static final Supplier<BlockEntityType<FeederTile>> FEEDER =
-            BLOCK_ENTITIES.register("feeder", () ->
-                    BlockEntityType.Builder.of(FeederTile::new,
-                            ModBlocks.FEEDER.get()).build(null));
 
-    public static final Supplier<BlockEntityType<SoulBreederTile>> SOUL_BREEDER =
-            BLOCK_ENTITIES.register("soul_breeder", () ->
-                    BlockEntityType.Builder.of(SoulBreederTile::new,
-                            ModBlocks.SOUL_BREEDER.get()).build(null));
 
-    public static final Supplier<BlockEntityType<BreederTile>> BREEDER =
+
+    public static final RegistryObject<BlockEntityType<Breeder_Tile>> BREEDER =
             BLOCK_ENTITIES.register("breeder", () ->
-                    BlockEntityType.Builder.of(BreederTile::new,
+                    BlockEntityType.Builder.of(Breeder_Tile::new,
                             ModBlocks.BREEDER.get()).build(null));
 
-    public static final Supplier<BlockEntityType<ChickenStorageTile>> CHICKENSTORAGE =
+    public static final Supplier<BlockEntityType<ChickenStorage_Tile>> CHICKENSTORAGE =
             BLOCK_ENTITIES.register("chickenstorage", () ->
-                    BlockEntityType.Builder.of(ChickenStorageTile::new,
+                    BlockEntityType.Builder.of(ChickenStorage_Tile::new,
                             ModBlocks.CHICKENSTORAGE.get()).build(null));
 
-
-    public static final Supplier<BlockEntityType<SoulExtractorTile>> SOUL_EXTRACTOR =
+    public static final RegistryObject<BlockEntityType<Soul_Extractor_Tile>> SOUL_EXTRACTOR =
             BLOCK_ENTITIES.register("soul_extractor", () ->
-                    BlockEntityType.Builder.of(SoulExtractorTile::new,
+                    BlockEntityType.Builder.of(Soul_Extractor_Tile::new,
                             ModBlocks.SOUL_EXTRACTOR.get()).build(null));
-    public static final Supplier<BlockEntityType<RoostTile>> ROOST =
+    public static final RegistryObject<BlockEntityType<Roost_Tile>> ROOST =
             BLOCK_ENTITIES.register("roost", () ->
-                    BlockEntityType.Builder.of(RoostTile::new,
+                    BlockEntityType.Builder.of(Roost_Tile::new,
                             ModBlocks.ROOST.get()).build(null));
 
-    public static final Supplier<BlockEntityType<TrainerTile>> TRAINER =
+    public static final RegistryObject<BlockEntityType<Trainer_Tile>> TRAINER =
             BLOCK_ENTITIES.register("trainer", () ->
-                    BlockEntityType.Builder.of(TrainerTile::new,
+                    BlockEntityType.Builder.of(Trainer_Tile::new,
                             ModBlocks.TRAINER.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<Feeder_Tile>> FEEDER =
+            BLOCK_ENTITIES.register("feeder", () ->
+                    BlockEntityType.Builder.of(Feeder_Tile::new,
+                            ModBlocks.FEEDER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<Collector_Tile>> COLLECTOR =
+            BLOCK_ENTITIES.register("collector", () ->
+                    BlockEntityType.Builder.of(Collector_Tile::new,
+                            ModBlocks.COLLECTOR.get()).build(null));
 
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
-    }
-
-
-
-    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                CHICKENSTORAGE.get(), ChickenStorageTile::getItemHandlerCapability);
-
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                SOUL_BREEDER.get(), SoulBreederTile::getItemHandlerCapability);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                BREEDER.get(), BreederTile::getItemHandlerCapability);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                SOUL_EXTRACTOR.get(), SoulExtractorTile::getItemHandlerCapability);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                ROOST.get(), RoostTile::getItemHandlerCapability);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                COLLECTOR.get(), CollectorTile::getItemHandlerCapability);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                TRAINER.get(), TrainerTile::getItemHandlerCapability);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK,
-                FEEDER.get(), FeederTile::getItemHandlerCapability);
-
     }
 }

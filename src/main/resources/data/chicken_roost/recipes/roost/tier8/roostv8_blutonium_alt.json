@@ -1,0 +1,20 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "bigreactors"
+    }
+  ],
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "c:seeds/tier8orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_blutonium"
+          },
+        "time": 20,
+        "output": {
+          "item": "bigreactors:blutonium_ingot"
+        }
+
+      }

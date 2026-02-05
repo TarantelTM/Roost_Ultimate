@@ -2,22 +2,24 @@ package net.tarantel.chickenroost.item.base;
 
 
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.tarantel.chickenroost.ChickenRoostMod;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.model.DefaultedBlockGeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.RenderUtil;
+import software.bernie.geckolib.util.RenderUtils;
 
 import java.util.function.Consumer;
-@SuppressWarnings("deprecation")
+
 public class AnimatedTrainerBlockItem extends BlockItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -33,9 +35,9 @@ public class AnimatedTrainerBlockItem extends BlockItem implements GeoItem {
             private GeoItemRenderer<AnimatedTrainerBlockItem> renderer = null;
 
             @Override
-            public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 if (this.renderer == null)
-                    this.renderer = new GeoItemRenderer<>(new DefaultedBlockGeoModel<>(ChickenRoostMod.ownresource("trainer")));
+                    this.renderer = new GeoItemRenderer<>(new DefaultedBlockGeoModel<>(new ResourceLocation("chicken_roost:trainer")));
 
                 return this.renderer;
             }
@@ -45,7 +47,11 @@ public class AnimatedTrainerBlockItem extends BlockItem implements GeoItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, state -> state.setAndContinue(IDLE_NORMAL)));
+        controllerRegistrar.add(new AnimationController<>(this, state -> {
+
+            return state.setAndContinue(IDLE_NORMAL);
+
+        }));
     }
 
     @Override
@@ -55,7 +61,7 @@ public class AnimatedTrainerBlockItem extends BlockItem implements GeoItem {
 
     @Override
     public double getTick(Object itemStack) {
-        return RenderUtil.getCurrentTick();
+        return RenderUtils.getCurrentTick();
     }
 
 }

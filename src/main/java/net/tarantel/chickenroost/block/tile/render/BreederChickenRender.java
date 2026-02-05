@@ -3,26 +3,30 @@ package net.tarantel.chickenroost.block.tile.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.tarantel.chickenroost.block.blocks.BreederBlock;
-import net.tarantel.chickenroost.block.tile.BreederTile;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
+import net.tarantel.chickenroost.block.blocks.Breeder_Block;
+import net.tarantel.chickenroost.block.tile.Breeder_Tile;
 
-public class BreederChickenRender implements BlockEntityRenderer<BreederTile> {
+public class BreederChickenRender implements BlockEntityRenderer<Breeder_Tile> {
     public BreederChickenRender(BlockEntityRendererProvider.Context context) {
 
     }
 
     @Override
-    public void render(BreederTile pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack,
-                       @NotNull MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
+    public void render(Breeder_Tile pBlockEntity, float pPartialTick, PoseStack pPoseStack,
+                       MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+        Level level = Minecraft.getInstance().level;
         ItemStack itemStack1 = pBlockEntity.getRenderStack1();
         ItemStack itemStack2 = pBlockEntity.getRenderStack2();
         ItemStack itemStack3 = pBlockEntity.getRenderStack3();
@@ -35,7 +39,7 @@ public class BreederChickenRender implements BlockEntityRenderer<BreederTile> {
         poseStack2.scale(0.7f, 0.7f, 0.7f);
         poseStack2.mulPose(Axis.XP.rotationDegrees(0));
 
-        switch (pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
+        switch (pBlockEntity.getBlockState().getValue(Breeder_Block.FACING)) {
             case NORTH -> {
                 poseStack2.translate(0.37f, 0.6f, 0.88f);
                 poseStack2.mulPose(Axis.ZP.rotationDegrees(0));
@@ -67,7 +71,7 @@ public class BreederChickenRender implements BlockEntityRenderer<BreederTile> {
         poseStack1.scale(0.7f, 0.7f, 0.7f);
         poseStack1.mulPose(Axis.XP.rotationDegrees(0));
 
-        switch (pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
+        switch (pBlockEntity.getBlockState().getValue(Breeder_Block.FACING)) {
             case NORTH -> {
                 poseStack1.translate(1.06f, 0.6f, 0.88f);
                 poseStack1.mulPose(Axis.ZP.rotationDegrees(0));
@@ -99,7 +103,7 @@ public class BreederChickenRender implements BlockEntityRenderer<BreederTile> {
         poseStack3.scale(0.5f, 0.5f, 0.5f);
         poseStack3.mulPose(Axis.XP.rotationDegrees(90));
 
-        switch (pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
+        switch (pBlockEntity.getBlockState().getValue(Breeder_Block.FACING)) {
             case NORTH -> {
                 poseStack3.translate(1.0f, 0.5f, -0.4f);
                 poseStack3.mulPose(Axis.ZP.rotationDegrees(0));
@@ -126,5 +130,11 @@ public class BreederChickenRender implements BlockEntityRenderer<BreederTile> {
         itemRenderer.renderStatic(itemStack3, ItemDisplayContext.FIXED, pPackedLight,
                 OverlayTexture.NO_OVERLAY, poseStack3, pBufferSource, pBlockEntity.getLevel(), 0);
         poseStack3.popPose();
+    }
+
+    private int getLightLevel(Level level, BlockPos pos) {
+        int bLight = level.getBrightness(LightLayer.BLOCK, pos);
+        int sLight = level.getBrightness(LightLayer.SKY, pos);
+        return LightTexture.pack(bLight, sLight);
     }
 }

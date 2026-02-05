@@ -15,16 +15,20 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.tarantel.chickenroost.recipes.TrainerRecipe;
+import net.tarantel.chickenroost.item.base.AnimatedChicken;
+import net.tarantel.chickenroost.recipes.Trainer_Recipe;
 import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("deprecation")
-public class TrainerRecipeCategory implements IRecipeCategory<TrainerRecipe> {
-    public final static ResourceLocation UID = ChickenRoostMod.ownresource("trainer_output");
-    public final static ResourceLocation ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
-    public final static ResourceLocation SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
-    public static final RecipeType<TrainerRecipe> RECIPE_TYPE = RecipeType.create(ChickenRoostMod.MODID, "trainer_output", TrainerRecipe.class);
+public class TrainerRecipeCategory implements IRecipeCategory<Trainer_Recipe> {
+    public final static ResourceLocation UID = new ResourceLocation("chicken_roost:trainer_output");
+    public final static ResourceLocation ARROWBACK = new ResourceLocation("chicken_roost:textures/screens/arrowback.png");
+    public final static ResourceLocation SLOT = new ResourceLocation("chicken_roost:textures/screens/slot.png");
+    public static final RecipeType<Trainer_Recipe> RECIPE_TYPE =
+            new RecipeType<>(UID, Trainer_Recipe.class);
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawableAnimated progress;
@@ -35,7 +39,7 @@ public class TrainerRecipeCategory implements IRecipeCategory<TrainerRecipe> {
     private final IDrawableStatic arrowbacki;
 
     public TrainerRecipeCategory(IGuiHelper helper) {
-        ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/arrow.png");
+        ResourceLocation ARROW = new ResourceLocation("chicken_roost:textures/screens/arrow.png");
         this.background = helper.createBlankDrawable(130, 20);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.TRAINER.get()));
 
@@ -51,7 +55,7 @@ public class TrainerRecipeCategory implements IRecipeCategory<TrainerRecipe> {
     }
 
     @Override
-    public RecipeType<TrainerRecipe> getRecipeType() {
+    public RecipeType<Trainer_Recipe> getRecipeType() {
         return JEIPlugin.TRAINER_TYPE;
     }
 
@@ -66,7 +70,7 @@ public class TrainerRecipeCategory implements IRecipeCategory<TrainerRecipe> {
     }
 
     @Override
-    public void draw(TrainerRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
+    public void draw(Trainer_Recipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
                      double mouseY) {
 
         this.slot_2.draw(guiGraphics);
@@ -81,10 +85,16 @@ public class TrainerRecipeCategory implements IRecipeCategory<TrainerRecipe> {
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, TrainerRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, Trainer_Recipe recipe, @NotNull IFocusGroup focuses) {
+        //super.setRecipe(builder, recipe, focuses);
+        Ingredient ingredient = Ingredient.of(
+                ForgeRegistries.ITEMS.getValues().stream()
+                        .filter(item -> item instanceof AnimatedChicken)
+                        .map(ItemStack::new)
+        );
         builder.addSlot(RecipeIngredientRole.INPUT, 91, 1)
-                .addIngredients(recipe.getIngredients().get(0));
+                .addIngredients(ingredient);
 
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 25, 1).addItemStack(recipe.output());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 25, 1).addItemStack(recipe.output);
     }
 }

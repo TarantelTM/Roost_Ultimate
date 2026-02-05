@@ -4,20 +4,21 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 
-import java.util.function.Supplier;
-
-
+@Mod.EventBusSubscriber(modid = ChickenRoostMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModCreativeModeTabs {
 
 	public static final DeferredRegister<CreativeModeTab> TAB_CHICKEN_ROOST = DeferredRegister.create(Registries.CREATIVE_MODE_TAB,
 			ChickenRoostMod.MODID);
 
 
-	public static Supplier<CreativeModeTab> TAB_CHICKEN_ROOST_TAB = TAB_CHICKEN_ROOST.register("tab_chicken_roost", () ->
+
+	public static RegistryObject<CreativeModeTab> TAB_CHICKEN_ROOST_TAB = TAB_CHICKEN_ROOST.register("tab_chicken_roost", () ->
 			CreativeModeTab.builder().icon(() -> new ItemStack(ModBlocks.ROOST.get()))
 					.title(Component.translatable("tab.chicken_roost.roost")).build());
 

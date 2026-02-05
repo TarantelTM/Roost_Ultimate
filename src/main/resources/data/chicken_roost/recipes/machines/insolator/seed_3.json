@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "thermal"
+    }
+  ],
+  "type": "thermal:insolator",
+  "ingredient": {
+    "item": "chicken_roost:chicken_food_tier_3"
+  },
+  "result": [
+    {
+      "item": "chicken_roost:chicken_food_tier_3",
+      "chance": 1.0
+    },
+    {
+      "item": "chicken_roost:chicken_essence_tier_3",
+      "chance": 0.5
+    }
+  ],
+  "energy_mod": 0.2,
+  "water_mod": 3.0
+      }

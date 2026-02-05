@@ -1,0 +1,16 @@
+{
+  "group": "roost",
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:souls/tier1andup"
+    },
+    {
+      "item": "minecraft:stick"
+    }
+  ],
+  "result": {
+    "item": "chicken_roost:chicken_torch",
+    "count": 4
+  }
+}

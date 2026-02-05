@@ -1,0 +1,19 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "draconicevolution"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": { 
+    "tag": "c:seeds/tier9orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_awakeneddraconium"
+    },
+  "time": 20,
+  "output": {
+    "item": "draconicevolution:awakened_draconium_ingot"
+  }
+}

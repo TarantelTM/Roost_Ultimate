@@ -1,0 +1,19 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": { 
+    "tag": "c:seeds/tier4orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_saltpeter"
+  },
+  "time": 20,
+  "output": {
+    "item": "gtceu:raw_saltpeter"
+  }
+}

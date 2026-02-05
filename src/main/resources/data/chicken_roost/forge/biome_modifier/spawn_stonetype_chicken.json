@@ -1,0 +1,54 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": ["stony_shore", "stony_peaks"],
+  "spawners": [
+    {
+      "type": "chicken_roost:c_tuff",
+      "maxCount": 5,
+      "minCount": 2,
+      "weight": 5
+    },
+    {
+      "type": "chicken_roost:c_cobble",
+      "maxCount": 5,
+      "minCount": 2,
+      "weight": 5
+    },
+    {
+      "type": "chicken_roost:c_stone",
+      "maxCount": 5,
+      "minCount": 2,
+      "weight": 5
+    },
+    {
+      "type": "chicken_roost:c_flint",
+      "maxCount": 5,
+      "minCount": 2,
+      "weight": 5
+    },
+    {
+      "type": "chicken_roost:c_gravel",
+      "maxCount": 5,
+      "minCount": 2,
+      "weight": 5
+    },
+    {
+      "type": "chicken_roost:c_granit",
+      "maxCount": 5,
+      "minCount": 2,
+      "weight": 5
+    },
+    {
+      "type": "chicken_roost:c_andesite",
+      "maxCount": 5,
+      "minCount": 2,
+      "weight": 5
+    },
+    {
+      "type": "chicken_roost:c_diorite",
+      "maxCount": 5,
+      "minCount": 2,
+      "weight": 5
+    }
+  ]
+}

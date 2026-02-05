@@ -1,45 +1,50 @@
 package net.tarantel.chickenroost.recipes;
 
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
+import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.tarantel.chickenroost.ChickenRoostMod;
-import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("deprecation")
-public record ThrowEggRecipe(ItemStack output, Ingredient ingredient0) implements Recipe<RecipeInput> {
+public class ThrowEggRecipe implements Recipe<SimpleContainer> {
+    public final ResourceLocation recipeId;
+    public final ItemStack output;
+    public final Ingredient ingredient0;
 
-    @Override
-    public @NotNull ItemStack assemble(@NotNull RecipeInput container,@NotNull HolderLookup.Provider registries) {
-        return output;
+    public ThrowEggRecipe(ResourceLocation recipeId,ItemStack output, Ingredient ingredient0) {
+        this.recipeId = recipeId;
+        this.output = output;
+        this.ingredient0 = ingredient0;
     }
 
+    @Override
+    public ItemStack assemble(SimpleContainer container, RegistryAccess registryAccess) {
+        return output.copy();
+    }
+
+    @Override
     public ResourceLocation getId() {
-        return ChickenRoostMod.ownresource("throwegg");
+        return recipeId;
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(HolderLookup.Provider registries) {
-        return output.copy();
-    }
-
-    public ItemStack getResultEmi() {
+    public ItemStack getResultItem(RegistryAccess registryAccess) {
         return output.copy();
     }
 
     @Override
-    public boolean matches(@NotNull RecipeInput pContainer, Level pLevel) {
-        if (pLevel.isClientSide()) {
+    public boolean matches(SimpleContainer container, Level level) {
+        if (level.isClientSide()) {
             return false;
         }
-        return ingredient0.test(pContainer.getItem(0));
+        return ingredient0.test(container.getItem(0));
     }
 
     @Override
@@ -48,72 +53,61 @@ public record ThrowEggRecipe(ItemStack output, Ingredient ingredient0) implement
     }
 
     @Override
-    public @NotNull NonNullList<Ingredient> getIngredients() {
+    public NonNullList<Ingredient> getIngredients() {
         NonNullList<Ingredient> ingredients = NonNullList.createWithCapacity(1);
-        ingredients.addFirst(ingredient0);
+        ingredients.add(0, ingredient0);
         return ingredients;
     }
 
     @Override
-    public boolean canCraftInDimensions(int pWidth, int pHeight) {
+    public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
     @Override
-    public @NotNull String getGroup() {
+    public String getGroup() {
         return "throwegg";
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
+    public RecipeSerializer<?> getSerializer() {
+        return ModRecipes.THROW_EGG_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
-        return Type.INSTANCE;
+    public RecipeType<?> getType() {
+        return ModRecipes.THROW_EGG_TYPE.get();
     }
 
     public static final class Type implements RecipeType<ThrowEggRecipe> {
-        private Type() {
-        }
-
+        private Type() { }
         public static final Type INSTANCE = new Type();
         public static final String ID = "throwegg";
     }
 
     public static final class Serializer implements RecipeSerializer<ThrowEggRecipe> {
-        private Serializer() {
-        }
-
+        private Serializer() {}
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID =
-                ChickenRoostMod.ownresource("throwegg");
-
-        private final MapCodec<ThrowEggRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> recipe.output), Ingredient.CODEC_NONEMPTY.fieldOf("egg").forGetter((recipe) -> recipe.ingredient0)).apply(instance, ThrowEggRecipe::new));
-
-        private final StreamCodec<RegistryFriendlyByteBuf, ThrowEggRecipe> STREAM_CODEC = StreamCodec.of(
-                Serializer::write, Serializer::read);
+        public static final ResourceLocation ID = new ResourceLocation("chicken_roost:throwegg");
 
         @Override
-        public @NotNull MapCodec<ThrowEggRecipe> codec() {
-            return CODEC;
+        public ThrowEggRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+            ItemStack output = CraftingHelper.getItemStack(json.getAsJsonObject("output"), true);
+            Ingredient ingredient0 = Ingredient.fromJson(json.getAsJsonObject("egg"));
+            return new ThrowEggRecipe(recipeId, output, ingredient0);
         }
 
         @Override
-        public @NotNull StreamCodec<RegistryFriendlyByteBuf, ThrowEggRecipe> streamCodec() {
-            return STREAM_CODEC;
+        public ThrowEggRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+            Ingredient input0 = Ingredient.fromNetwork(buffer);
+            ItemStack output = buffer.readItem();
+            return new ThrowEggRecipe(recipeId, output, input0);
         }
 
-        private static ThrowEggRecipe read(RegistryFriendlyByteBuf buffer) {
-            Ingredient input0 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-            ItemStack output = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
-            return new ThrowEggRecipe(output, input0);
-        }
-
-        private static void write(RegistryFriendlyByteBuf buffer, ThrowEggRecipe recipe) {
-            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient0);
-            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.output);
+        @Override
+        public void toNetwork(FriendlyByteBuf buffer, ThrowEggRecipe recipe) {
+            recipe.ingredient0.toNetwork(buffer);
+            buffer.writeItem(recipe.output);
         }
     }
 }

@@ -1,0 +1,19 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "evilcraft"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": { 
+    "tag": "c:seeds/tier6orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_darkgem"
+  },
+  "time": 20,
+  "output": {
+    "item": "evilcraft:dark_gem"
+  }
+}

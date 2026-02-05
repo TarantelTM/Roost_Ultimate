@@ -1,0 +1,20 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "bloodmagic"
+    }
+  ],
+  "type": "chicken_roost:roost_output",
+  "food": {
+    "tag": "c:seeds/tier5orup"
+  },
+  "chicken": {
+    "item": "chicken_roost:c_blood"
+  },
+  "time": 20,
+  "output": {
+    "item": "bloodmagic:weakbloodshard"
+  }
+
+}

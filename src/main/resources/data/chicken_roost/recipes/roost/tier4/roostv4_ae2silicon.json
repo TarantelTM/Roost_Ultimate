@@ -1,0 +1,20 @@
+{
+  "conditions": [
+    {
+              "type": "forge:mod_loaded",
+              "modid": "ae2"
+            }
+        ],
+        "type": "chicken_roost:roost_output",
+        "food": {
+            "tag": "c:seeds/tier4orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_silicon"
+          },
+        "time": 20,
+        "output": {
+          "item": "ae2:silicon"
+        }
+
+      }
