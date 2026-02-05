@@ -1,11 +1,7 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": {
-    "tag": "c:seeds/tier2orup"
-  },
-  "chicken": {
-    "item": "chicken_roost:c_lime"
-  },
+  "food": "#c:seeds/tier2orup",
+  "chicken": "chicken_roost:c_lime",
   "time": 20,
   "output": {
     "item": "minecraft:lime_dye"

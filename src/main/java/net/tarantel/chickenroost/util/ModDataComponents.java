@@ -1,5 +1,6 @@
 package net.tarantel.chickenroost.util;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -10,6 +11,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.tarantel.chickenroost.ChickenRoostMod;
 
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class ModDataComponents {
@@ -17,14 +19,22 @@ public class ModDataComponents {
 
     public static final DeferredRegister<DataComponentType<?>> COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, ChickenRoostMod.MODID);
     public static final DeferredRegister.DataComponents DATA_COMPONENTS =
-            DeferredRegister.createDataComponents(ChickenRoostMod.MODID);
+            DeferredRegister.createDataComponents(
+                    Registries.DATA_COMPONENT_TYPE,
+                    ChickenRoostMod.MODID
+            );
 
     public static void register(IEventBus bus) {
         COMPONENTS.register(bus);
         DATA_COMPONENTS.register(bus);
     }
 
-
+    public static final Supplier<DataComponentType<ChickenStats>> CHICKEN_STATS =
+            COMPONENTS.register("chicken_stats",
+                    () -> DataComponentType.<ChickenStats>builder()
+                            .persistent(ChickenStats.CODEC)
+                            .build()
+            );
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SimpleFluidContent>> SIMPLE_FLUID_CONTENT =
             DATA_COMPONENTS.registerComponentType(
                     "simple_fluid_content",
@@ -40,6 +50,14 @@ public class ModDataComponents {
                     .networkSynchronized(ByteBufCodecs.VAR_INT)
                     .build()
     );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> MAXLEVEL =
+            COMPONENTS.register("maxlevel",
+                    () -> DataComponentType.<Boolean>builder()
+                            .persistent(Codec.BOOL)
+                            .networkSynchronized(ByteBufCodecs.BOOL)
+                            .build()
+            );
 
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CHICKENXP = COMPONENTS.register("chickenxp",

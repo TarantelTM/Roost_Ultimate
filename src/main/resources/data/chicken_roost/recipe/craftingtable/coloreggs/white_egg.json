@@ -4,12 +4,8 @@
     "01 "
   ],
   "key": {
-    "0": {
-      "item": "minecraft:egg"
-    },
-    "1": {
-      "item": "minecraft:bone_meal"
-    }
+    "0":  "minecraft:egg",
+    "1":  "minecraft:bone_meal"
   },
   "result": {
     "id": "chicken_roost:white_egg",

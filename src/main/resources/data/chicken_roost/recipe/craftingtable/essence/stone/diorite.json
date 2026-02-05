@@ -5,9 +5,7 @@
     "0  "
   ],
   "key": {
-    "0": {
-      "item": "chicken_roost:stone_essence"
-    }
+    "0":  "chicken_roost:stone_essence"
   },
   "result": {
     "id": "minecraft:diorite",

@@ -6,12 +6,8 @@
     }
   ],
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "c:seeds/tier5orup"
-  },
-  "chicken": {
-      "item": "chicken_roost:c_darksteel"
-  },
+  "food": "#c:seeds/tier5orup",
+  "chicken": "chicken_roost:c_darksteel",
   "time": 20,
   "output": {
     "item": "enderio:dark_steel_ingot"

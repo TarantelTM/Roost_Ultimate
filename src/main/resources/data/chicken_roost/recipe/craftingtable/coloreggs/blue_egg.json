@@ -4,12 +4,8 @@
     "01 "
   ],
   "key": {
-    "0": {
-      "item": "minecraft:egg"
-    },
-    "1": {
-      "item": "minecraft:lapis_lazuli"
-    }
+    "0":  "minecraft:egg",
+    "1":  "minecraft:lapis_lazuli"
   },
   "result": {
     "id": "chicken_roost:blue_egg",

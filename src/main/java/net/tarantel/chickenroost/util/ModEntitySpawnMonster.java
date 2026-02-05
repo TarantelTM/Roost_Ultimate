@@ -35,7 +35,7 @@ public record ModEntitySpawnMonster(HolderSet<Biome> biomes, MobSpawnSettings.Sp
 	@Override
 	public void modify(@NotNull Holder<Biome> biome, @NotNull Phase phase, ModifiableBiomeInfo.BiomeInfo.@NotNull Builder builder) {
 		if (phase == Phase.ADD && this.biomes.contains(biome)) {
-			builder.getMobSpawnSettings().addSpawn(MobCategory.MONSTER, this.spawn);
+			builder.getMobSpawnSettings().addSpawn(MobCategory.MONSTER, 5, this.spawn);
 		}
 	}
 

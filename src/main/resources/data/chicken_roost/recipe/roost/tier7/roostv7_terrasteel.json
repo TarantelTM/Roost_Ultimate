@@ -6,12 +6,8 @@
     }
   ],
         "type": "chicken_roost:roost_output",
-        "food": {
-            "tag": "c:seeds/tier7orup"
-          },
-          "chicken": {
-            "item": "chicken_roost:c_terrasteel"
-          },
+        "food": "#c:seeds/tier7orup",
+          "chicken": "chicken_roost:c_terrasteel",
         "time": 20,
         "output": {
           "item": "botania:terrasteel_ingot"

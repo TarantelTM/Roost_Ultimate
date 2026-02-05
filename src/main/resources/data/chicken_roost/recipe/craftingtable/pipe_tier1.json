@@ -1,0 +1,16 @@
+{
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "000",
+          "010",
+          "000"
+        ],
+        "key": {
+          "0": "minecraft:black_wool",
+          "1": "minecraft:redstone_block"
+        },
+        "result": {
+          "id": "chicken_roost:pipe_tier1",
+          "count": 8
+        }
+}

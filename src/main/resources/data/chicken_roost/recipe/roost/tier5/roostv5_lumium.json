@@ -1,11 +1,7 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "c:seeds/tier5orup"
-  },
-  "chicken": {
-      "item": "chicken_roost:c_lumium"
-  },
+  "food": "#c:seeds/tier5orup",
+  "chicken": "chicken_roost:c_lumium",
   "time": 20,
   "output": {
     "item": "chicken_roost:ingot_lumium"

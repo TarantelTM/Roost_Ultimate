@@ -7,9 +7,7 @@
   ],
         "type": "minecraft:crafting_shapeless",
         "ingredients": [
-          {
-            "item": "ae2:silicon"
-          }
+           "ae2:silicon"
         ],
         "result": {
           "id": "refinedstorage:silicon",

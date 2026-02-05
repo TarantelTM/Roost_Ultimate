@@ -1,14 +1,8 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": {
-    "tag": "c:seeds/tier1orup"
-  },
-  "left-chicken": {
-    "item": "chicken_roost:c_slime"
-  },
-  "right-chicken": {
-    "item": "chicken_roost:c_magmacream"
-  },
+  "food": "#c:seeds/tier1orup",
+  "left-chicken": "chicken_roost:c_slime",
+  "right-chicken": "chicken_roost:c_magmacream",
   "time": 20,
   "output": {
     "item": "chicken_roost:c_magmaslime"

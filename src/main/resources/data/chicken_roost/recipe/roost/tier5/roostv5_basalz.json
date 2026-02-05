@@ -6,12 +6,8 @@
     }
   ],
         "type": "chicken_roost:roost_output",
-        "food": {
-            "tag": "c:seeds/tier5orup"
-          },
-          "chicken": {
-            "item": "chicken_roost:c_basalz"
-          },
+        "food": "#c:seeds/tier5orup",
+          "chicken": "chicken_roost:c_basalz",
         "time": 20,
         "output": {
           "item": "thermal:basalz_powder"

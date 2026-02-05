@@ -13,12 +13,8 @@
     " 0 "
   ],
   "key": {
-    "0": {
-      "item": "ae2:controller"
-    },
-    "1": {
-      "item": "chicken_roost:roost"
-    }
+    "0":  "ae2:controller",
+    "1":  "chicken_roost:roost"
   },
   "result": {
     "id": "chicken_roost:chickenstorage",

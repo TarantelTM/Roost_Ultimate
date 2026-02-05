@@ -1,14 +1,8 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": {
-    "tag": "c:seeds/tier4orup"
-  },
-  "left-chicken": {
-    "item": "chicken_roost:c_coke"
-  },
-  "right-chicken": {
-    "item": "chicken_roost:c_coke"
-  },
+  "food": "#c:seeds/tier4orup",
+  "left-chicken": "chicken_roost:c_coke",
+  "right-chicken": "chicken_roost:c_coke",
   "time": 20,
   "output": {
     "item": "chicken_roost:c_coke"

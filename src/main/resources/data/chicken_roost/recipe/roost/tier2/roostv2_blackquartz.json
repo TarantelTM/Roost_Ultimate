@@ -6,12 +6,8 @@
     }
   ],
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "c:seeds/tier2orup"
-  },
-  "chicken": {
-      "item": "chicken_roost:c_blackquartz"
-  },
+  "food": "#c:seeds/tier2orup",
+  "chicken": "chicken_roost:c_blackquartz",
   "time": 20,
   "output": {
     "item": "actuallyadditions:black_quartz"

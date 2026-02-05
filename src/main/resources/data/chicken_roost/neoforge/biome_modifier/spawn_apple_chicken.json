@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "flower_forest",
+  "biomes": "basalt_deltas",
   "spawners": {
     "type": "chicken_roost:c_apple",
     "maxCount": 6,

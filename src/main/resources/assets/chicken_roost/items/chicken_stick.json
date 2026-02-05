@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "chicken_roost:item/chicken_stick",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
+  }
+}

@@ -1,14 +1,8 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": {
-    "tag": "c:seeds/tier1orup"
-  },
-  "left-chicken": {
-    "item": "chicken_roost:c_redstonecrystal"
-  },
-  "right-chicken": {
-    "item": "chicken_roost:c_gold"
-  },
+  "food": "#c:seeds/tier1orup",
+  "left-chicken": "chicken_roost:c_redstonecrystal",
+  "right-chicken": "chicken_roost:c_gold",
   "time": 20,
   "output": {
     "item": "chicken_roost:c_stoneburnt"

@@ -1,0 +1,16 @@
+{
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "000",
+          "010",
+          "000"
+        ],
+        "key": {
+          "0": "chicken_roost:pipe_tier1",
+          "1": "minecraft:copper_block"
+        },
+        "result": {
+          "id": "chicken_roost:pipe_tier2",
+          "count": 8
+        }
+}

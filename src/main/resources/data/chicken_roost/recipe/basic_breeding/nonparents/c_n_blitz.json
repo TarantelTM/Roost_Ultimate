@@ -1,14 +1,8 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": {
-    "tag": "c:seeds/tier1orup"
-  },
-  "left-chicken": {
-    "item": "chicken_roost:c_basalz"
-  },
-  "right-chicken": {
-    "item": "chicken_roost:c_sulfur"
-  },
+  "food": "#c:seeds/tier1orup",
+  "left-chicken": "chicken_roost:c_basalz",
+  "right-chicken": "chicken_roost:c_sulfur",
   "time": 20,
   "output": {
     "item": "chicken_roost:c_blitz"

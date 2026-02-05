@@ -11,7 +11,7 @@ public final class ItemCapabilityMenuHelper {
     private ItemCapabilityMenuHelper() {}
 
     public static Optional<IItemHandler> getCapabilityItemHandler(Level level, BlockEntity blockEntity) {
-        return Optional.ofNullable(level.getCapability(Capabilities.ItemHandler.BLOCK, blockEntity.getBlockPos(),
+        return Optional.ofNullable((IItemHandler) level.getCapability(Capabilities.Item.BLOCK, blockEntity.getBlockPos(),
                 blockEntity.getBlockState(), blockEntity, null));
     }
 }

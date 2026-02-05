@@ -8,14 +8,21 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.item.base.ChickenSeedBase;
 import net.tarantel.chickenroost.item.base.RoostUltimateItem;
@@ -43,12 +50,24 @@ public class ChickenStorageTile extends BlockEntity {
             return (stack.getItem() instanceof RoostUltimateItem || stack.getItem() instanceof ChickenSeedBase);
         }
     };
+
+    private boolean dropped = false;
+
+    public boolean hasDropped() {
+        return dropped;
+    }
+
+    public void markDropped() {
+        this.dropped = true;
+    }
+
+
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         SimpleContainer block = new SimpleContainer(1);
 
         int integer = 0;
-        ItemStack itemStack = new ItemStack(ModBlocks.CHICKENSTORAGE.get());
+        ItemStack itemStack = new ItemStack(ModBlocks.CHICKENSTORAGE);
         NonNullList<ItemStack> items = inventory.getItems();
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             items.set(i, itemHandler.getStackInSlot(i));
@@ -78,22 +97,28 @@ public class ChickenStorageTile extends BlockEntity {
         super.onLoad();
         setChanged();
     }
-    public @Nullable IItemHandler getItemHandlerCapability(@Nullable Direction side) {
-        if(side == null)
-            return itemHandler;
-
-        return itemHandler;
-    }
-    @Override
-    public void saveAdditional(CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
-        nbt.put("inventory", itemHandler.serializeNBT(lookup));
-        super.saveAdditional(nbt, lookup);
+    private static @Nullable ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, @Nullable Direction side) {
+        return level.getCapability(Capabilities.Item.BLOCK, pos, side);
     }
 
+    public static final BlockCapability<IItemHandler, @Nullable Direction> ITEM_HANDLER_BLOCK =
+            BlockCapability.create(
+                    Identifier.fromNamespaceAndPath("chicken_roost", "item_handler"),
+                    IItemHandler.class,
+                    Direction.class);
+
+
     @Override
-    public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
-        super.loadAdditional(nbt, lookup);
-        itemHandler.deserializeNBT(lookup, nbt.getCompound("inventory"));
+    protected void saveAdditional(ValueOutput out) {
+        super.saveAdditional(out);
+        itemHandler.serialize(out);
+
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput in) {
+        super.loadAdditional(in);
+        itemHandler.deserialize(in);
     }
 
 

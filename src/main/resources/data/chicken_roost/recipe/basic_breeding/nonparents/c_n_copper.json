@@ -1,14 +1,8 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": {
-    "tag": "c:seeds/tier1orup"
-  },
-  "left-chicken": {
-    "item": "chicken_roost:c_yellow"
-  },
-  "right-chicken": {
-    "item": "chicken_roost:c_brown"
-  },
+  "food": "#c:seeds/tier1orup",
+  "left-chicken": "chicken_roost:c_yellow",
+  "right-chicken": "chicken_roost:c_brown",
   "time": 20,
   "output": {
     "item": "chicken_roost:c_copper"

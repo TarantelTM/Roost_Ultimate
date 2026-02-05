@@ -2,6 +2,7 @@ package net.tarantel.chickenroost.handler;
 
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -9,9 +10,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.RoostTile;
-import net.tarantel.chickenroost.item.base.*;
+import net.tarantel.chickenroost.item.base.ChickenItemBase;
+import net.tarantel.chickenroost.item.base.ChickenSeedBase;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -38,32 +42,31 @@ public class RoostHandler extends AbstractContainerMenu {
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
 
+        Container dummy = new DummyContainer(3);
+        int c = 0;
 
 
-        ItemCapabilityMenuHelper.getCapabilityItemHandler(this.level, this.blockEntity).ifPresent(itemHandler -> {
-            addSlot(new SlotItemHandler(itemHandler, 0, 11, 19){
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return (stack.getItem() instanceof ChickenSeedBase);
-                }
+        addSlot(new TransferSlot(level, dummy, c++, blockEntity.inventory, // ResourceHandler
+                0, 11, 19,
+                stack -> stack.getItem() instanceof ChickenSeedBase
+        ));
 
-            });
-
-            addSlot(new SlotItemHandler(itemHandler, 1, 39, 19){
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return (stack.getItem() instanceof ChickenItemBase);
-                }
-            });
-
-            addSlot(new SlotItemHandler(itemHandler, 2, 120, 19){
-                @Override
-                public boolean mayPlace(@NotNull ItemStack stack) {
-                    return false;
-                }
-            });
-
+        addSlot(new TransferSlot(level, dummy, c++, blockEntity.inventory, // ResourceHandler
+                    1, 39, 19,
+                    stack -> stack.getItem() instanceof ChickenItemBase
+        ) {
+            @Override
+            public int getMaxStackSize() {
+                return 1;
+            }
         });
+
+        addSlot(new TransferSlot(level, dummy, c++, blockEntity.inventory, // ResourceHandler
+                2, 120, 19,                  // GUI position
+                stack -> false           // mayPlace-Regel
+        ));
+
+
         addDataSlots(this.data);
     }
 
@@ -71,12 +74,22 @@ public class RoostHandler extends AbstractContainerMenu {
         return data.get(0) > 0;
     }
 
-    public int getScaledProgress() {
-        int progress = this.data.get(0);
-        int maxProgress = this.data.get(1);
-        int progressArrowSize = 54;
+    public int getProgress() {
+        return this.data.get(0);
+    }
 
-        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
+    public int getMaxProgress() {
+        return this.data.get(1);
+    }
+    public int getScaledProgress(int arrowWidth) {
+        int progress = getProgress();
+        int maxProgress = getMaxProgress();
+
+        if (maxProgress == 0 || progress == 0) {
+            return 0;
+        }
+
+        return progress * arrowWidth / maxProgress;
     }
 
     private static final int HOTBAR_SLOT_COUNT = 9;
@@ -86,35 +99,75 @@ public class RoostHandler extends AbstractContainerMenu {
     private static final int VANILLA_SLOT_COUNT = HOTBAR_SLOT_COUNT + PLAYER_INVENTORY_SLOT_COUNT;
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
+
     private static final int TE_INVENTORY_SLOT_COUNT = 3;
 
-    @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index) {
-        Slot sourceSlot = slots.get(index);
-        if (!sourceSlot.hasItem()) return ItemStack.EMPTY;
-        ItemStack sourceStack = sourceSlot.getItem();
-        ItemStack copyOfSourceStack = sourceStack.copy();
+    private static final int PLAYER_START = 0;
+    private static final int PLAYER_END = 36;
 
-        if (index < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
-            if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
-                    + TE_INVENTORY_SLOT_COUNT, false)) {
-                return ItemStack.EMPTY;
+    private static final int MACHINE_START = 36;
+    private static final int MACHINE_END = MACHINE_START + TE_INVENTORY_SLOT_COUNT;
+
+    @Override
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
+
+        Slot slot = slots.get(index);
+        if (!slot.hasItem()) return ItemStack.EMPTY;
+
+        ItemStack stack = slot.getItem();
+        ItemStack copy = stack.copy();
+
+        boolean fromPlayer  = index < PLAYER_END;
+        boolean fromMachine = index >= MACHINE_START && index < MACHINE_END;
+
+        // PLAYER -> MACHINE (nur Slots 0,1,2)
+        if (fromPlayer) {
+            try (Transaction tx = Transaction.openRoot()) {
+
+                ItemResource res = ItemResource.of(stack);
+                int remaining = stack.getCount();
+
+                for (int s = 0; s <= 1 && remaining > 0; s++) {
+                    remaining -= blockEntity.inventory.insert(s, res, remaining, tx);
+                }
+
+                int moved = stack.getCount() - remaining;
+                if (moved <= 0) return ItemStack.EMPTY;
+
+                stack.shrink(moved);
+                tx.commit();
             }
-        } else if (index < TE_INVENTORY_FIRST_SLOT_INDEX + TE_INVENTORY_SLOT_COUNT) {
-            if (!moveItemStackTo(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
-                return ItemStack.EMPTY;
+
+            slot.setChanged();
+            return copy;
+        }
+
+        // MACHINE -> PLAYER (alle Slots 0–11)
+        if (fromMachine) {
+
+            int machineSlot = index - MACHINE_START;
+
+            // ✅ WICHTIG: exakte Slot-Resource holen
+            ItemResource res = blockEntity.inventory.getResource(machineSlot);
+            int amount = blockEntity.inventory.getAmountAsInt(machineSlot);
+
+            if (res.isEmpty() || amount <= 0) return ItemStack.EMPTY;
+
+            int extracted;
+            try (Transaction tx = Transaction.openRoot()) {
+                extracted = blockEntity.inventory.extract(machineSlot, res, amount, tx);
+                if (extracted <= 0) return ItemStack.EMPTY;
+                tx.commit();
             }
-        } else {
-            System.out.println("Invalid slotIndex:" + index);
-            return ItemStack.EMPTY;
+
+            ItemStack toGive = res.toStack(extracted);
+            player.getInventory().placeItemBackInInventory(toGive);
+
+            slot.setChanged();
+            return copy;
         }
-        if (sourceStack.getCount() == 0) {
-            sourceSlot.set(ItemStack.EMPTY);
-        } else {
-            sourceSlot.setChanged();
-        }
-        sourceSlot.onTake(playerIn, sourceStack);
-        return copyOfSourceStack;
+
+        return ItemStack.EMPTY;
     }
 
     @Override
@@ -137,7 +190,7 @@ public class RoostHandler extends AbstractContainerMenu {
         }
     }
 
-    public BlockEntity getBlockEntity() {
+    public RoostTile getBlockEntity() {
         return blockEntity;
     }
 }

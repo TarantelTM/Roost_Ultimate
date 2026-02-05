@@ -6,12 +6,8 @@
     }
   ],
         "type": "chicken_roost:roost_output",
-        "food": {
-            "tag": "c:seeds/tier7orup"
-          },
-          "chicken": {
-            "item": "chicken_roost:c_manyullyn"
-          },
+        "food": "#c:seeds/tier7orup",
+          "chicken": "chicken_roost:c_manyullyn",
         "time": 20,
         "output": {
           "item": "tconstruct:manyullyn_nugget"

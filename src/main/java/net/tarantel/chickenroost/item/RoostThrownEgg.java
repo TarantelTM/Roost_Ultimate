@@ -2,12 +2,12 @@ package net.tarantel.chickenroost.item;
 
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.*;
+
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -19,13 +19,24 @@ public class RoostThrownEgg extends ThrowableItemProjectile {
 
     private EntityType customtype;
 
-    public RoostThrownEgg(Level level, LivingEntity shooter, EntityType entity) {
-        super(EntityType.EGG, shooter, level);
+    public RoostThrownEgg(Level level, LivingEntity shooter, EntityType<?> entity) {
+        super(
+                EntityType.EGG,               // EntityType des Projektils
+                shooter,
+                level,
+                new ItemStack(ModItems.WOOD_ESSENCE.get()) // ItemStack ist Pflicht
+        );
         this.customtype = entity;
     }
 
+
     public RoostThrownEgg(Level level, double x, double y, double z) {
-        super(EntityType.EGG, x, y, z, level);
+        super(
+                EntityType.EGG,
+                x, y, z,
+                level,
+                new ItemStack(ModItems.WOOD_ESSENCE.get())
+        );
     }
 
     @Override
@@ -45,33 +56,46 @@ public class RoostThrownEgg extends ThrowableItemProjectile {
     @Override
     protected void onHit(@NotNull HitResult result) {
         super.onHit(result);
-        if (!this.level().isClientSide) {
-            if (this.random.nextInt(8) == 0) {
-                int i = 1;
-                if (this.random.nextInt(32) == 0) {
-                    i = 4;
-                }
 
-                for(int j = 0; j < i; ++j) {
-                    Entity chicken = customtype.create(this.level());
-                    if (chicken != null) {
-                        chicken.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
-                        if (!chicken.fudgePositionAfterSizeChange(ZERO_SIZED_DIMENSIONS)) {
-                            break;
-                        }
+        if (this.level().isClientSide()) return;
 
-                        this.level().addFreshEntity(chicken);
-                    }
-                }
+        if (this.random.nextInt(8) == 0) {
+            int count = this.random.nextInt(32) == 0 ? 4 : 1;
+
+            if (!(this.level() instanceof ServerLevel serverLevel)) {
+                return;
             }
 
-            this.level().broadcastEntityEvent(this, (byte)3);
-            this.discard();
+            for (int j = 0; j < count; ++j) {
+
+                Entity chicken = customtype.spawn(
+                        serverLevel,
+                        this.blockPosition(),
+                        EntitySpawnReason.BREEDING
+                );
+
+                if (chicken == null) break;
+
+                // Position / Rotation (moveTo-Ersatz)
+                chicken.setPos(this.getX(), this.getY(), this.getZ());
+                chicken.setYRot(this.getYRot());
+                chicken.setXRot(0.0F);
+                chicken.setYHeadRot(this.getYRot());
+                chicken.setYBodyRot(this.getYRot());
+
+                // optional, aber sinnvoll:
+                if (!chicken.fudgePositionAfterSizeChange(ZERO_SIZED_DIMENSIONS)) {
+                    break;
+                }
+            }
         }
 
+        this.level().broadcastEntityEvent(this, (byte) 3);
+        this.discard();
     }
 
+
     protected @NotNull Item getDefaultItem() {
-        return ModItems.LAVA_EGG.get();
+        return ModItems.WOOD_ESSENCE.get();
     }
 }

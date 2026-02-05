@@ -6,12 +6,8 @@
     }
   ],
         "type": "chicken_roost:roost_output",
-        "food": {
-            "tag": "c:seeds/tier8orup"
-          },
-          "chicken": {
-            "item": "chicken_roost:c_elementium"
-          },
+        "food": "#c:seeds/tier8orup",
+          "chicken": "chicken_roost:c_elementium",
         "time": 20,
         "output": {
           "item": "botania:elementium_ingot"

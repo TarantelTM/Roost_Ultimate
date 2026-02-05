@@ -1,14 +1,8 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": {
-    "tag": "c:seeds/tier5orup"
-  },
-  "left-chicken": {
-    "item": "chicken_roost:c_cinnabar"
-  },
-  "right-chicken": {
-    "item": "chicken_roost:c_cinnabar"
-  },
+  "food": "#c:seeds/tier5orup",
+  "left-chicken": "chicken_roost:c_cinnabar",
+  "right-chicken": "chicken_roost:c_cinnabar",
   "time": 20,
   "output": {
     "item": "chicken_roost:c_cinnabar"

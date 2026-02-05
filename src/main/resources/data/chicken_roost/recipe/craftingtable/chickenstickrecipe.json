@@ -7,15 +7,9 @@
     "2"
   ],
   "key": {
-    "0": {
-      "item": "minecraft:egg"
-    },
-    "1": {
-      "item": "minecraft:stick"
-    },
-    "2": {
-      "item": "minecraft:feather"
-    }
+    "0": "minecraft:egg",
+    "1": "minecraft:stick",
+    "2": "minecraft:feather"
   },
   "result": {
     "id": "chicken_roost:chicken_stick",

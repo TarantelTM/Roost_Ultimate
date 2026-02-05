@@ -11,21 +11,26 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeHolderType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.item.ModItems;
+import net.tarantel.chickenroost.recipes.BreederRecipe;
+import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.recipes.ThrowEggRecipe;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
-public class EggRecipeCategory implements IRecipeCategory<ThrowEggRecipe> {
-    public final static ResourceLocation UID = ChickenRoostMod.ownresource("throwegg");
-    public final static ResourceLocation ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
-    public final static ResourceLocation SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
+public class EggRecipeCategory implements IRecipeCategory<RecipeHolder<ThrowEggRecipe>> {
+    public final static Identifier UID = ChickenRoostMod.ownresource("throwegg");
+    public final static Identifier ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
+    public final static Identifier SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
     public static final RecipeType<ThrowEggRecipe> RECIPE_TYPE = new RecipeType<>(UID, ThrowEggRecipe.class);
+    public static final IRecipeHolderType<ThrowEggRecipe> TYPE = IRecipeHolderType.create(ModRecipes.THROW_EGG_TYPE.get());
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawableAnimated progress;
@@ -35,7 +40,7 @@ public class EggRecipeCategory implements IRecipeCategory<ThrowEggRecipe> {
     private final IDrawableStatic arrowbacki;
 
     public EggRecipeCategory(IGuiHelper helper) {
-        ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/arrow.png");
+        Identifier ARROW = ChickenRoostMod.ownresource("textures/screens/arrow.png");
         this.background = helper.createBlankDrawable(130, 20);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.CHICKEN_STICK.get()));
 
@@ -51,8 +56,8 @@ public class EggRecipeCategory implements IRecipeCategory<ThrowEggRecipe> {
     }
 
     @Override
-    public RecipeType<ThrowEggRecipe> getRecipeType() {
-        return JEIPlugin.EGG_TYPE;
+    public IRecipeHolderType<ThrowEggRecipe> getRecipeType() {
+        return TYPE;
     }
 
     @Override
@@ -61,28 +66,38 @@ public class EggRecipeCategory implements IRecipeCategory<ThrowEggRecipe> {
     }
 
     @Override
-    public IDrawable getBackground() {
-        return this.background;
+    public int getWidth() {
+        return background.getWidth();
     }
 
     @Override
-    public void draw(ThrowEggRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
-                     double mouseY) {
+    public int getHeight() {
+        return background.getHeight();
+    }
+
+    @Override
+    public IDrawable getIcon() {
+        return icon;
+    }
+
+    /*@Override
+    public IDrawable getBackground() {
+        return this.background;
+    }*/
+
+    @Override
+    public void draw(RecipeHolder<ThrowEggRecipe> recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 
         this.slot_1.draw(guiGraphics);
         this.slot_3.draw(guiGraphics);
         this.arrowbacki.draw(guiGraphics);
         this.progress.draw(guiGraphics);
     }
-    @Override
-    public IDrawable getIcon() {
-        return this.icon;
-    }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, ThrowEggRecipe recipe, @NotNull IFocusGroup focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 11, 1)
-                .addIngredients(recipe.getIngredients().get(0));
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1).addItemStack(recipe.output());
+    public void setRecipe(IRecipeLayoutBuilder iRecipeLayoutBuilder, RecipeHolder<ThrowEggRecipe> recipe, IFocusGroup iFocusGroup) {
+        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT, 11, 1)
+                .addIngredients(recipe.value().getIngredients().get(0));
+        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1).addItemStack(recipe.value().getResultItem(null));
     }
 }

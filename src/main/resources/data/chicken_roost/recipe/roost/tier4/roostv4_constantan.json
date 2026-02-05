@@ -6,12 +6,8 @@
     }
   ],
         "type": "chicken_roost:roost_output",
-        "food": {
-            "tag": "c:seeds/tier4orup"
-          },
-          "chicken": {
-            "item": "chicken_roost:c_constantan"
-          },
+        "food": "#c:seeds/tier4orup",
+          "chicken": "chicken_roost:c_constantan",
         "time": 20,
         "output": {
           "item": "thermal:constantan_nugget"

@@ -1,7 +1,7 @@
 package net.tarantel.chickenroost.util;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -24,12 +24,12 @@ public class ChickenStickTool {
         ItemStack itemchicken;
         if (entity instanceof BaseChickenEntity) {
             String newentity = Objects.requireNonNull(entity.getEncodeId()).toLowerCase();
-            ResourceLocation myEntity = ResourceLocation.tryParse(newentity);
+            Identifier myEntity = Identifier.tryParse(newentity);
 
-            itemchicken = new ItemStack(BuiltInRegistries.ITEM.get(myEntity));
-            itemchicken.set(ModDataComponents.CHICKENLEVEL, entity.getPersistentData().getInt("chickenlevel"));
-            itemchicken.set(ModDataComponents.CHICKENXP, entity.getPersistentData().getInt("chickenxp"));
-            itemchicken.set(ModDataComponents.AGE, entity.getPersistentData().getInt("age"));
+            itemchicken = new ItemStack(BuiltInRegistries.ITEM.get(myEntity).get());
+            itemchicken.set(ModDataComponents.CHICKENLEVEL.get(), entity.getPersistentData().getIntOr("chickenlevel", 0));
+            itemchicken.set(ModDataComponents.CHICKENXP.get(),    entity.getPersistentData().getIntOr("chickenxp", 0));
+            itemchicken.set(ModDataComponents.AGE.get(),         entity.getPersistentData().getIntOr("age", 0));
             if (world instanceof Level _level && !_level.isClientSide()) {
                 ItemEntity entityToSpawn = new ItemEntity(_level, x, y, z, itemchicken);
                 entityToSpawn.setPickUpDelay(10);
@@ -41,12 +41,12 @@ public class ChickenStickTool {
         }
         if (entity.getType() == EntityType.CHICKEN) {
             String newentity = ("chicken_roost:c_vanilla");
-            ResourceLocation myEntity = ResourceLocation.tryParse(newentity);
+            Identifier myEntity = Identifier.tryParse(newentity);
 
-            itemchicken = new ItemStack(BuiltInRegistries.ITEM.get(myEntity));
-            itemchicken.set(ModDataComponents.CHICKENLEVEL, entity.getPersistentData().getInt("chickenlevel"));
-            itemchicken.set(ModDataComponents.CHICKENXP, entity.getPersistentData().getInt("chickenxp"));
-            itemchicken.set(ModDataComponents.AGE, entity.getPersistentData().getInt("age"));
+            itemchicken = new ItemStack(BuiltInRegistries.ITEM.get(myEntity).get());
+            itemchicken.set(ModDataComponents.CHICKENLEVEL.get(), entity.getPersistentData().getIntOr("chickenlevel", 0));
+            itemchicken.set(ModDataComponents.CHICKENXP.get(), entity.getPersistentData().getIntOr("chickenxp", 0));
+            itemchicken.set(ModDataComponents.AGE.get(), entity.getPersistentData().getIntOr("age", 0));
             if (world instanceof Level _level && !_level.isClientSide()) {
                 ItemEntity entityToSpawn = new ItemEntity(_level, x, y, z, itemchicken);
                 entityToSpawn.setPickUpDelay(10);

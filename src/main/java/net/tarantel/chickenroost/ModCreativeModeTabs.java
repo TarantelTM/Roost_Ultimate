@@ -18,7 +18,7 @@ public class ModCreativeModeTabs {
 
 
 	public static Supplier<CreativeModeTab> TAB_CHICKEN_ROOST_TAB = TAB_CHICKEN_ROOST.register("tab_chicken_roost", () ->
-			CreativeModeTab.builder().icon(() -> new ItemStack(ModBlocks.ROOST.get()))
+			CreativeModeTab.builder().icon(() -> new ItemStack(ModBlocks.ROOST))
 					.title(Component.translatable("tab.chicken_roost.roost")).build());
 
 	public static void register(IEventBus eventBus) {

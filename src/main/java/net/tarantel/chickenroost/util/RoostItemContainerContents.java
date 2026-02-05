@@ -3,19 +3,20 @@ package net.tarantel.chickenroost.util;
 import com.google.common.collect.Iterables;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.OptionalInt;
-import java.util.stream.Stream;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.OptionalInt;
+import java.util.stream.Stream;
+
 public final class RoostItemContainerContents {
     public static final RoostItemContainerContents EMPTY = new RoostItemContainerContents(NonNullList.create());
-    public static final Codec<RoostItemContainerContents> CODEC = RoostItemContainerContents.Slot.CODEC
+    public static final Codec<RoostItemContainerContents> CODEC = Slot.CODEC
             .sizeLimitedListOf(2147483)
             .xmap(RoostItemContainerContents::fromSlots, RoostItemContainerContents::asSlots);
     public static final StreamCodec<RegistryFriendlyByteBuf, RoostItemContainerContents> STREAM_CODEC = ItemStack.OPTIONAL_STREAM_CODEC
@@ -45,14 +46,14 @@ public final class RoostItemContainerContents {
         }
     }
 
-    private static RoostItemContainerContents fromSlots(List<RoostItemContainerContents.Slot> slots) {
-        OptionalInt optionalint = slots.stream().mapToInt(RoostItemContainerContents.Slot::index).max();
+    private static RoostItemContainerContents fromSlots(List<Slot> slots) {
+        OptionalInt optionalint = slots.stream().mapToInt(Slot::index).max();
         if (optionalint.isEmpty()) {
             return EMPTY;
         } else {
             RoostItemContainerContents itemcontainercontents = new RoostItemContainerContents(optionalint.getAsInt() + 1);
 
-            for (RoostItemContainerContents.Slot itemcontainercontents$slot : slots) {
+            for (Slot itemcontainercontents$slot : slots) {
                 itemcontainercontents.items.set(itemcontainercontents$slot.index(), itemcontainercontents$slot.item());
             }
 
@@ -85,13 +86,13 @@ public final class RoostItemContainerContents {
         return -1;
     }
 
-    private List<RoostItemContainerContents.Slot> asSlots() {
-        List<RoostItemContainerContents.Slot> list = new ArrayList<>();
+    private List<Slot> asSlots() {
+        List<Slot> list = new ArrayList<>();
 
         for (int i = 0; i < this.items.size(); i++) {
             ItemStack itemstack = this.items.get(i);
             if (!itemstack.isEmpty()) {
-                list.add(new RoostItemContainerContents.Slot(i, itemstack));
+                list.add(new Slot(i, itemstack));
             }
         }
 
@@ -158,12 +159,12 @@ public final class RoostItemContainerContents {
     }
 
     static record Slot(int index, ItemStack item) {
-        public static final Codec<RoostItemContainerContents.Slot> CODEC = RecordCodecBuilder.create(
+        public static final Codec<Slot> CODEC = RecordCodecBuilder.create(
                 p_331695_ -> p_331695_.group(
-                                Codec.intRange(0, 2147483).fieldOf("slot").forGetter(RoostItemContainerContents.Slot::index),
-                                ItemStack.CODEC.fieldOf("item").forGetter(RoostItemContainerContents.Slot::item)
+                                Codec.intRange(0, 2147483).fieldOf("slot").forGetter(Slot::index),
+                                ItemStack.CODEC.fieldOf("item").forGetter(Slot::item)
                         )
-                        .apply(p_331695_, RoostItemContainerContents.Slot::new)
+                        .apply(p_331695_, Slot::new)
         );
     }
 }

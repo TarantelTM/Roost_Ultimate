@@ -1,11 +1,7 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": { 
-    "tag": "c:seeds/tier1orup"
-  },
-  "chicken": {
-      "item": "chicken_roost:c_oakwood"
-  },
+  "food": "#c:seeds/tier1orup",
+  "chicken": "chicken_roost:c_oakwood",
   "time": 20,
   "output": {
     "item": "chicken_roost:wood_essence"

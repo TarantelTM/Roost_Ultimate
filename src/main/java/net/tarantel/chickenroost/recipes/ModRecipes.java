@@ -1,9 +1,12 @@
 package net.tarantel.chickenroost.recipes;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.tarantel.chickenroost.ChickenRoostMod;
 
@@ -15,24 +18,23 @@ public class ModRecipes {
         RECIPE_TYPES.register(bus);
     }
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, ChickenRoostMod.MODID);
+
     public static final Supplier<RecipeType<ThrowEggRecipe>> THROW_EGG_TYPE =
             RECIPE_TYPES.register("throwegg", () -> ThrowEggRecipe.Type.INSTANCE);
-    public static final Supplier<RecipeType<SoulBreederRecipe>> SOUL_BREEDING_TYPE =
-            RECIPE_TYPES.register("soul_breeding", () -> SoulBreederRecipe.Type.INSTANCE);
     public static final Supplier<RecipeType<BreederRecipe>> BASIC_BREEDING_TYPE =
             RECIPE_TYPES.register("basic_breeding", () -> BreederRecipe.Type.INSTANCE);
     public static final Supplier<RecipeType<SoulExtractorRecipe>> SOUL_EXTRACTION_TYPE =
             RECIPE_TYPES.register("soul_extraction", () -> SoulExtractorRecipe.Type.INSTANCE);
     public static final Supplier<RecipeType<RoostRecipe>> ROOST_TYPE =
             RECIPE_TYPES.register("roost_output", () -> RoostRecipe.Type.INSTANCE);
-
     public static final Supplier<RecipeType<TrainerRecipe>> TRAINER_TYPE =
             RECIPE_TYPES.register("trainer_output", () -> TrainerRecipe.Type.INSTANCE);
+
+
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, ChickenRoostMod.MODID);
+
     public static final Supplier<RecipeSerializer<ThrowEggRecipe>> THROW_EGG_SERIALIZER =
             RECIPE_SERIALIZERS.register("throwegg", () -> ThrowEggRecipe.Serializer.INSTANCE);
-    public static final Supplier<RecipeSerializer<SoulBreederRecipe>> SOUL_BREEDING_SERIALIZER =
-            RECIPE_SERIALIZERS.register("soul_breeding", () -> SoulBreederRecipe.Serializer.INSTANCE);
     public static final Supplier<RecipeSerializer<BreederRecipe>> BASIC_BREEDING_SERIALIZER =
             RECIPE_SERIALIZERS.register("basic_breeding", () -> BreederRecipe.Serializer.INSTANCE);
     public static final Supplier<RecipeSerializer<SoulExtractorRecipe>> SOUL_EXTRACTION_SERIALIZER =
@@ -42,5 +44,23 @@ public class ModRecipes {
     public static final Supplier<RecipeSerializer<TrainerRecipe>> TRAINER_SERIALIZER =
             RECIPE_SERIALIZERS.register("trainer_output", () -> TrainerRecipe.Serializer.INSTANCE);
 
+
+
+    public static final DeferredRegister<RecipeBookCategory> RECIPE_BOOK_CATEGORIES =
+            DeferredRegister.create(Registries.RECIPE_BOOK_CATEGORY, ChickenRoostMod.MODID);
+
+
+    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> THROW_EGG_CATEGORY =
+            RECIPE_BOOK_CATEGORIES.register("throwegg", RecipeBookCategory::new);
+
+    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> BREEDING_CATEGORY =
+            RECIPE_BOOK_CATEGORIES.register("basic_breeding", RecipeBookCategory::new);
+
+    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> SOUL_EXTRACTION_CATEGORY =
+            RECIPE_BOOK_CATEGORIES.register("soul_extraction", RecipeBookCategory::new);
+    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> ROOST_CATEGORY =
+            RECIPE_BOOK_CATEGORIES.register("roost_output", RecipeBookCategory::new);
+    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> TRAINER_CATEGORY =
+            RECIPE_BOOK_CATEGORIES.register("trainer_output", RecipeBookCategory::new);
 
 }

@@ -3,7 +3,9 @@ package net.tarantel.chickenroost.handler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -31,15 +33,13 @@ public class CollectorHandler extends AbstractContainerMenu {
         addPlayerHotbar(inv);
         int i = (6 - 4) * 18;
 
-
-        ItemCapabilityMenuHelper.getCapabilityItemHandler(this.level, this.blockEntity).ifPresent(itemHandler -> {
             for (int j = 0; j < 6; j++) {
                 for (int k = 0; k < 9; k++) {
-                    addSlot(new SlotItemHandler(itemHandler, k + j * 9, 8 + k * 18, 18 + j * 18));
+                    addSlot(new SlotItemHandler(blockEntity.itemHandler, k + j * 9, 8 + k * 18, 18 + j * 18));
                 }
             }
 
-        });
+
     }
 
 
@@ -103,7 +103,7 @@ public class CollectorHandler extends AbstractContainerMenu {
         }
     }
 
-    public BlockEntity getBlockEntity() {
+    public CollectorTile getBlockEntity() {
         return blockEntity;
     }
 }

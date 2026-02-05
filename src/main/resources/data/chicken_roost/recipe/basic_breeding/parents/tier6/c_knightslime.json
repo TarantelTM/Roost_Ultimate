@@ -1,14 +1,8 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": {
-    "tag": "c:seeds/tier6orup"
-  },
-  "left-chicken": {
-    "item": "chicken_roost:c_knightslime"
-  },
-  "right-chicken": {
-    "item": "chicken_roost:c_knightslime"
-  },
+  "food": "#c:seeds/tier6orup",
+  "left-chicken": "chicken_roost:c_knightslime",
+  "right-chicken": "chicken_roost:c_knightslime",
   "time": 20,
   "output": {
     "item": "chicken_roost:c_knightslime"

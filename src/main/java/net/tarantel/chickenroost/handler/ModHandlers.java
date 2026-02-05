@@ -14,8 +14,6 @@ import java.util.function.Supplier;
 public class ModHandlers {
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, ChickenRoostMod.MODID);
 
-    public static final Supplier<MenuType<SoulBreederHandler>> SOUL_BREEDER_MENU =
-            registerMenuType(SoulBreederHandler::new, "new_soul_breeder_menu");
     public static final Supplier<MenuType<BreederHandler>> BREEDER_MENU =
             registerMenuType(BreederHandler::new, "breeder_menu");
     public static final Supplier<MenuType<SoulExtractorHandler>> SOUL_EXTRACTOR_MENU =

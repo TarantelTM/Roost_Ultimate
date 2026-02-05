@@ -1,73 +1,167 @@
 package net.tarantel.chickenroost.util;
 
+import com.google.gson.annotations.SerializedName;
+import net.tarantel.chickenroost.datagen.ChickenRecipeContainer;
+
 public class ChickenData {
-    private String ChickenName;
-    private String MobOrMonster;
-    private String id;
-    private String itemtexture;
-    private String mobtexture;
-    private String dropitem;
-    private int eggtime;
-    private int tier;
 
-    private boolean CanGetFireDamage;
-    private boolean CanGetProjectileDamage;
-    private boolean CanGetExplosionDamage;
-    private boolean CanGetFallDamage;
-    private boolean CanGetDrowningDamage;
-    private boolean CanGetFreezingDamage;
-    private boolean CanGetLightningDamage;
-    private boolean CanGetWitherDamage;
-    public Boolean getIsFire() {
-        return CanGetFireDamage;
-    }
-    public Boolean getIsProjectile() {
-        return CanGetProjectileDamage;
-    }
-    public Boolean getIsExplosion() {
-        return CanGetExplosionDamage;
-    }
-    public Boolean getIsFall() {
-        return CanGetFallDamage;
-    }
-    public Boolean getIsDrowning() {
-        return CanGetDrowningDamage;
-    }
-    public Boolean getIsFreezing() {
-        return CanGetFreezingDamage;
-    }
-    public Boolean getIsLightning() {
-        return CanGetLightningDamage;
-    }
-    public Boolean getIsWither() {
-        return CanGetWitherDamage;
+    public String ChickenName;
+    public String MobOrMonster;
+    public String id;
+    public String itemtexture;
+    public String mobtexture;
+    public String dropitem;
+    public int eggtime;
+    public int tier;
+
+
+    public ChickenRecipeContainer recipes;
+
+
+    @SerializedName("CanGetFireDamage")
+    public boolean CanGetFireDamage;
+
+    @SerializedName("CanGetProjectileDamage")
+    public boolean CanGetProjectileDamage;
+
+    @SerializedName("CanGetExplosionDamage")
+    public boolean CanGetExplosionDamage;
+
+    @SerializedName("CanGetFallDamage")
+    public boolean CanGetFallDamage;
+
+    @SerializedName("CanGetDrowningDamage")
+    public boolean CanGetDrowningDamage;
+
+    @SerializedName("CanGetFreezingDamage")
+    public boolean CanGetFreezingDamage;
+
+    @SerializedName("CanGetLightningDamage")
+    public boolean CanGetLightningDamage;
+
+    @SerializedName("CanGetWitherDamage")
+    public boolean CanGetWitherDamage;
+
+
+    public transient DamageFlags damageFlags;
+
+
+    public static class DamageFlags {
+        public boolean CanGetFireDamage;
+        public boolean CanGetProjectileDamage;
+        public boolean CanGetExplosionDamage;
+        public boolean CanGetFallDamage;
+        public boolean CanGetDrowningDamage;
+        public boolean CanGetFreezingDamage;
+        public boolean CanGetLightningDamage;
+        public boolean CanGetWitherDamage;
     }
 
-    public void setIS_FIRE(Boolean CanGetFireDamage) {
+
+    public ChickenData(
+            String ChickenName,
+            String MobOrMonster,
+            String id,
+            String itemtexture,
+            String mobtexture,
+            String dropitem,
+            int eggtime,
+            int tier,
+            boolean CanGetFireDamage,
+            boolean CanGetProjectileDamage,
+            boolean CanGetExplosionDamage,
+            boolean CanGetFallDamage,
+            boolean CanGetDrowningDamage,
+            boolean CanGetFreezingDamage,
+            boolean CanGetLightningDamage,
+            boolean CanGetWitherDamage
+    ) {
+        this.ChickenName = ChickenName;
+        this.MobOrMonster = MobOrMonster;
+        this.id = id;
+        this.itemtexture = itemtexture;
+        this.mobtexture = mobtexture;
+        this.dropitem = dropitem;
+        this.eggtime = eggtime;
+        this.tier = tier;
+
+
         this.CanGetFireDamage = CanGetFireDamage;
-    }
-    public void setIS_PROJECTILE(Boolean CanGetProjectileDamage) {
         this.CanGetProjectileDamage = CanGetProjectileDamage;
-    }
-    public void setIS_EXPLOSION(Boolean CanGetExplosionDamage) {
         this.CanGetExplosionDamage = CanGetExplosionDamage;
-    }
-    public void setIS_FALL(Boolean CanGetFallDamage) {
         this.CanGetFallDamage = CanGetFallDamage;
-    }
-    public void setIS_DROWNING(Boolean CanGetDrowningDamage) {
         this.CanGetDrowningDamage = CanGetDrowningDamage;
-    }
-    public void setIS_FREEZING(Boolean CanGetFreezingDamage) {
         this.CanGetFreezingDamage = CanGetFreezingDamage;
-    }
-    public void setIS_LIGHTNING(Boolean CanGetLightningDamage) {
         this.CanGetLightningDamage = CanGetLightningDamage;
-    }
-    public void setIS_WITHER(Boolean CanGetWitherDamage) {
         this.CanGetWitherDamage = CanGetWitherDamage;
+
+
+        rebuildDamageFlags();
+
+        this.recipes = null;
     }
 
+
+    public ChickenData(
+            String ChickenName,
+            String MobOrMonster,
+            String id,
+            String itemtexture,
+            String mobtexture,
+            String dropitem,
+            int eggtime,
+            int tier,
+            boolean CanGetFireDamage,
+            boolean CanGetProjectileDamage,
+            boolean CanGetExplosionDamage,
+            boolean CanGetFallDamage,
+            boolean CanGetDrowningDamage,
+            boolean CanGetFreezingDamage,
+            boolean CanGetLightningDamage,
+            boolean CanGetWitherDamage,
+            ChickenRecipeContainer recipes
+    ) {
+        this(
+                ChickenName,
+                MobOrMonster,
+                id,
+                itemtexture,
+                mobtexture,
+                dropitem,
+                eggtime,
+                tier,
+                CanGetFireDamage,
+                CanGetProjectileDamage,
+                CanGetExplosionDamage,
+                CanGetFallDamage,
+                CanGetDrowningDamage,
+                CanGetFreezingDamage,
+                CanGetLightningDamage,
+                CanGetWitherDamage
+        );
+        this.recipes = recipes;
+    }
+
+    private Object readResolve() {
+        rebuildDamageFlags();
+        return this;
+    }
+
+    private void rebuildDamageFlags() {
+        this.damageFlags = new DamageFlags();
+        this.damageFlags.CanGetFireDamage = CanGetFireDamage;
+        this.damageFlags.CanGetProjectileDamage = CanGetProjectileDamage;
+        this.damageFlags.CanGetExplosionDamage = CanGetExplosionDamage;
+        this.damageFlags.CanGetFallDamage = CanGetFallDamage;
+        this.damageFlags.CanGetDrowningDamage = CanGetDrowningDamage;
+        this.damageFlags.CanGetFreezingDamage = CanGetFreezingDamage;
+        this.damageFlags.CanGetLightningDamage = CanGetLightningDamage;
+        this.damageFlags.CanGetWitherDamage = CanGetWitherDamage;
+    }
+
+    public ChickenRecipeContainer getRecipes() {
+        return recipes;
+    }
 
     public String getChickenName() {
         return ChickenName;
@@ -120,22 +214,6 @@ public class ChickenData {
     public void setTier(int tier) {
         this.tier = tier;
     }
-    public ChickenData(String ChickenName, String MobOrMonster, String id, String itemtexture, String mobtexture, String dropitem, int eggtime, int tier, Boolean CanGetFireDamage, Boolean CanGetProjectileDamage, Boolean CanGetExplosionDamage, Boolean CanGetFallDamage, Boolean CanGetDrowningDamage, Boolean CanGetFreezingDamage, Boolean CanGetLightningDamage, Boolean CanGetWitherDamage ) {
-        this.ChickenName = ChickenName;
-        this.MobOrMonster = MobOrMonster;
-        this.id = id;
-        this.itemtexture = itemtexture;
-        this.mobtexture = mobtexture;
-        this.dropitem = dropitem;
-        this.eggtime = eggtime;
-        this.tier = tier;
-        this.CanGetFireDamage = CanGetFireDamage;
-        this.CanGetProjectileDamage = CanGetProjectileDamage;
-        this.CanGetExplosionDamage = CanGetExplosionDamage;
-        this.CanGetFallDamage = CanGetFallDamage;
-        this.CanGetDrowningDamage = CanGetDrowningDamage;
-        this.CanGetFreezingDamage = CanGetFreezingDamage;
-        this.CanGetLightningDamage = CanGetLightningDamage;
-        this.CanGetWitherDamage = CanGetWitherDamage;
-    }
+
+
 }
