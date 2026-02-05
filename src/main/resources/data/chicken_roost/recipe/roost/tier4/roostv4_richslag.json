@@ -6,8 +6,12 @@
     }
   ],
   "type": "chicken_roost:roost_output",
-  "food": "#c:seeds/tier4orup",
-  "chicken": "chicken_roost:c_richslag",
+  "food": { 
+    "tag": "c:seeds/tier4orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_richslag"
+  },
   "time": 20,
   "output": {
     "item": "thermal:rich_slag"

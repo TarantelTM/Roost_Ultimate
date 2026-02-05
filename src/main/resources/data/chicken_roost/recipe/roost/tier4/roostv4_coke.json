@@ -6,8 +6,12 @@
     }
   ],
         "type": "chicken_roost:roost_output",
-        "food": "#c:seeds/tier4orup",
-          "chicken": "chicken_roost:c_coke",
+        "food": {
+            "tag": "c:seeds/tier4orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_coke"
+          },
         "time": 20,
         "output": {
           "item": "thermal:coal_coke"

@@ -6,8 +6,12 @@
           "000"
         ],
         "key": {
-          "0": "chicken_roost:pipe_tier1",
-          "1": "minecraft:copper_block"
+          "0": {
+            "item": "chicken_roost:pipe_tier1"
+          },
+          "1": {
+            "item": "minecraft:copper_block"
+          }
         },
         "result": {
           "id": "chicken_roost:pipe_tier2",

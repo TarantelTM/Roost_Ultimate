@@ -1,10 +1,18 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    "chicken_roost:chicken_essence_tier_1",
-    "minecraft:wheat_seeds",
-    "minecraft:wheat_seeds",
-    "minecraft:wheat_seeds"
+    {
+      "item": "chicken_roost:chicken_essence_tier_1"
+    },
+    {
+      "item": "minecraft:wheat_seeds"
+    },
+    {
+      "item": "minecraft:wheat_seeds"
+    },
+    {
+      "item": "minecraft:wheat_seeds"
+    }
   ],
   "result": {
     "id": "chicken_roost:chicken_food_tier_1",

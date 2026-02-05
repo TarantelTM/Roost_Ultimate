@@ -1,8 +1,14 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": "#c:seeds/tier6orup",
-  "left-chicken": "chicken_roost:c_blitz",
-  "right-chicken": "chicken_roost:c_blitz",
+  "food": {
+    "tag": "c:seeds/tier6orup"
+  },
+  "left-chicken": {
+    "item": "chicken_roost:c_blitz"
+  },
+  "right-chicken": {
+    "item": "chicken_roost:c_blitz"
+  },
   "time": 20,
   "output": {
     "item": "chicken_roost:c_blitz"

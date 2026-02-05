@@ -7,15 +7,13 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.tarantel.chickenroost.block.tile.ModBlockEntities;
 import net.tarantel.chickenroost.block.tile.render.*;
-//import net.tarantel.chickenroost.client.tooltip.ClientStackLineTooltip;
-//import net.tarantel.chickenroost.client.tooltip.StackLineTooltip;
+import net.tarantel.chickenroost.client.tooltip.ClientStackLineTooltip;
+import net.tarantel.chickenroost.client.tooltip.StackLineTooltip;
 import net.tarantel.chickenroost.handler.ModHandlers;
 import net.tarantel.chickenroost.screen.*;
 import net.tarantel.chickenroost.util.Config;
@@ -29,7 +27,7 @@ public class ChickenRoostModClient {
         container.registerConfig(ModConfig.Type.CLIENT, Config.ClientSpec);
     }
 
-    @EventBusSubscriber(modid = ChickenRoostMod.MODID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = "chicken_roost", bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
@@ -39,13 +37,8 @@ public class ChickenRoostModClient {
                     RoostChickenRender::new);
             event.registerBlockEntityRenderer(ModBlockEntities.SOUL_EXTRACTOR.get(),
                     ExtractorChickenRender::new);
-            event.registerBlockEntityRenderer(
-                    ModBlockEntities.TRAINER.get(), context -> new AnimatedTrainerRenderer<>());
-
-            /*event.registerBlockEntityRenderer(
-                    ModBlockEntities.TRAINER.get(),
-                    TrainerChickenOverlayRenderer::new
-            );*/
+            event.registerBlockEntityRenderer(ModBlockEntities.TRAINER.get(),
+                    AnimatedTrainerRenderer::new);
         }
 
         @SubscribeEvent
@@ -58,10 +51,10 @@ public class ChickenRoostModClient {
             event.register(ModHandlers.FEEDER_MENU.get(), FeederScreen::new);
         }
 
-        /*@SubscribeEvent
+        @SubscribeEvent
         public static void registerTooltipFactories(RegisterClientTooltipComponentFactoriesEvent e) {
             e.register(StackLineTooltip.class, ClientStackLineTooltip::new);
-        }*/
+        }
     }
 
 

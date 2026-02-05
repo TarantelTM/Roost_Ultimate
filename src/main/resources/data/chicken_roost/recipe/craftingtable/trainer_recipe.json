@@ -1,16 +1,38 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "010",
-    "222",
-    "343"
+    "012",
+    "345",
+    "678"
   ],
   "key": {
-    "0":  "minecraft:blaze_rod",
-    "1":  "minecraft:clock",
-    "2":  "chicken_roost:breeder",
-    "3":  "minecraft:golden_carrot",
-    "4":  "minecraft:anvil"
+    "0": {
+      "item": "minecraft:blaze_rod"
+    },
+    "1": {
+      "item": "minecraft:clock"
+    },
+    "2": {
+      "item": "minecraft:blaze_rod"
+    },
+    "3": {
+      "item": "chicken_roost:breeder"
+    },
+    "4": {
+      "item": "chicken_roost:breeder"
+    },
+    "5": {
+      "item": "chicken_roost:breeder"
+    },
+    "6": {
+      "item": "minecraft:golden_carrot"
+    },
+    "7": {
+      "item": "minecraft:anvil"
+    },
+    "8": {
+      "item": "minecraft:golden_carrot"
+    }
   },
   "result": {
     "id": "chicken_roost:trainer",

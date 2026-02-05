@@ -1,8 +1,14 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": "#c:seeds/tier9orup",
-  "left-chicken": "chicken_roost:c_unobtainium",
-  "right-chicken": "chicken_roost:c_unobtainium",
+  "food": {
+    "tag": "c:seeds/tier9orup"
+  },
+  "left-chicken": {
+    "item": "chicken_roost:c_unobtainium"
+  },
+  "right-chicken": {
+    "item": "chicken_roost:c_unobtainium"
+  },
   "time": 20,
   "output": {
     "item": "chicken_roost:c_unobtainium"

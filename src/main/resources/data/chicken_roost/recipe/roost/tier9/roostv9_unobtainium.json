@@ -6,8 +6,12 @@
     }
   ],
         "type": "chicken_roost:roost_output",
-        "food": "#c:seeds/tier9orup",
-          "chicken": "chicken_roost:c_unobtainium",
+        "food": {
+            "tag": "c:seeds/tier9orup"
+          },
+          "chicken": {
+            "item": "chicken_roost:c_unobtainium"
+          },
         "time": 20,
         "output": {
           "item": "allthemodium:unobtainium_ingot"

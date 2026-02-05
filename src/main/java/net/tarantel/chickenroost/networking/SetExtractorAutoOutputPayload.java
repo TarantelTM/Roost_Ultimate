@@ -1,1 +1,0 @@
-package net.tarantel.chickenroost.networking;

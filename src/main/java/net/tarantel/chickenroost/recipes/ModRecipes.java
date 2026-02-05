@@ -1,12 +1,9 @@
 package net.tarantel.chickenroost.recipes;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.tarantel.chickenroost.ChickenRoostMod;
 
@@ -44,23 +41,5 @@ public class ModRecipes {
     public static final Supplier<RecipeSerializer<TrainerRecipe>> TRAINER_SERIALIZER =
             RECIPE_SERIALIZERS.register("trainer_output", () -> TrainerRecipe.Serializer.INSTANCE);
 
-
-
-    public static final DeferredRegister<RecipeBookCategory> RECIPE_BOOK_CATEGORIES =
-            DeferredRegister.create(Registries.RECIPE_BOOK_CATEGORY, ChickenRoostMod.MODID);
-
-
-    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> THROW_EGG_CATEGORY =
-            RECIPE_BOOK_CATEGORIES.register("throwegg", RecipeBookCategory::new);
-
-    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> BREEDING_CATEGORY =
-            RECIPE_BOOK_CATEGORIES.register("basic_breeding", RecipeBookCategory::new);
-
-    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> SOUL_EXTRACTION_CATEGORY =
-            RECIPE_BOOK_CATEGORIES.register("soul_extraction", RecipeBookCategory::new);
-    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> ROOST_CATEGORY =
-            RECIPE_BOOK_CATEGORIES.register("roost_output", RecipeBookCategory::new);
-    public static final DeferredHolder<RecipeBookCategory, RecipeBookCategory> TRAINER_CATEGORY =
-            RECIPE_BOOK_CATEGORIES.register("trainer_output", RecipeBookCategory::new);
 
 }

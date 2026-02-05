@@ -3,35 +3,21 @@ package net.tarantel.chickenroost.pipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.ModBlockEntities;
-import net.tarantel.chickenroost.item.ModItems;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class PipeBlockEntity extends BlockEntity {
 
@@ -55,30 +41,6 @@ public class PipeBlockEntity extends BlockEntity {
             return values()[id];
         }
     }
-    /*public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        SimpleContainer block = new SimpleContainer(1);
-        ItemStack itemStack = new ItemStack(ModBlocks.BREEDER);
-        NonNullList<ItemStack> items = inventory.getItems();
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            items.set(i, itemHandler.getStackInSlot(i));
-        }
-        itemStack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(inventory.getItems()));
-        block.setItem(0, itemStack.copy());
-
-
-        Containers.dropContents(Objects.requireNonNull(this.level), this.worldPosition, block);
-    }*/
-
-    private boolean dropped = false;
-
-    public boolean hasDropped() {
-        return dropped;
-    }
-
-    public void markDropped() {
-        this.dropped = true;
-    }
 
     private PipeMode stackSendMode = PipeMode.NONE;
 
@@ -97,7 +59,7 @@ public class PipeBlockEntity extends BlockEntity {
         this.stackSendMode = mode;
 
         setChanged();
-        if (level != null && !level.isClientSide()) {
+        if (level != null && !level.isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
@@ -184,7 +146,7 @@ public class PipeBlockEntity extends BlockEntity {
 
 
     public static void tick(Level level, BlockPos pos, BlockState state, PipeBlockEntity pipe) {
-        if (level.isClientSide()) return;
+        if (level.isClientSide) return;
 
         pipe.accumulator += pipe.tier.itemsPerSecond / 20f;
         int moves = (int) pipe.accumulator;
@@ -197,44 +159,39 @@ public class PipeBlockEntity extends BlockEntity {
     }
 
     private boolean tryTransfer(Level level, BlockPos pos) {
+
         if (mode != PipeMode.INPUT) return false;
 
+
         for (Direction d : Direction.values()) {
-            ResourceHandler<ItemResource> src = getItemHandler(level, pos.relative(d), d.getOpposite());
+            IItemHandler src = getItemHandler(level, pos.relative(d), d.getOpposite());
             if (src == null) continue;
 
-            int slots = src.size();
-            if (slots <= 0) continue;
+            int slots = src.getSlots();
+
 
             for (int i = 0; i < slots; i++) {
                 int slot = (roundRobin + i) % slots;
 
-                ItemResource res = src.getResource(slot);
-                if (res == null || res.isEmpty()) continue;
 
-                long available = src.getAmountAsLong(slot);
-                if (available <= 0) continue;
+                ItemStack simulated = src.extractItem(slot, 1, true);
+                if (simulated.isEmpty()) continue;
 
-                // ✅ Root transaction nur hier
-                try (Transaction root = Transaction.openRoot()) {
 
-                    int extracted = src.extract(slot, res, 1, root);
-                    if (extracted <= 0) continue;
-
-                    ItemStack stack = res.toStack(extracted);
-
-                    if (pushIntoNetwork(level, pos, stack, 0, root)) {
-                        root.commit(); // ✅ extract + insert werden final
-                        roundRobin = (slot + 1) % slots;
-                        return true;
-                    }
-                    // kein commit => rollback (extract wird rückgängig)
+                if (!pushIntoNetwork(level, pos, simulated, 0)) {
+                    continue;
                 }
+
+
+                ItemStack extracted = src.extractItem(slot, 1, false);
+                if (extracted.isEmpty()) continue;
+
+                return true;
             }
         }
+
         return false;
     }
-
 
     private int maxHops() {
         return switch (tier) {
@@ -246,17 +203,10 @@ public class PipeBlockEntity extends BlockEntity {
     }
 
     private boolean pushIntoNetwork(Level level, BlockPos pos, ItemStack stack) {
-        try (Transaction tx = Transaction.openRoot()) {
-            if (pushIntoNetwork(level, pos, stack, 0, tx)) {
-                tx.commit();
-                return true;
-            }
-            return false;
-        }
+        return pushIntoNetwork(level, pos, stack, 0);
     }
 
-
-    private boolean pushIntoNetwork(Level level, BlockPos pos, ItemStack stack, int hops, TransactionContext tx) {
+    private boolean pushIntoNetwork(Level level, BlockPos pos, ItemStack stack, int hops) {
         if (hops > maxHops()) return false;
 
         List<BlockPos> outputs = getCachedOutputs(level);
@@ -277,9 +227,28 @@ public class PipeBlockEntity extends BlockEntity {
                 continue;
             }
 
-            if (target.acceptItem(level, targetPos, stack, hops + 1, tx)) {
+            if (target.acceptItem(level, targetPos, stack, hops + 1)) {
                 outputPipeRR = (outputPipeRR + i + 1) % size;
                 setChanged();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
+
+
+
+    private boolean canAcceptSimulated(Level level, BlockPos pos, ItemStack stack) {
+        List<IItemHandler> targets = findAdjacentInventories(level, pos);
+        if (targets.isEmpty()) return false;
+
+        for (IItemHandler target : targets) {
+            ItemStack rem = ItemHandlerHelper.insertItem(target, stack, true);
+            if (rem.isEmpty()) {
                 return true;
             }
         }
@@ -287,67 +256,29 @@ public class PipeBlockEntity extends BlockEntity {
     }
 
 
-
-
-
-
-
-    private boolean canAcceptSimulated(Level level, BlockPos pos, ItemStack stack, TransactionContext parent) {
-        List<ResourceHandler<ItemResource>> targets = findAdjacentInventories(level, pos);
-        if (targets.isEmpty()) return false;
-
-        ItemResource res = ItemResource.of(stack);
-
-        for (ResourceHandler<ItemResource> target : targets) {
-            try (Transaction attempt = Transaction.open(parent)) {
-                int inserted = target.insert(res, stack.getCount(), attempt);
-
-                // ❗ kein commit = simulation
-                if (inserted == stack.getCount()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-
-    private boolean acceptItem(Level level, BlockPos pos, ItemStack stack, int hops, TransactionContext parent) {
+    private boolean acceptItem(Level level, BlockPos pos, ItemStack stack, int hops) {
 
         if (mode == PipeMode.OUTPUT) {
-
-            List<ResourceHandler<ItemResource>> targets = findAdjacentInventories(level, pos);
+            List<IItemHandler> targets = findAdjacentInventories(level, pos);
             if (targets.isEmpty()) {
                 invalidateOutputCache();
                 return false;
             }
-
-            ItemResource res = ItemResource.of(stack);
-
             for (int i = 0; i < targets.size(); i++) {
-                ResourceHandler<ItemResource> target = targets.get(roundRobin++ % targets.size());
-
-                try (Transaction attempt = Transaction.open(parent)) {
-
-                    int inserted = target.insert(res, stack.getCount(), attempt);
-                    if (inserted == stack.getCount()) {
-                        attempt.commit(); // ✅ merge in parent
-                        return true;
-                    }
+                IItemHandler target = targets.get(roundRobin++ % targets.size());
+                if (ItemHandlerHelper.insertItem(target, stack, false).isEmpty()) {
+                    return true;
                 }
             }
             return false;
         }
 
         if (mode == PipeMode.NONE) {
-            return pushIntoNetwork(level, pos, stack, hops, parent);
+            return pushIntoNetwork(level, pos, stack, hops);
         }
 
         return false;
     }
-
-
 
 
     private ItemStack extractOne(IItemHandler handler) {
@@ -360,39 +291,46 @@ public class PipeBlockEntity extends BlockEntity {
         return ItemStack.EMPTY;
     }
 
-    private List<ResourceHandler<ItemResource>> findAdjacentInventories(Level level, BlockPos pos) {
-        List<ResourceHandler<ItemResource>> list = new ArrayList<>();
-
+    private List<IItemHandler> findAdjacentInventories(Level level, BlockPos pos) {
+        List<IItemHandler> list = new ArrayList<>();
         for (Direction d : Direction.values()) {
-            ResourceHandler<ItemResource> h = getItemHandler(level, pos.relative(d), d.getOpposite());
+            IItemHandler h = getItemHandler(level, pos.relative(d), d.getOpposite());
             if (h != null) list.add(h);
         }
-
         return list;
     }
 
     @Nullable
-    private ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, @Nullable Direction side) {
-        return level.getCapability(Capabilities.Item.BLOCK, pos, side);
+    private IItemHandler getItemHandler(Level level, BlockPos pos, Direction side) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be == null) return null;
+
+        return level.getCapability(
+                Capabilities.ItemHandler.BLOCK,
+                pos,
+                level.getBlockState(pos),
+                be,
+                side
+        );
     }
 
     @Override
-    protected void saveAdditional(ValueOutput tag) {
+    protected void saveAdditional(CompoundTag tag, HolderLookup.@NotNull Provider lookup) {
         tag.putInt("Mode", mode.ordinal());
         tag.putFloat("Acc", accumulator);
         tag.putInt("RR", roundRobin);
         tag.putInt("OutputRR", outputPipeRR);
 
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, lookup);
     }
 
     @Override
-    protected void loadAdditional(ValueInput compoundTag) {
-        super.loadAdditional(compoundTag);
-        mode = PipeMode.values()[compoundTag.getIntOr("Mode" , 0)];
-        accumulator = compoundTag.getFloatOr("Acc", 0);
-        roundRobin = compoundTag.getIntOr("RR", 0);
-        outputPipeRR = compoundTag.getIntOr("OutputRR", 0);
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider lookup) {
+        super.loadAdditional(tag, lookup);
+        mode = PipeMode.values()[tag.getInt("Mode")];
+        accumulator = tag.getFloat("Acc");
+        roundRobin = tag.getInt("RR");
+        outputPipeRR = tag.getInt("OutputRR");
 
     }
 

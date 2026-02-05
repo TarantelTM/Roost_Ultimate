@@ -1,6 +1,0 @@
-{
-  "parent": "item/handheld",
-  "type": "minecraft:model",
-    "model": "chicken_roost:item/chickenscannertex"
-  }
-}

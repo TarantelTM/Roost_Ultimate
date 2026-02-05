@@ -3,7 +3,7 @@ package net.tarantel.chickenroost.datagen;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import net.neoforged.api.distmarker.Dist;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLPaths;
@@ -16,14 +16,14 @@ import java.nio.file.Path;
 import java.util.List;
 
 
-@EventBusSubscriber(modid = ChickenRoostMod.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = "chicken_roost", bus = EventBusSubscriber.Bus.MOD, value = net.neoforged.api.distmarker.Dist.CLIENT)
 public class ChickenModelGenerator {
     public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .create();
 
     @SubscribeEvent
-    public static void register(RegisterColorHandlersEvent.ItemTintSources event){
+    public static void register(RegisterColorHandlersEvent.Item event){
         List<ChickenData> chickens = ChickenRoostMod.chickens;
 
         ChickenModelGenerator.generateModels(chickens);
@@ -31,9 +31,8 @@ public class ChickenModelGenerator {
     }
     public static void generateModels(List<ChickenData> chickens) {
 
-        Path root = FMLPaths.GAMEDIR.get().resolve("crlib/resources_client");
+        Path root = FMLPaths.GAMEDIR.get().resolve("crlib/resources");
         Path modelDir = root.resolve("assets/chicken_roost/models/item");
-        Path extramodelDir = root.resolve("assets/chicken_roost/items");
         Path langFile = root.resolve("assets/chicken_roost/lang/en_us.json");
         Path packMeta = root.resolve("pack.mcmeta");
 
@@ -42,7 +41,7 @@ public class ChickenModelGenerator {
                 Files.writeString(packMeta, """
     {
       "pack": {
-        "pack_format": 75,
+        "pack_format": 34,
         "description": {
          "text": "ChickenRoost Generated Resources"
       }
@@ -50,7 +49,6 @@ public class ChickenModelGenerator {
     """);
             }
             Files.createDirectories(modelDir);
-            Files.createDirectories(extramodelDir);
             Files.createDirectories(langFile.getParent());
 
             JsonObject lang = Files.exists(langFile)
@@ -68,21 +66,6 @@ public class ChickenModelGenerator {
                         }
                         """
                 );
-
-                Files.writeString(
-                        extramodelDir.resolve(chicken.getId() + ".json"),
-                        """
-                                {
-                                   "model": {
-                                     "type": "minecraft:special",
-                                     "base": "chicken_roost:item/%s",
-                                     "model": {
-                                         "type": "geckolib:geckolib"
-                                              }
-                                            }
-                                          }
-                        """
-                                .formatted(chicken.getId()));
 
 
                 lang.addProperty(

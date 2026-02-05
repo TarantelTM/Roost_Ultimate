@@ -1,8 +1,14 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": "#c:seeds/tier6orup",
-  "left-chicken": "chicken_roost:c_ruby",
-  "right-chicken": "chicken_roost:c_ruby",
+  "food": {
+    "tag": "c:seeds/tier6orup"
+  },
+  "left-chicken": {
+    "item": "chicken_roost:c_ruby"
+  },
+  "right-chicken": {
+    "item": "chicken_roost:c_ruby"
+  },
   "time": 20,
   "output": {
     "item": "chicken_roost:c_ruby"

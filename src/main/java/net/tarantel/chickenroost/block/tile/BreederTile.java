@@ -22,50 +22,66 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.ContainerHelper;
-
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
-
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.api.ICollectorTarget;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.handler.BreederHandler;
-import net.tarantel.chickenroost.item.base.ChickenItemBase;
-import net.tarantel.chickenroost.item.base.ChickenSeedBase;
+import net.tarantel.chickenroost.item.base.*;
 import net.tarantel.chickenroost.networking.SyncAutoOutputPayload;
 import net.tarantel.chickenroost.recipes.BreederRecipe;
 import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.util.Config;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import java.util.*;
 
 public class BreederTile extends BlockEntity implements MenuProvider, ICollectorTarget {
 
-    // -------------------------
-    // STATE
-    // -------------------------
     private boolean migrating = false;
-
     public int progress = 0;
-    public int maxProgress = (Config.breed_speed_tick.get() * 20);
+    public int maxProgress = ( Config.breed_speed_tick.get() * 20);
+    public final ItemStackHandler itemHandler = new ItemStackHandler(12) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            if (!migrating) {
+                setChanged();
+                if (slot == 0 || slot == 2) {
+                    resetProgress();
+                }
+                assert level != null;
+                if (!level.isClientSide()) {
+                    level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+                }
+            }
+        }
+
+
+        @Override
+        public int getSlotLimit(int slot)
+        {
+            if(slot == 0 || slot == 2){
+                return 1;
+            }
+            return 64;
+        }
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return switch (slot) {
+                case 0, 2 -> (stack.getItem() instanceof ChickenItemBase);
+                case 1 -> (stack.getItem() instanceof ChickenSeedBase);
+                default -> false;
+            };
+        }
+    };
+
 
     private static final int CHICKEN_SLOT = 0;
 
@@ -74,13 +90,50 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
         return CHICKEN_SLOT;
     }
 
+    @Override
+    public @Nullable IItemHandler getItemHandler() {
+        return ccView;
+    }
+
+    private final IItemHandler ccView = new IItemHandler() {
+        @Override
+        public int getSlots() {
+            return itemHandler.getSlots();
+        }
+
+        @Override
+        public @NotNull ItemStack getStackInSlot(int slot) {
+            return itemHandler.getStackInSlot(slot);
+        }
+
+        @Override
+        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            return stack;
+        }
+
+        @Override
+        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return itemHandler.getSlotLimit(slot);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return itemHandler.isItemValid(slot, stack);
+        }
+    };
+
     private String customName = "BREEDER";
 
     public void setCustomName(String name) {
         if (name == null) name = "";
         this.customName = name;
         setChanged();
-        if (this.level != null && !this.level.isClientSide()) {
+        if (this.level != null && !this.level.isClientSide) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
         }
     }
@@ -89,86 +142,88 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
         return this.customName;
     }
 
+
+
     public ItemStack currentOutput = ItemStack.EMPTY;
 
-    // -------------------------
-    // NEW INVENTORY (TRANSFER)
-    // -------------------------
-    public final UniversalItemInventory inventory = new UniversalItemInventory(
-            12,
+    public ItemStack getRenderStack1() {
+        ItemStack stack;
 
-            // INSERT rules (intern + crafting)
-            (slot, res) -> switch (slot) {
-                case 0, 2 -> res.test(s -> s.getItem() instanceof ChickenItemBase);
-                case 1 -> res.test(s -> s.getItem() instanceof ChickenSeedBase);
-                default -> true; // ✅ Output-Slots erlauben Insert (für Crafting!)
-            },
+        if(!itemHandler.getStackInSlot(0).isEmpty()) {
+            stack = itemHandler.getStackInSlot(0);
+        } else {
+            stack = ItemStack.EMPTY;
+        }
 
-            // EXTRACT rules (intern)
-            slot -> true,
-
-            // SLOT LIMIT
-            slot -> (slot == 0 || slot == 2) ? 1 : 64,
-
-            // CHANGE callback
-            slot -> {
-                if (!migrating) {
-                    setChanged();
-                    if (slot == 0 || slot == 2) resetProgress();
-                    if (level != null && !level.isClientSide()) {
-                        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
-                    }
-                }
-            }
-    );
-
-
-    /**
-     * GUI/Container-View:
-     * Storage bleibt Transfer-Inventory, aber GUI arbeitet oft mit IItemHandler-Slots.
-     */
-    //public final IItemHandler guiItemHandler = IItemHandler.of(inventory);
-
-    private static @Nullable ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, @Nullable Direction side) {
-        return level.getCapability(Capabilities.Item.BLOCK, pos, side);
+        return stack;
     }
 
-    // -------------------------
-    // MENU/DATA
-    // -------------------------
-    protected final ContainerData data = new ContainerData() {
-        @Override
-        public int get(int index) {
-            return switch (index) {
-                case 0 -> BreederTile.this.progress;
-                case 1 -> BreederTile.this.maxProgress;
-                default -> 0;
-            };
+    public ItemStack getRenderStack2() {
+        ItemStack stack;
+
+        if(!itemHandler.getStackInSlot(2).isEmpty()) {
+            stack = itemHandler.getStackInSlot(2);
+        } else {
+            stack = ItemStack.EMPTY;
         }
 
-        @Override
-        public void set(int index, int value) {
-            switch (index) {
-                case 0 -> BreederTile.this.progress = value;
-                case 1 -> BreederTile.this.maxProgress = value;
-            }
+        return stack;
+    }
+
+    public ItemStack getRenderStack3() {
+        ItemStack stack;
+
+        if(!itemHandler.getStackInSlot(1).isEmpty()) {
+            stack = itemHandler.getStackInSlot(1);
+        } else {
+            stack = ItemStack.EMPTY;
         }
 
-        @Override
-        public int getCount() {
-            return 2;
+        return stack;
+    }
+
+    public void setHandler(ItemStackHandler itemStackHandler) {
+        for (int i = 0; i < itemStackHandler.getSlots(); i++) {
+            itemHandler.setStackInSlot(i, itemStackHandler.getStackInSlot(i));
         }
-    };
+    }
+    protected final ContainerData data;
+
 
     public int getScaledProgress() {
-        int p = progress;
-        int mp = this.maxProgress;
-        int arrow = 200;
-        return mp != 0 && p != 0 ? p * arrow / mp : 0;
-    }
+        int progresss = progress;
+        int maxProgresss = this.maxProgress;
+        int progressArrowSize = 200;
 
+        return maxProgresss != 0 && progresss != 0 ? progresss * progressArrowSize / maxProgresss : 0;
+    }
     public BreederTile(BlockPos pos, BlockState state) {
         super(ModBlockEntities.BREEDER.get(), pos, state);
+
+
+        this.data = new ContainerData() {
+            @Override
+            public int get(int index) {
+                return switch (index) {
+                    case 0 -> BreederTile.this.progress;
+                    case 1 -> BreederTile.this.maxProgress;
+                    default -> 0;
+                };
+            }
+
+            @Override
+            public void set(int index, int value) {
+                switch (index) {
+                    case 0 -> BreederTile.this.progress = value;
+                    case 1 -> BreederTile.this.maxProgress = value;
+                }
+            }
+
+            @Override
+            public int getCount() {
+                return 2;
+            }
+        };
     }
 
     @Override
@@ -178,53 +233,17 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int id, @NotNull Inventory inv, @NotNull Player player) {
-        // ✅ BreederHandler muss ggfs. statt ItemStackHandler nun guiItemHandler verwenden
-        return new BreederHandler(id, inv, this, this.data);
+    public AbstractContainerMenu createMenu(int id, @NotNull Inventory inventory, @NotNull Player player) {
+        return new BreederHandler(id, inventory, this, this.data);
     }
 
-    // -------------------------
-    // RENDER HELPERS
-    // -------------------------
-    public ItemStack getRenderStack1() {
-        return inventory.getStackDirect(0);
-    }
+    private final IItemHandler itemHandlerSided = new InputOutputItemHandler(itemHandler, (i, stack) -> i == 0 || i == 1 || i == 2, i -> i == 3 || i == 4 || i == 5 || i == 6 || i == 7 || i == 8 || i == 9 || i == 10 || i == 11);
 
-    public ItemStack getRenderStack2() {
-        return inventory.getStackDirect(2);
-    }
 
-    public ItemStack getRenderStack3() {
-        return inventory.getStackDirect(1);
-    }
-
-    // -------------------------
-    // SAVE/LOAD
-    // -------------------------
-    @Override
-    protected void saveAdditional(ValueOutput out) {
-        super.saveAdditional(out);
-
-        inventory.serialize(out);
-
-        out.putInt("breeder.progress", this.progress);
-        out.putBoolean("AutoOutput", autoOutput);
-        out.putBoolean("LastRedstonePowered", lastRedstonePowered);
-        out.putBoolean("AutoOutputByRedstone", autoOutputByRedstone);
-        out.putString("breeder.custom_name", this.customName);
-    }
-
-    @Override
-    protected void loadAdditional(ValueInput in) {
-        super.loadAdditional(in);
-
-        inventory.deserialize(in);
-
-        this.customName = in.getStringOr("breeder.custom_name", "BREEDER");
-        this.progress = in.getIntOr("breeder.progress", 0);
-        this.autoOutput = in.getBooleanOr("AutoOutput", false);
-        this.lastRedstonePowered = in.getBooleanOr("LastRedstonePowered", false);
-        this.autoOutputByRedstone = in.getBooleanOr("AutoOutputByRedstone", false);
+    public @Nullable IItemHandler getItemHandlerCapability(@Nullable Direction side) {
+        if(side == null)
+            return itemHandler;
+        return itemHandlerSided;
     }
 
     @Override
@@ -232,70 +251,96 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
         super.onLoad();
         setChanged();
     }
-
-    // -------------------------
-    // DROPS
-    // -------------------------
-    private boolean dropped = false;
-
-    public boolean hasDropped() {
-        return dropped;
+    @Override
+    public void saveAdditional(CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
+        nbt.put("inventory", itemHandler.serializeNBT(lookup));
+        nbt.putInt("breeder.progress", this.progress);
+        nbt.putBoolean("AutoOutput", autoOutput);
+        nbt.putBoolean("LastRedstonePowered", lastRedstonePowered);
+        nbt.putBoolean("AutoOutputByRedstone", autoOutputByRedstone);
+        nbt.putString("breeder.custom_name", this.customName);
+        super.saveAdditional(nbt, lookup);
     }
 
-    public void markDropped() {
-        this.dropped = true;
-    }
+    @Override
+    public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
+        super.loadAdditional(nbt, lookup);
+        this.customName = nbt.getString("breeder.custom_name");
+        migrating = true;
+        try {
+            if (nbt.contains("inventory")) {
+                CompoundTag invTag = nbt.getCompound("inventory");
 
-    public void drops() {
-        SimpleContainer inv = new SimpleContainer(inventory.size());
-        for (int i = 0; i < inventory.size(); i++) {
-            inv.setItem(i, inventory.getStackDirect(i));
+                int oldSize = invTag.contains("Size") ? invTag.getInt("Size") : itemHandler.getSlots();
+                ItemStackHandler oldHandler = new ItemStackHandler(oldSize);
+                oldHandler.deserializeNBT(lookup, invTag);
+
+                for (int i = 0; i < Math.min(oldHandler.getSlots(), itemHandler.getSlots()); i++) {
+                    ItemStack oldStack = oldHandler.getStackInSlot(i);
+                    if (!oldStack.isEmpty() && itemHandler.getStackInSlot(i).isEmpty()) {
+                        itemHandler.setStackInSlot(i, oldStack);
+                    }
+                }
+            }
+
+            this.progress = nbt.getInt("breeder.progress");
+        } finally {
+            migrating = false;
         }
 
-        SimpleContainer block = new SimpleContainer(1);
-        ItemStack itemStack = new ItemStack(ModBlocks.BREEDER);
+        if (nbt.contains("AutoOutput")) {
+            this.autoOutput = nbt.getBoolean("AutoOutput");
+        } else {
+            this.autoOutput = false;
+        }
+        if (nbt.contains("LastRedstonePowered")) {
+            this.lastRedstonePowered = nbt.getBoolean("LastRedstonePowered");
+        } else {
+            this.lastRedstonePowered = false;
+        }
 
-        itemStack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(inv.getItems()));
+        if(nbt.contains("AutoOutputByRedstone")){
+            this.autoOutputByRedstone = nbt.getBoolean("AutoOutputByRedstone");
+        } else {
+            this.autoOutputByRedstone = false;
+        }
+
+    }
+
+
+
+
+    public void drops() {
+        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+        SimpleContainer block = new SimpleContainer(1);
+        ItemStack itemStack = new ItemStack(ModBlocks.BREEDER.get());
+        NonNullList<ItemStack> items = inventory.getItems();
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            items.set(i, itemHandler.getStackInSlot(i));
+        }
+        itemStack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(inventory.getItems()));
         block.setItem(0, itemStack.copy());
+
 
         Containers.dropContents(Objects.requireNonNull(this.level), this.worldPosition, block);
     }
 
-    // -------------------------
-    // RECIPE HELPERS
-    // -------------------------
-    private static boolean hasFreeOrStackableSlot(BreederTile e, ItemStack result) {
+    private static boolean hasFreeOrStackableSlot(BreederTile pEntity, ItemStack result) {
         for (int slot = 3; slot <= 11; slot++) {
-            ItemStack inSlot = e.inventory.getStackDirect(slot);
+            ItemStack stackInSlot = pEntity.itemHandler.getStackInSlot(slot);
 
-            if (inSlot.isEmpty()) return true;
+            if (stackInSlot.isEmpty()) return true;
 
-            if (ItemStack.isSameItemSameComponents(inSlot, result)
-                    && inSlot.getCount() < inSlot.getMaxStackSize()) {
+            if (ItemStack.isSameItemSameComponents(stackInSlot, result)
+                    && stackInSlot.getCount() < stackInSlot.getMaxStackSize()) {
                 return true;
             }
         }
         return false;
     }
-
-    public static RecipeInput getRecipeInput(SimpleContainer inventory) {
-        return new RecipeInput() {
-            @Override
-            public @NotNull ItemStack getItem(int index) {
-                return inventory.getItem(index).copy();
-            }
-
-            @Override
-            public int size() {
-                return inventory.getContainerSize();
-            }
-        };
-    }
-
-    // -------------------------
-    // AUTO OUTPUT / REDSTONE
-    // -------------------------
     private boolean autoOutput = false;
+
+
     private boolean lastRedstonePowered = false;
     private boolean autoOutputByRedstone = false;
 
@@ -307,7 +352,7 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
         this.autoOutput = enabled;
         this.autoOutputByRedstone = false;
 
-        if (level != null && !level.isClientSide()) {
+        if (level != null && !level.isClientSide) {
             setChanged(level, worldPosition, getBlockState());
         }
     }
@@ -317,6 +362,7 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
         this.autoOutputByRedstone = false;
         syncToClients();
     }
+
 
     private void setAutoOutputFromRedstone(boolean enabled) {
         this.autoOutput = enabled;
@@ -335,127 +381,135 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
         setChanged();
     }
 
+    public static void tick(Level levelL, BlockPos pos, BlockState state, BreederTile pEntity) {
+        if(levelL.isClientSide()) {
+            return;
+        }
+
+        boolean powered = levelL.hasNeighborSignal(pos);
+
+        if (powered && !pEntity.lastRedstonePowered) {
+            if (!pEntity.autoOutput) {
+                pEntity.setAutoOutputFromRedstone(true);
+            }
+        }
+
+        if (!powered && pEntity.lastRedstonePowered) {
+            if (pEntity.autoOutputByRedstone) {
+                pEntity.setAutoOutputFromRedstone(false);
+            }
+        }
+
+        pEntity.lastRedstonePowered = powered;
+
+        setChanged(levelL, pos, state);
+
+        SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
+        for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
+            inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
+        }
+
+        List<RecipeHolder<BreederRecipe>> recipes = levelL.getRecipeManager().getRecipesFor(ModRecipes.BASIC_BREEDING_TYPE.get(), getRecipeInput(inventory), levelL);
+
+        if (!recipes.isEmpty()) {
+
+
+            if (pEntity.progress == 0 || pEntity.currentOutput.isEmpty()) {
+                pEntity.currentOutput = pickRandomVariant(recipes);
+
+                Optional<RecipeHolder<BreederRecipe>> first = levelL.getRecipeManager().getRecipeFor(ModRecipes.BASIC_BREEDING_TYPE.get(), getRecipeInput(inventory), levelL);
+                first.ifPresent(holder -> pEntity.maxProgress = ( Config.breed_speed_tick.get() * holder.value().time()));
+            }
+
+
+            if (hasFreeOrStackableSlot(pEntity, pEntity.currentOutput)) {
+                pEntity.progress++;
+
+                if (pEntity.progress >= pEntity.maxProgress) {
+                    craftItem(pEntity);
+                    pEntity.currentOutput = ItemStack.EMPTY;
+                }
+            } else {
+                pEntity.resetProgress();
+                pEntity.currentOutput = ItemStack.EMPTY;
+            }
+        } else {
+            pEntity.resetProgress();
+            pEntity.currentOutput = ItemStack.EMPTY;
+            setChanged(levelL, pos, state);
+        }
+
+        if(pEntity.isAutoOutputEnabled()) {
+
+            tryPushBreederOutputsDown(levelL, pos, state, pEntity);
+        }
+
+    }
+
     public void setAutoOutputClient(boolean enabled) {
         this.autoOutput = enabled;
     }
 
-    // -------------------------
-    // TICK
-    // -------------------------
-    public static void tick(Level levelL, BlockPos pos, BlockState state, BreederTile e) {
-        if (levelL.isClientSide()) return;
 
-        boolean powered = levelL.hasNeighborSignal(pos);
 
-        if (powered && !e.lastRedstonePowered) {
-            if (!e.autoOutput) e.setAutoOutputFromRedstone(true);
-        }
-
-        if (!powered && e.lastRedstonePowered) {
-            if (e.autoOutputByRedstone) e.setAutoOutputFromRedstone(false);
-        }
-
-        e.lastRedstonePowered = powered;
-
-        setChanged(levelL, pos, state);
-
-        // SimpleContainer nur fürs Rezept-System (wie bisher)
-        SimpleContainer recipeInv = new SimpleContainer(e.inventory.size());
-        for (int i = 0; i < e.inventory.size(); i++) {
-            recipeInv.setItem(i, e.inventory.getStackDirect(i));
-        }
-
-        RecipeManager rm = levelL.getServer().getRecipeManager();
-
-        List<RecipeHolder<BreederRecipe>> recipes =
-                rm.recipeMap()
-                        .getRecipesFor(
-                                ModRecipes.BASIC_BREEDING_TYPE.get(),
-                                getRecipeInput(recipeInv),
-                                levelL
-                        )
-                        .toList();
-
-        if (!recipes.isEmpty()) {
-
-            if (e.progress == 0 || e.currentOutput.isEmpty()) {
-                e.currentOutput = pickRandomVariant(recipes);
-
-                Optional<RecipeHolder<BreederRecipe>> first =
-                        ((ServerLevel) levelL).recipeAccess()
-                                .getRecipeFor(ModRecipes.BASIC_BREEDING_TYPE.get(), getRecipeInput(recipeInv), levelL);
-
-                first.ifPresent(holder -> e.maxProgress = (Config.breed_speed_tick.get() * holder.value().time()));
-            }
-
-            if (hasFreeOrStackableSlot(e, e.currentOutput)) {
-                e.progress++;
-
-                if (e.progress >= e.maxProgress) {
-                    craftItem(e);
-                    e.currentOutput = ItemStack.EMPTY;
-                }
-            } else {
-                e.resetProgress();
-                e.currentOutput = ItemStack.EMPTY;
-            }
-
-        } else {
-            e.resetProgress();
-            e.currentOutput = ItemStack.EMPTY;
-            setChanged(levelL, pos, state);
-        }
-
-        if (e.isAutoOutputEnabled()) {
-            tryPushBreederOutputsDown(levelL, pos, state, e);
-        }
-    }
-
-    // -------------------------
-    // NEW-SYSTEM OUTPUT PUSH (ATOMIC)
-    // -------------------------
     private static void tryPushBreederOutputsDown(Level level, BlockPos pos, BlockState state, BreederTile tile) {
 
-        ResourceHandler<ItemResource> below = getItemHandler(level, pos.below(), Direction.UP);
-        if (below == null) return;
+        IItemHandler belowHandler = level.getCapability(
+                Capabilities.ItemHandler.BLOCK,
+                pos.below(),
+                Direction.UP
+        );
+
+        if (belowHandler == null) {
+            return;
+        }
 
         boolean changed = false;
 
+
         for (int outputSlot = 3; outputSlot <= 11; outputSlot++) {
-            ItemStack stackInSlot = tile.inventory.getStackDirect(outputSlot);
-            if (stackInSlot.isEmpty()) continue;
-
-            ItemResource res = ItemResource.of(stackInSlot);
-            int amount = stackInSlot.getCount();
-
-            try (Transaction tx = Transaction.openRoot()) {
-
-                // 1) rein in den Target
-                int inserted = below.insert(res, amount, tx);
-                if (inserted <= 0) continue;
-
-                // 2) exakt dieselbe Menge aus unserem Slot entfernen (im selben tx!)
-                int extracted = tile.inventory.extract(outputSlot, res, inserted, tx);
-                if (extracted <= 0) {
-                    // sollte praktisch nie passieren, aber sicher ist sicher
-                    continue;
-                }
-
-                tx.commit();
-                changed = true;
+            ItemStack stackInSlot = tile.itemHandler.getStackInSlot(outputSlot);
+            if (stackInSlot.isEmpty()) {
+                continue;
             }
+
+            ItemStack remaining = stackInSlot.copy();
+
+
+            for (int targetSlot = 0; targetSlot < belowHandler.getSlots() && !remaining.isEmpty(); targetSlot++) {
+                remaining = belowHandler.insertItem(targetSlot, remaining, false);
+            }
+
+
+            if (remaining.getCount() == stackInSlot.getCount()) {
+                continue;
+            }
+
+
+            int moved = stackInSlot.getCount() - remaining.getCount();
+
+
+            ItemStack newStack = stackInSlot.copy();
+            newStack.shrink(moved);
+
+            if (newStack.isEmpty()) {
+                newStack = ItemStack.EMPTY;
+            }
+
+            tile.itemHandler.setStackInSlot(outputSlot, newStack);
+            changed = true;
         }
 
         if (changed) {
             setChanged(level, pos, state);
-            level.sendBlockUpdated(pos, state, state, 3);
         }
     }
 
-    // -------------------------
-    // CRAFTING
-    // -------------------------
+
+
+
     private void resetProgress() {
+
         this.progress = 0;
     }
 
@@ -466,63 +520,107 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
         return new ItemStack(randomRecipe.value().output().getItem());
     }
 
-    private static void craftItem(BreederTile e) {
-        Level level = e.level;
-        if (level == null || level.isClientSide()) return;
-
-        ItemStack chickenOutput = e.currentOutput;
-        if (chickenOutput == null || chickenOutput.isEmpty()) {
-            e.resetProgress();
-            return;
+    private static void craftItem(BreederTile pEntity) {
+        Level level = pEntity.level;
+        SimpleContainer inventory = new SimpleContainer(pEntity.itemHandler.getSlots());
+        for (int i = 0; i < pEntity.itemHandler.getSlots(); i++) {
+            inventory.setItem(i, pEntity.itemHandler.getStackInSlot(i));
         }
 
-        try (Transaction tx = Transaction.openRoot()) {
+        assert level != null;
+        List<RecipeHolder<BreederRecipe>> recipes = level.getRecipeManager().getRecipesFor(ModRecipes.BASIC_BREEDING_TYPE.get(), getRecipeInput(inventory), level);
 
-            // 1️⃣ Output einfügen
-            ItemResource out = ItemResource.of(chickenOutput);
-            int remaining = chickenOutput.getCount();
 
-            for (int slot = 3; slot <= 11 && remaining > 0; slot++) {
-                remaining -= e.inventory.insert(slot, out, remaining, tx);
-            }
 
-            if (remaining > 0) {
-                // passt nicht komplett rein → abbrechen
+            ItemStack chickenOutput = pEntity.currentOutput != null && !pEntity.currentOutput.isEmpty()
+                    ? pEntity.currentOutput
+                    : (recipes.isEmpty() ? ItemStack.EMPTY : new ItemStack(recipes.get(new Random().nextInt(recipes.size())).value().output().getItem()));
+
+            if (chickenOutput.isEmpty()) {
+                pEntity.resetProgress();
                 return;
             }
 
-            // 2️⃣ Seeds verbrauchen (IM SELBEN TX!)
-            if (ChickenRoostMod.CONFIG.BreederSeeds) {
-                consumeOne(e, 1, tx);
+
+            for (int slot = 3; slot <= 11; slot++) {
+                ItemStack stackInSlot = pEntity.itemHandler.getStackInSlot(slot);
+
+                if (!stackInSlot.isEmpty() &&
+                        ItemStack.isSameItemSameComponents(stackInSlot, chickenOutput) &&
+                        stackInSlot.getCount() < stackInSlot.getMaxStackSize()) {
+
+
+                    int spaceLeft = stackInSlot.getMaxStackSize() - stackInSlot.getCount();
+                    int toInsert = Math.min(spaceLeft, chickenOutput.getCount());
+
+
+                    if(ChickenRoostMod.CONFIG.BreederSeeds) {
+                        pEntity.itemHandler.extractItem(0, 0, true);
+                        pEntity.itemHandler.extractItem(2, 0, true);
+                        pEntity.itemHandler.extractItem(1, 1, false);
+
+
+                        stackInSlot.grow(toInsert);
+                        pEntity.itemHandler.setStackInSlot(slot, stackInSlot);
+
+                        pEntity.resetProgress();
+                    }else {
+                        pEntity.itemHandler.extractItem(0, 0, true);
+                        pEntity.itemHandler.extractItem(2, 0, true);
+
+
+
+                        stackInSlot.grow(toInsert);
+                        pEntity.itemHandler.setStackInSlot(slot, stackInSlot);
+
+                        pEntity.resetProgress();
+                    }
+                    return;
+                }
             }
 
-            // 3️⃣ Commit = alles atomar
-            tx.commit();
-            e.resetProgress();
-            e.currentOutput = ItemStack.EMPTY;
-        }
+
+            for (int slot = 3; slot <= 11; slot++) {
+                if (pEntity.itemHandler.getStackInSlot(slot).isEmpty()) {
+
+                    if(ChickenRoostMod.CONFIG.BreederSeeds) {
+                        pEntity.itemHandler.extractItem(0, 0, true);
+                        pEntity.itemHandler.extractItem(2, 0, true);
+                        pEntity.itemHandler.extractItem(1, 1, false);
+
+
+                        pEntity.itemHandler.setStackInSlot(slot, chickenOutput);
+
+                        pEntity.resetProgress();
+                    } else {
+                        pEntity.itemHandler.extractItem(0, 0, true);
+                        pEntity.itemHandler.extractItem(2, 0, true);
+
+
+                        pEntity.itemHandler.setStackInSlot(slot, chickenOutput);
+
+                        pEntity.resetProgress();
+                    }
+                    return;
+                }
+            }
+
+            pEntity.resetProgress();
     }
 
+    public static RecipeInput getRecipeInput(SimpleContainer inventory) {
+        return new RecipeInput() {
+            @Override
+            public @NotNull ItemStack getItem(int index) {
+                return inventory.getItem(index).copy();
+            }
 
-    /**
-     * Verbraucht 1 Item aus einem Slot mit Transfer-API korrekt (Transaction).
-     */
-    private static void consumeOne(
-            BreederTile e,
-            int slot,
-            TransactionContext tx
-    ) {
-        ItemStack stack = e.inventory.getStackDirect(slot);
-        if (stack.isEmpty()) return;
-
-        ItemResource res = ItemResource.of(stack);
-        e.inventory.extract(slot, res, 1, tx);
+            @Override
+            public int size() {
+                return inventory.getContainerSize();
+            }
+        };
     }
-
-
-    // -------------------------
-    // SYNC
-    // -------------------------
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {

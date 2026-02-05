@@ -1,54 +1,57 @@
 package net.tarantel.chickenroost.block.tile.render;
 
-import com.mojang.datafixers.util.Either;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.cache.model.BakedGeoModel;
-import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.renderer.GeoBlockRenderer;
-import software.bernie.geckolib.renderer.base.GeoRenderState;
-import net.tarantel.chickenroost.block.tile.TrainerTile;
 import net.tarantel.chickenroost.block.blocks.model.AnimatedTrainerModel;
-import software.bernie.geckolib.renderer.layer.builtin.BlockAndItemGeoLayer;
+import net.tarantel.chickenroost.block.tile.TrainerTile;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.renderer.GeoBlockRenderer;
+import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
 
-import java.util.List;
+import javax.annotation.Nullable;
 
-public class AnimatedTrainerRenderer<R extends BlockEntityRenderState & GeoRenderState>
-        extends GeoBlockRenderer<TrainerTile, R> {
-
-    public AnimatedTrainerRenderer() {
+public class AnimatedTrainerRenderer extends GeoBlockRenderer<TrainerTile> {
+    public AnimatedTrainerRenderer(BlockEntityRendererProvider.Context context) {
         super(new AnimatedTrainerModel());
+        this.addRenderLayer(new BlockAndItemGeoLayer<>(this) {
 
-        this.withRenderLayer(renderer ->
-                new TrainerItemLayer<>(renderer)
-        );
+            @Nullable
+            @Override
+            protected ItemStack getStackForBone(GeoBone bone, TrainerTile animatable) {
+                ItemStack itemStack = animatable.getRenderStack();
+                return switch (bone.getName()) {
+                    case "bone" -> new ItemStack(itemStack.getItem());
+                    default -> null;
+                };
+            }
+
+
+            @Override
+            protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack,
+                                                                  TrainerTile animatable) {
+                return switch (bone.getName()) {
+                    default -> ItemDisplayContext.FIXED;
+                };
+            }
+
+            @Override
+            protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack,
+                                              TrainerTile animatable, MultiBufferSource bufferSource, float partialTick, int packedLight,
+                                              int packedOverlay) {
+                poseStack.mulPose(Axis.XP.rotationDegrees(0));
+                poseStack.mulPose(Axis.YP.rotationDegrees(0));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(0));
+                poseStack.translate(0.0D, 0.4D, 0.0D);
+                poseStack.scale(1.0f, 1.0f, 1.0f);
+                super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight,
+                        packedOverlay);
+            }
+        });
+
     }
-
-    @Override
-    public void extractRenderState(
-            TrainerTile tile,
-            R renderState,
-            float partialTick,
-            Vec3 cameraPos,
-            ModelFeatureRenderer.CrumblingOverlay damageOverlay
-    ) {
-        // 🔹 Vanilla + GeckoLib interner State
-        super.extractRenderState(tile, renderState, partialTick, cameraPos, damageOverlay);
-
-        // 🔥 CLIENTSEITIG Animation anwenden
-        if (tile.getLevel() != null && tile.getLevel().isClientSide()) {
-            tile.applyClientAnimation();
-        }
-    }
-
-
 }

@@ -16,8 +16,8 @@ public interface ICollectorTarget {
 
     void setAutoOutputClient(boolean enabled);
 
-    /*@Nullable
-    IItemHandler getItemHandler();*/
+    @Nullable
+    IItemHandler getItemHandler();
 
     int getReadSlot();
 }

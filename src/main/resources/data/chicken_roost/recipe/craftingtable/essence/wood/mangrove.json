@@ -6,7 +6,9 @@
     "00 "
   ],
   "key": {
-    "0": "chicken_roost:wood_essence"
+    "0": {
+      "item": "chicken_roost:wood_essence"
+    }
   },
   "result": {
     "id": "minecraft:mangrove_log",

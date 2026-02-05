@@ -1,8 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    "minecraft:bucket",
-    "chicken_roost:lava_egg"
+    {
+      "item": "minecraft:bucket"
+    },
+    {
+      "item": "chicken_roost:lava_egg"
+    }
   ],
   "result": {
     "id": "minecraft:lava_bucket",

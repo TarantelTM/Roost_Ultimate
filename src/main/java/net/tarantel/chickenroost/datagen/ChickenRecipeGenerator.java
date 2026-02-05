@@ -3,6 +3,7 @@ package net.tarantel.chickenroost.datagen;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
 import net.neoforged.fml.loading.FMLPaths;
 import net.tarantel.chickenroost.util.ChickenData;
 
@@ -21,7 +22,7 @@ public class ChickenRecipeGenerator {
     public static void generate(List<ChickenData> chickens) {
 
         Path root = FMLPaths.GAMEDIR.get()
-                .resolve("crlib/resources_server/data/chicken_roost/recipe");
+                .resolve("crlib/resources/data/chicken_roost/recipe");
 
         try {
             Files.createDirectories(root);

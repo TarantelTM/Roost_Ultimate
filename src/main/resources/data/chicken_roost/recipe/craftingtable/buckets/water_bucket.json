@@ -1,8 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    "minecraft:bucket",
-    "chicken_roost:water_egg"
+    {
+      "item": "minecraft:bucket"
+    },
+    {
+      "item": "chicken_roost:water_egg"
+    }
   ],
   "result": {
     "id": "minecraft:water_bucket",

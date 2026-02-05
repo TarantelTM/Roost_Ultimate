@@ -6,26 +6,25 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.tarantel.chickenroost.ChickenRoostMod;
-import net.tarantel.chickenroost.RoostBaseRecipe;
 import org.jetbrains.annotations.NotNull;
 
-public record TrainerRecipe(ItemStack output, Ingredient ingredient0) implements RoostBaseRecipe<RecipeInput> {
+public record TrainerRecipe(ItemStack output, Ingredient ingredient0) implements Recipe<RecipeInput> {
 
     @Override
     public @NotNull ItemStack assemble(@NotNull RecipeInput container,@NotNull HolderLookup.Provider registries) {
         return output;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return ChickenRoostMod.ownresource("trainer_output");
     }
 
-
+    @Override
     public @NotNull ItemStack getResultItem(HolderLookup.Provider registries) {
         return output.copy();
     }
@@ -47,7 +46,7 @@ public record TrainerRecipe(ItemStack output, Ingredient ingredient0) implements
         return true;
     }
 
-
+    @Override
     public @NotNull NonNullList<Ingredient> getIngredients() {
         NonNullList<Ingredient> ingredients = NonNullList.createWithCapacity(1);
         ingredients.addFirst(ingredient0);
@@ -55,43 +54,23 @@ public record TrainerRecipe(ItemStack output, Ingredient ingredient0) implements
     }
 
     @Override
-    public boolean isIngredient(ItemStack itemStack) {
-        return getIngredients().getFirst().test(itemStack);
-    }
-
-    @Override
-    public boolean isResult(ItemStack itemStack) {
-        return ItemStack.isSameItemSameComponents(output, itemStack);
-    }
-
-
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
         return true;
     }
 
-
+    @Override
     public @NotNull String getGroup() {
         return "trainer_output";
     }
 
     @Override
-    public RecipeSerializer<? extends Recipe<RecipeInput>> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return Serializer.INSTANCE;
     }
 
     @Override
-    public RecipeType<? extends Recipe<RecipeInput>> getType() {
+    public @NotNull RecipeType<?> getType() {
         return Type.INSTANCE;
-    }
-
-    @Override
-    public PlacementInfo placementInfo() {
-        return PlacementInfo.NOT_PLACEABLE;
-    }
-
-    @Override
-    public RecipeBookCategory recipeBookCategory() {
-        return ModRecipes.TRAINER_CATEGORY.get();
     }
 
     public static final class Type implements RecipeType<TrainerRecipe> {
@@ -107,10 +86,10 @@ public record TrainerRecipe(ItemStack output, Ingredient ingredient0) implements
         }
 
         public static final Serializer INSTANCE = new Serializer();
-        public static final Identifier ID =
+        public static final ResourceLocation ID =
                 ChickenRoostMod.ownresource("trainer_output");
 
-        private final MapCodec<TrainerRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> recipe.output.copy()), Ingredient.CODEC.fieldOf("chicken").forGetter((recipe) -> recipe.ingredient0)).apply(instance, TrainerRecipe::new));
+        private final MapCodec<TrainerRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> recipe.output.copy()), Ingredient.CODEC_NONEMPTY.fieldOf("chicken").forGetter((recipe) -> recipe.ingredient0)).apply(instance, TrainerRecipe::new));
 
         private final StreamCodec<RegistryFriendlyByteBuf, TrainerRecipe> STREAM_CODEC = StreamCodec.of(
                 Serializer::write, Serializer::read);

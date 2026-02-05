@@ -1,0 +1,50 @@
+
+
+[
+{
+    "ChickenName": "Example Chicken",
+    "MobOrMonster": "Monster",
+    "id": "c_example",
+    "itemtexture": "soulsandchicken", <--------- Path crlib/resources/assets/chicken_roost/textures/block/
+    "mobtexture": "soulariumchicken", <--------- Path crlib/resources/assets/chicken_roost/textures/entities/
+    "dropitem": "examplemod:exampleitem",
+    "eggtime": 600,
+    "tier": 1,
+    "recipes": {
+      "roost_output": {
+        "foodTag": "c:seeds/tier1orup",
+        "output": "examplemod:exampleitem",
+        "time": 20, <--------- is optional default it sets to 20 if not set in recipe.
+      },
+      "basic_breeding": [
+        {
+          "left": "chicken_roost:c_example",
+          "right": "chicken_roost:c_example",
+          "foodTag": "c:seeds/tier1orup",
+          "output": "chicken_roost:c_example",
+          "time": 40
+        },
+        {
+          "left": "chicken_roost:c_example",
+          "right": "chicken_roost:c_example",
+          "foodTag": "c:seeds/tier2orup",
+          "output": "chicken_roost:c_example"
+        },
+		{
+          "left": "chicken_roost:c_example",
+          "right": "chicken_roost:c_example",
+          "foodTag": "c:seeds/tier2orup",
+          "output": "chicken_roost:c_example"
+        }
+      ]
+    },
+    "CanGetFireDamage": false,
+    "CanGetProjectileDamage": true,
+    "CanGetExplosionDamage": true,
+    "CanGetFallDamage": false,
+    "CanGetDrowningDamage": true,
+    "CanGetFreezingDamage": true,
+    "CanGetLightningDamage": true,
+    "CanGetWitherDamage": true
+  }
+  ]

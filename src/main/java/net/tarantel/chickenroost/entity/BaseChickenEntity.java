@@ -5,12 +5,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -18,22 +17,20 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.animal.chicken.Chicken;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.tarantel.chickenroost.ChickenRoostMod;
@@ -44,11 +41,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
-import java.util.Optional;
 
 public class BaseChickenEntity extends Chicken {
 
-    private Integer eggTime;
+    private int eggTime;
 
     private final ItemStack dropStack;
     private final Boolean IS_FIRE;
@@ -100,73 +96,59 @@ public class BaseChickenEntity extends Chicken {
         };
 
     }
-    private static <T extends AgeableMob> T createBaby(
-            EntityType<T> type,
-            ServerLevel level,
-            BlockPos pos
-    ) {
-        T child = type.create(level, EntitySpawnReason.BREEDING);
-        if (child == null) return null;
 
-        // Position + Rotation setzen (moveTo gibt’s nicht mehr)
-        child.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-        // optional: child.setYRot(...); child.setXRot(...);
-
-        child.setAge(-24000);
-        return child;
-    }
     @Override
     public Chicken getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob otherParent) {
-        BlockPos pos = this.blockPosition();
-
         if (!(otherParent instanceof BaseChickenEntity parent2)) {
-            Chicken fallback = createBaby(EntityType.CHICKEN, level, pos);
-            return fallback; // kann null sein, aber MC erwartet i.d.R. nicht-null; s.u.
+
+            Chicken fallback = EntityType.CHICKEN.create(level);
+            if (fallback != null) fallback.setAge(-24000);
+            return fallback;
         }
 
-        Identifier id1 = EntityType.getKey(this.getType());
-        Identifier id2 = EntityType.getKey(parent2.getType());
 
-        ItemStack stack1 = new ItemStack(BuiltInRegistries.ITEM.get(id1).get());
-        ItemStack stack2 = new ItemStack(BuiltInRegistries.ITEM.get(id2).get());
-
-        RecipeManager recipeManager = level.getServer().getRecipeManager();
-
-        for (RecipeHolder<?> holder : recipeManager.getRecipes()) {
-            if (!(holder.value() instanceof BreederRecipe recipe)) continue;
-
-            boolean match =
-                    (recipe.ingredient1().test(stack1) && recipe.ingredient2().test(stack2)) ||
-                            (recipe.ingredient1().test(stack2) && recipe.ingredient2().test(stack1));
-
-            if (!match) continue;
-
-            ItemStack result = recipe.getResultItem(level.registryAccess());
-            Identifier resultId = BuiltInRegistries.ITEM.getKey(result.getItem());
-
-            EntityType<?> rawType =
-                    BuiltInRegistries.ENTITY_TYPE.get(resultId).orElseThrow().value();
+        ResourceLocation id1 = EntityType.getKey(this.getType());
+        ResourceLocation id2 = EntityType.getKey(parent2.getType());
 
 
-            @SuppressWarnings("unchecked")
-            EntityType<? extends BaseChickenEntity> childType =
-                    (EntityType<? extends BaseChickenEntity>) rawType;
+        ItemStack stack1 = new ItemStack(BuiltInRegistries.ITEM.get(id1));
+        ItemStack stack2 = new ItemStack(BuiltInRegistries.ITEM.get(id2));
 
-            BaseChickenEntity child =
-                    (BaseChickenEntity) createBaby((EntityType) childType, level, pos);
 
-            if (child != null) {
-                return child;
+        for (RecipeHolder<BreederRecipe> holder : level.getRecipeManager().getAllRecipesFor(BreederRecipe.Type.INSTANCE)) {
+            BreederRecipe recipe = holder.value();
+
+            boolean match = (recipe.ingredient1().test(stack1) && recipe.ingredient2().test(stack2)) ||
+                    (recipe.ingredient1().test(stack2) && recipe.ingredient2().test(stack1));
+
+            if (match) {
+                ItemStack result = recipe.getResultItem(level.registryAccess());
+                ResourceLocation resultId = BuiltInRegistries.ITEM.getKey(result.getItem());
+                EntityType<?> rawType = BuiltInRegistries.ENTITY_TYPE.get(resultId);
+
+                @SuppressWarnings("unchecked")
+                EntityType<? extends BaseChickenEntity> childType = (EntityType<? extends BaseChickenEntity>) rawType;
+
+                BaseChickenEntity child = childType.create(level);
+                if (child != null) {
+                    child.setAge(-24000);
+                    ChickenRoostMod.LOGGER.info("Breeding success: {} + {} -> {}", id1, id2, resultId);
+                    return child;
+                } else {
+                    ChickenRoostMod.LOGGER.warn("Failed to create child entity for resultId {}", resultId);
+                }
             }
         }
 
 
-        Chicken fallback = createBaby(EntityType.CHICKEN, level, pos);
+        Chicken fallback = EntityType.CHICKEN.create(level);
+        if (fallback != null) fallback.setAge(-24000);
+        ChickenRoostMod.LOGGER.info("No breeding recipe matched: {} + {} -> fallback CHICKEN", id1, id2);
         return fallback;
     }
 
     @Override
-    public boolean checkSpawnRules(LevelAccessor level, @NotNull EntitySpawnReason spawnType) {
+    public boolean checkSpawnRules(LevelAccessor level, @NotNull MobSpawnType spawnType) {
         int max = 10;
         int radius = 20;
         BlockPos pos = this.blockPosition();
@@ -182,14 +164,9 @@ public class BaseChickenEntity extends Chicken {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new PanicGoal(this, 1.4));
-        this.goalSelector.addGoal(2, new BreedGoal(this, (double)1.0F));
-        this.goalSelector.addGoal(3, new TemptGoal(this, (double)1.0F, (p_481852_) -> p_481852_.is(ItemTags.CHICKEN_FOOD), false));
-        this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.1));
-        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, (double)1.0F));
-        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
-        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(1, new RandomStrollGoal(this, 1));
+        this.goalSelector.addGoal(2, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(3, new FloatGoal(this));
     }
 
     @Override
@@ -212,19 +189,19 @@ public class BaseChickenEntity extends Chicken {
     }
 
     @Override
-    public ItemEntity spawnAtLocation(ServerLevel level,@NotNull ItemStack stack) {
+    public ItemEntity spawnAtLocation(@NotNull ItemStack stack) {
         if (stack.is(Items.EGG)) {
             if (!dropStack.isEmpty()) {
-                return super.spawnAtLocation(level, dropStack.copy());
+                return super.spawnAtLocation(dropStack.copy());
             }
             return null;
         }
 
-        return super.spawnAtLocation(level, stack);
+        return super.spawnAtLocation(stack);
     }
     @Override
-    public ItemEntity spawnAtLocation(ServerLevel level, @NotNull ItemLike itemLike) {
-        return this.spawnAtLocation(level, new ItemStack(itemLike).getItem());
+    public ItemEntity spawnAtLocation(@NotNull ItemLike itemLike) {
+        return this.spawnAtLocation(new ItemStack(itemLike));
     }
     private static final Field VANILLA_EGG_TIME;
     static {
@@ -237,7 +214,6 @@ public class BaseChickenEntity extends Chicken {
     }
 
     private final int configuredEggTime;
-
     @Override
     public void aiStep() {
         super.aiStep();
@@ -251,88 +227,69 @@ public class BaseChickenEntity extends Chicken {
 
         this.flapping *= 0.9F;
         Vec3 vec3 = this.getDeltaMovement();
-        if (!this.onGround() && vec3.y < (double)0.0F) {
-            this.setDeltaMovement(vec3.multiply((double)1.0F, 0.6, (double)1.0F));
+        if (!this.onGround() && vec3.y < 0.0D) {
+            this.setDeltaMovement(vec3.multiply(1.0D, 0.6D, 1.0D));
         }
 
         this.flap += this.flapping * 2.0F;
-        if (!this.level().isClientSide() && this.isAlive() && !this.isBaby() && !this.isChickenJockey() && --this.eggTime <= 0) {
+        if (!this.level().isClientSide && this.isAlive() && !this.isBaby() && !this.isChickenJockey() && --this.eggTime <= 0) {
             this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
             this.gameEvent(GameEvent.ENTITY_PLACE);
             this.eggTime = configuredEggTime;
         }
 
-        if (!this.level().isClientSide() && this.isAlive() && !this.isBaby() && !this.isChickenJockey()) {
+        if (!this.level().isClientSide && this.isAlive() && !this.isBaby() && !this.isChickenJockey()) {
             try {
                 int vanillaTime = (int) VANILLA_EGG_TIME.get(this);
                 if (vanillaTime > this.configuredEggTime) {
                     VANILLA_EGG_TIME.set(this, this.configuredEggTime);
                 }
             } catch (IllegalAccessException e) {
-                //ChickenRoostMod.LOGGER.error("Failed to modify Chicken eggTime", e);
+                ChickenRoostMod.LOGGER.error("Failed to modify Chicken eggTime", e);
             }
         }
 
     }
-
     @Override
-    public int getBaseExperienceReward(ServerLevel level) {
-        return this.isChickenJockey() ? 10 : super.getBaseExperienceReward(level);
+    public int getBaseExperienceReward() {
+        return this.isChickenJockey() ? 10 : super.getBaseExperienceReward();
     }
     @Override
-    public void readAdditionalSaveData(@NotNull ValueInput input) {
-        super.readAdditionalSaveData(input);
+    public void readAdditionalSaveData(@NotNull CompoundTag p_28243_) {
+        super.readAdditionalSaveData(p_28243_);
+        this.isChickenJockey = p_28243_.getBoolean("IsChickenJockey");
+        if (p_28243_.contains("EggLayTime")) {
+            this.eggTime = p_28243_.getInt("EggLayTime");
+        }
 
-        this.isChickenJockey =
-                input.getBooleanOr("IsChickenJockey", this.isChickenJockey);
-
-        input.getInt("EggLayTime")
-                .ifPresent(value -> this.eggTime = value);
     }
     @Override
-    public void addAdditionalSaveData(@NotNull ValueOutput p_28257_) {
+    public void addAdditionalSaveData(@NotNull CompoundTag p_28257_) {
         super.addAdditionalSaveData(p_28257_);
         p_28257_.putBoolean("IsChickenJockey", this.isChickenJockey);
         p_28257_.putInt("EggLayTime", this.eggTime);
     }
-    /*@Override
+    @Override
     public @NotNull SoundEvent getAmbientSound() {
-        return BuiltInRegistries.SOUND_EVENT.get(Identifier.withDefaultNamespace("entity.chicken.ambient"));
+        return Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace("entity.chicken.ambient")));
     }
 
     @Override
     public void playStepSound(@NotNull BlockPos pos, @NotNull BlockState blockIn) {
-        this.playSound(Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.get(Identifier.withDefaultNamespace("entity.chicken.step"))), 0.15f, 1);
+        this.playSound(Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace("entity.chicken.step"))), 0.15f, 1);
     }
 
     @Override
     public @NotNull SoundEvent getHurtSound(@NotNull DamageSource ds) {
-        return Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.get(Identifier.withDefaultNamespace("entity.chicken.hurt")));
+        return Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace("entity.chicken.hurt")));
     }
 
     @Override
     public @NotNull SoundEvent getDeathSound() {
-        return Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.get(Identifier.withDefaultNamespace("entity.chicken.death")));
-    }*/
+        return Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace("entity.chicken.death")));
+    }
+
     @Override
-    protected void actuallyHurt(ServerLevel level, DamageSource source, float amount) {
-        if (!canTakeDamage(source)) return;
-        super.actuallyHurt(level,source, amount);
-    }
-
-    private boolean canTakeDamage(DamageSource source) {
-        if (isFireLike(source))              return IS_FIRE;
-        if (isProjectileLike(source))       return IS_PROJECTILE;
-        if (isExplosionLike(source))        return IS_EXPLOSION;
-        if (source.is(DamageTypes.FALL))    return IS_FALL;
-        if (source.is(DamageTypes.DROWN))   return IS_DROWNING;
-        if (source.is(DamageTypes.FREEZE))  return IS_FREEZING;
-        if (source.is(DamageTypes.LIGHTNING_BOLT)) return IS_LIGHTNING;
-        if (isAny(source, DamageTypes.WITHER, DamageTypes.WITHER_SKULL)) return IS_WITHER;
-        return true;
-    }
-
-    /*@Override
     public boolean hurt(@NotNull DamageSource damageSource, float amount) {
         if (isFireLike(damageSource))              return IS_FIRE       && super.hurt(damageSource, amount);
         if (isProjectileLike(damageSource))       return IS_PROJECTILE && super.hurt(damageSource, amount);
@@ -345,7 +302,7 @@ public class BaseChickenEntity extends Chicken {
         if (isAny(damageSource, DamageTypes.WITHER, DamageTypes.WITHER_SKULL))
             return IS_WITHER     && super.hurt(damageSource, amount);
         return super.hurt(damageSource, amount);
-    }*/
+    }
 
     private static boolean isFireLike(DamageSource src) {
         return src.is(DamageTypeTags.IS_FIRE) || isAny(src,
@@ -369,20 +326,13 @@ public class BaseChickenEntity extends Chicken {
 
     public static void init() {
     }
-    public static AttributeSupplier.Builder createAttributes() {
+    public static AttributeSupplier.@NotNull Builder createAttributes() {
         AttributeSupplier.Builder builder = Mob.createMobAttributes();
         builder = builder.add(Attributes.MOVEMENT_SPEED, 0.3);
         builder = builder.add(Attributes.MAX_HEALTH, 3);
-        builder = builder.add(Attributes.TEMPT_RANGE, 18);
+        builder = builder.add(Attributes.ARMOR, 0);
+        builder = builder.add(Attributes.ATTACK_DAMAGE, 0);
+        builder = builder.add(Attributes.FOLLOW_RANGE, 16);
         return builder;
     }
-
-    /*public static AttributeSupplier.Builder createAttributes() {
-        return BaseChickenEntity.createLivingAttributes()
-                .add(Attributes.MOVEMENT_SPEED, 0.3d)
-                .add(Attributes.MAX_HEALTH, 3D)
-                .add(Attributes.ARMOR, 0d)
-                .add(Attributes.ATTACK_DAMAGE, 0D)
-                .add(Attributes.FOLLOW_RANGE, 16D);
-    }*/
 }

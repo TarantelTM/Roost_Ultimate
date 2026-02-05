@@ -6,15 +6,33 @@
     "678"
   ],
   "key": {
-    "0":  "minecraft:crafting_table",
-    "1":  "minecraft:glass_bottle",
-    "2":  "minecraft:crafting_table",
-    "3":  "minecraft:bone",
-    "4":  "chicken_roost:chicken_stick",
-    "5":  "minecraft:bone",
-    "6":  "minecraft:furnace",
-    "7":  "minecraft:glass_bottle",
-    "8":  "minecraft:furnace"
+    "0": {
+      "item": "minecraft:crafting_table"
+    },
+    "1": {
+      "item": "minecraft:glass_bottle"
+    },
+    "2": {
+      "item": "minecraft:crafting_table"
+    },
+    "3": {
+      "item": "minecraft:bone"
+    },
+    "4": {
+      "item": "chicken_roost:chicken_stick"
+    },
+    "5": {
+      "item": "minecraft:bone"
+    },
+    "6": {
+      "item": "minecraft:furnace"
+    },
+    "7": {
+      "item": "minecraft:glass_bottle"
+    },
+    "8": {
+      "item": "minecraft:furnace"
+    }
   },
   "result": {
     "id": "chicken_roost:soul_extractor",

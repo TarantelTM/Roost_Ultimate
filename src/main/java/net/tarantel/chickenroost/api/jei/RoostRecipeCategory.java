@@ -11,27 +11,20 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeHolderType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.tarantel.chickenroost.recipes.BreederRecipe;
-import net.tarantel.chickenroost.recipes.ModRecipes;
 import net.tarantel.chickenroost.recipes.RoostRecipe;
 import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("deprecation")
-public class RoostRecipeCategory implements IRecipeCategory<RecipeHolder<RoostRecipe>> {
-    public final static Identifier UID = ChickenRoostMod.ownresource("roost_output");
-    public final static Identifier ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
-    public final static Identifier SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
+public class RoostRecipeCategory implements IRecipeCategory<RoostRecipe> {
+    public final static ResourceLocation UID = ChickenRoostMod.ownresource("roost_output");
+    public final static ResourceLocation ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
+    public final static ResourceLocation SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
     public static final RecipeType<RoostRecipe> RECIPE_TYPE = RecipeType.create(ChickenRoostMod.MODID, "roost_output", RoostRecipe.class);
-    public static final IRecipeHolderType<RoostRecipe> TYPE = IRecipeHolderType.create(ModRecipes.ROOST_TYPE.get());
-
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawableAnimated progress;
@@ -42,9 +35,9 @@ public class RoostRecipeCategory implements IRecipeCategory<RecipeHolder<RoostRe
     private final IDrawableStatic arrowbacki;
 
     public RoostRecipeCategory(IGuiHelper helper) {
-        Identifier ARROW = ChickenRoostMod.ownresource("textures/screens/arrow.png");
+        ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/arrow.png");
         this.background = helper.createBlankDrawable(130, 20);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.ROOST));
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.ROOST.get()));
 
         IDrawableStatic progressDrawable = helper.drawableBuilder(ARROW, 0, 10, 38, 10).setTextureSize(38, 10).addPadding(4,0,47,0).build();
         this.slot_1 = helper.drawableBuilder(SLOT, 0, 18, 18, 18).setTextureSize(18, 18).addPadding(0,0,0,0).build();
@@ -59,8 +52,8 @@ public class RoostRecipeCategory implements IRecipeCategory<RecipeHolder<RoostRe
     }
 
     @Override
-    public IRecipeHolderType<RoostRecipe> getRecipeType() {
-        return TYPE;
+    public RecipeType<RoostRecipe> getRecipeType() {
+        return JEIPlugin.ROOST_TYPE;
     }
 
     @Override
@@ -69,27 +62,14 @@ public class RoostRecipeCategory implements IRecipeCategory<RecipeHolder<RoostRe
     }
 
     @Override
-    public int getWidth() {
-        return background.getWidth();
-    }
-
-    @Override
-    public int getHeight() {
-        return background.getHeight();
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
-    }
-
-    /*@Override
     public IDrawable getBackground() {
         return this.background;
-    }*/
+    }
+
 
     @Override
-    public void draw(RecipeHolder<RoostRecipe> recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(RoostRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
+                     double mouseY) {
 
         this.slot_1.draw(guiGraphics);
         this.slot_2.draw(guiGraphics);
@@ -98,14 +78,18 @@ public class RoostRecipeCategory implements IRecipeCategory<RecipeHolder<RoostRe
         this.progress.draw(guiGraphics);
     }
 
+    @Override
+    public IDrawable getIcon() {
+        return this.icon;
+    }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder iRecipeLayoutBuilder, RecipeHolder<RoostRecipe> recipe, IFocusGroup iFocusGroup) {
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-                        .addIngredients(recipe.value().getIngredients().get(0));
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT, 25, 1)
-                        .addIngredients(recipe.value().getIngredients().get(1));
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, RoostRecipe recipe, @NotNull IFocusGroup focuses) {
+        builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+                        .addIngredients(recipe.getIngredients().get(0));
+        builder.addSlot(RecipeIngredientRole.INPUT, 25, 1)
+                        .addIngredients(recipe.getIngredients().get(1));
 
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1).addItemStack(recipe.value().output());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1).addItemStack(recipe.output());
     }
 }

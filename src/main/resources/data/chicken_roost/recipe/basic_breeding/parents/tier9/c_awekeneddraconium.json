@@ -1,8 +1,14 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": "#c:seeds/tier9orup",
-  "left-chicken": "chicken_roost:c_awakeneddraconium",
-  "right-chicken": "chicken_roost:c_awakeneddraconium",
+  "food": {
+    "tag": "c:seeds/tier9orup"
+  },
+  "left-chicken": {
+    "item": "chicken_roost:c_awakeneddraconium"
+  },
+  "right-chicken": {
+    "item": "chicken_roost:c_awakeneddraconium"
+  },
   "time": 20,
   "output": {
     "item": "chicken_roost:c_awakeneddraconium"

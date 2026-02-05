@@ -1,7 +1,11 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": "#c:seeds/tier2orup",
-  "chicken": "chicken_roost:c_coal",
+  "food": { 
+    "tag": "c:seeds/tier2orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_coal"
+  },
   "time": 20,
   "output": {
     "item": "minecraft:coal"

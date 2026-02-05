@@ -6,7 +6,9 @@
     "   "
   ],
   "key": {
-    "0": "chicken_roost:wood_essence"
+    "0": {
+      "item": "chicken_roost:wood_essence"
+    }
   },
   "result": {
     "id": "minecraft:jungle_log",

@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +17,6 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -24,11 +24,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.tarantel.chickenroost.block.tile.BreederTile;
 import net.tarantel.chickenroost.block.tile.ModBlockEntities;
 import net.tarantel.chickenroost.block.tile.TrainerTile;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public class TrainerBlock extends BaseEntityBlock {
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final MapCodec<TrainerBlock> CODEC = simpleCodec(TrainerBlock::new);
 
 
@@ -48,43 +47,6 @@ public class TrainerBlock extends BaseEntityBlock {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
-
-    @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        dropFromTile(level, pos);
-        return super.playerWillDestroy(level, pos, state, player);
-    }
-
-    @Override
-    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-        // Wird von destroyBlock(...) benutzt
-        if (level instanceof Level l && !l.isClientSide()) {
-            dropFromTile(l, pos);
-        }
-        super.destroy(level, pos, state);
-    }
-
-    @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state,
-                              @Nullable BlockEntity be, ItemStack tool) {
-        dropFromTile(level, pos);
-        super.playerDestroy(level, player, pos, state, be, tool);
-    }
-
-    private void dropFromTile(Level level, BlockPos pos) {
-        if (level.isClientSide()) return;
-
-        BlockEntity be = level.getBlockEntity(pos);
-        if (!(be instanceof TrainerTile tile)) return;
-
-        if (tile.hasDropped()) return; // 🔥 extrem wichtig
-        tile.markDropped();
-
-        tile.drops();
-    }
-
-
 
     private static final VoxelShape SHAPE =
             Block.box(0, 0, 0, 16, 16, 16);
@@ -136,7 +98,7 @@ public class TrainerBlock extends BaseEntityBlock {
         for (int i = 0; i < slots; i++) {
             ItemStack itemStack = itemContainerContents.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                tile.inventory.setStackDirect(i, itemStack);
+                tile.itemHandler.setStackInSlot(i, itemStack);
             }
         }
     }
@@ -150,10 +112,19 @@ public class TrainerBlock extends BaseEntityBlock {
 
     @Override
     public @NotNull RenderShape getRenderShape(@NotNull BlockState blockState) {
-        return RenderShape.INVISIBLE;
+        return RenderShape.MODEL;
     }
 
-
+    @Override
+    public void onRemove(BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        if (pState.getBlock() != pNewState.getBlock()) {
+            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+            if (blockEntity instanceof TrainerTile) {
+                ((TrainerTile) blockEntity).drops();
+            }
+        }
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+    }
     @Override
     public void tick(@NotNull BlockState blockstate, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource random) {
         super.tick(blockstate, world, pos, random);
@@ -173,10 +144,10 @@ public class TrainerBlock extends BaseEntityBlock {
             }
         }
 
-        return InteractionResult.SUCCESS;
+        return InteractionResult.PASS;
     }
     @Override
-    protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
+    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
             ServerPlayer theplayer = (ServerPlayer) player;
@@ -187,7 +158,7 @@ public class TrainerBlock extends BaseEntityBlock {
             }
         }
 
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.sidedSuccess(true);
     }
 
     @Nullable

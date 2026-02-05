@@ -6,8 +6,12 @@
     }
   ],
   "type": "chicken_roost:roost_output",
-  "food": "#c:seeds/tier6orup",
-  "chicken": "chicken_roost:c_emeradiccrystal",
+  "food": { 
+    "tag": "c:seeds/tier6orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_emeradiccrystal"
+  },
   "time": 20,
   "output": {
     "item": "actuallyadditions:emeradic_crystal"

@@ -1,15 +1,33 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    "minecraft:nether_star",
-    "chicken_roost:chicken_essence_tier_9",
-    "minecraft:nether_star",
-    "chicken_roost:chicken_essence_tier_9",
-    "chicken_roost:chicken_food_tier_8",
-    "chicken_roost:chicken_essence_tier_9",
-    "minecraft:nether_star",
-    "chicken_roost:chicken_essence_tier_9",
-    "minecraft:nether_star"
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "item": "chicken_roost:chicken_essence_tier_9"
+    },
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "item": "chicken_roost:chicken_essence_tier_9"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_8"
+    },
+    {
+      "item": "chicken_roost:chicken_essence_tier_9"
+    },
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "item": "chicken_roost:chicken_essence_tier_9"
+    },
+    {
+      "item": "minecraft:nether_star"
+    }
   ],
   "result": {
     "id": "chicken_roost:chicken_food_tier_9",

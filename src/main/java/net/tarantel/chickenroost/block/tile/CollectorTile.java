@@ -1,6 +1,5 @@
 package net.tarantel.chickenroost.block.tile;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -22,21 +21,18 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
+import net.tarantel.chickenroost.block.blocks.RoostBlock;
 import net.tarantel.chickenroost.handler.CollectorHandler;
-import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.LongStream;
 
 
 public class CollectorTile extends BlockEntity implements MenuProvider {
@@ -46,7 +42,7 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
         protected void onContentsChanged(int slot) {
             setChanged();
             assert level != null;
-            if (!level.isClientSide()) {
+            if (!level.isClientSide) {
                 level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
             }
         }
@@ -70,17 +66,17 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
         if (active) this.activeRoosts.add(pos);
         else this.activeRoosts.remove(pos);
         setChanged();
-        if (level != null && !level.isClientSide()) {
+        if (level != null && !level.isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
     public int getCollectRange() { return this.collectRange; }
     public void setCollectRange(int r) {
-        int nr = Math.max(5, Math.min(Config.collectorrange.get(), r));
+        int nr = Math.max(5, Math.min(30, r));
         if (nr != this.collectRange) {
             this.collectRange = nr;
             setChanged();
-            if (level != null && !level.isClientSide()) {
+            if (level != null && !level.isClientSide) {
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
             }
         }
@@ -121,40 +117,27 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
 
 
     @Override
-    protected void saveAdditional(ValueOutput out) {
-        super.saveAdditional(out);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
+        nbt.put("inventory", itemHandler.serializeNBT(lookup));
 
-        itemHandler.serialize(out);
-
-        long[] roosts = this.activeRoosts.stream()
-                .mapToLong(BlockPos::asLong)
-                .toArray();
-
-        out.store("collector.roosts", Codec.LONG_STREAM, LongStream.of(roosts));
-        out.putInt("collector.range", this.collectRange);
+        long[] arr = this.activeRoosts.stream().mapToLong(BlockPos::asLong).toArray();
+        nbt.putLongArray("collector.roosts", arr);
+        nbt.putInt("collector.range", this.collectRange);
+        super.saveAdditional(nbt, lookup);
     }
 
     @Override
-    protected void loadAdditional(ValueInput in) {
-        super.loadAdditional(in);
-
-        itemHandler.deserialize(in);
+    public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider lookup) {
+        super.loadAdditional(nbt, lookup);
+        itemHandler.deserializeNBT(lookup, nbt.getCompound("inventory"));
 
         this.activeRoosts.clear();
+        long[] arr = nbt.getLongArray("collector.roosts");
+        for (long l : arr) this.activeRoosts.add(BlockPos.of(l));
 
-        in.read("collector.roosts", Codec.LONG_STREAM)
-                .ifPresent(stream ->
-                        stream.forEach(l -> this.activeRoosts.add(BlockPos.of(l)))
-                );
-
-        this.collectRange = Math.max(
-                5,
-                Math.min(30, in.getIntOr("collector.range", 5))
-        );
-
+        this.collectRange = Math.max(5, Math.min(30, nbt.getInt("collector.range")));
         pruneMissingCollectorTargets();
     }
-
 
 
     private static void moveOneStack(IItemHandler from, IItemHandler to) {
@@ -210,7 +193,7 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
             if (be == null) continue;
 
             IItemHandler sourceInv =
-                    (IItemHandler) level.getCapability(Capabilities.Item.BLOCK, pos, null);
+                    level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
 
             if (sourceInv == null) continue;
 
@@ -236,23 +219,11 @@ public class CollectorTile extends BlockEntity implements MenuProvider {
 
         return itemHandler;
     }
-
-    private boolean dropped = false;
-
-    public boolean hasDropped() {
-        return dropped;
-    }
-
-    public void markDropped() {
-        this.dropped = true;
-    }
-
-
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         SimpleContainer block = new SimpleContainer(1);
 
-        ItemStack itemStack = new ItemStack(ModBlocks.COLLECTOR);
+        ItemStack itemStack = new ItemStack(ModBlocks.COLLECTOR.get());
         NonNullList<ItemStack> items = inventory.getItems();
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             items.set(i, itemHandler.getStackInSlot(i));

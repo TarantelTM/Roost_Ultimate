@@ -1,9 +1,0 @@
-{
-  "model": {
-    "type": "minecraft:special",
-    "base": "chicken_roost:item/trainer",
-    "model": {
-      "type": "geckolib:geckolib"
-    }
-  }
-}

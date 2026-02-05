@@ -1,7 +1,11 @@
 {
   "type": "chicken_roost:roost_output",
-  "food": "#c:seeds/tier9orup",
-  "chicken": "chicken_roost:c_titanium",
+  "food": { 
+    "tag": "c:seeds/tier9orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_titanium"
+    },
   "time": 20,
   "output": {
     "item": "chicken_roost:ingot_titanum"

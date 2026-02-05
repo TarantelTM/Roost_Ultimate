@@ -2,20 +2,14 @@ package net.tarantel.chickenroost.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CraftingScreen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.tarantel.chickenroost.ChickenRoostMod;
@@ -37,11 +31,11 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerHandler> {
         this.imageHeight = 166;
     }
     private boolean colorblindMode = Config.trainer_cb.get();
-    private static final Identifier GUI = ChickenRoostMod.ownresource("textures/screens/trainer.png");
-    private static final Identifier ARROW = ChickenRoostMod.ownresource("textures/screens/newarrow.png");
-    private static final Identifier ARROW_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrow.png");
-    private static final Identifier GUI_VANILLA = ChickenRoostMod.ownresource("textures/screens/trainer_vanilla.png");
-    private static final Identifier ARROWBACK_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
+    private static final ResourceLocation GUI = ChickenRoostMod.ownresource("textures/screens/trainer.png");
+    private static final ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/newarrow.png");
+    private static final ResourceLocation ARROW_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrow.png");
+    private static final ResourceLocation GUI_VANILLA = ChickenRoostMod.ownresource("textures/screens/trainer_vanilla.png");
+    private static final ResourceLocation ARROWBACK_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
     private EditBox nameField;
     private String enteredName = "TRAINER";
     private Button nameButton;
@@ -54,17 +48,15 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerHandler> {
     @Override
     protected void init() {
         super.init();
-        this.leftPos = (this.width - this.imageWidth) / 2;
-        this.topPos = (this.height - this.imageHeight) / 2;
+
         this.output = Button.builder(
                         makeOutputText(),
                         button -> {
                             boolean newValue = !this.menu.blockEntity.isAutoOutputEnabled();
                             this.menu.blockEntity.setAutoOutputEnabled(newValue);
                             button.setMessage(makeOutputText());
-                            Minecraft.getInstance()
-                                    .getConnection()
-                                    .send(new SetAutoOutputPayload(
+                            PacketDistributor.sendToServer(
+                                    new SetAutoOutputPayload(
                                             this.menu.blockEntity.getBlockPos(),
                                             newValue
                                     )
@@ -168,39 +160,27 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerHandler> {
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics g, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull GuiGraphics ms, float partialTicks, int gx, int gy) {
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        if (colorblindMode) {
+            RenderSystem.setShaderTexture(0, GUI_VANILLA);
+            ms.blit(GUI_VANILLA, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            ms.blit(ARROW, this.leftPos + 54, this.topPos + 31, 0, 0, getScaledProgress(), 33, 54, 33);
 
-        Identifier bg = colorblindMode ? GUI_VANILLA : GUI;
+        } else {
+            RenderSystem.setShaderTexture(0, GUI);
+            ms.blit(GUI, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            ms.blit(ARROW, this.leftPos + 54, this.topPos + 31, 0, 0, getScaledProgress(), 33, 54, 33);
+        }
 
-        // Hintergrund
-        g.blit(
-                RenderPipelines.GUI_TEXTURED,
-                bg,
-                this.leftPos,
-                this.topPos,
-                0, 0,
-                this.imageWidth,
-                this.imageHeight,
-                this.imageWidth,
-                this.imageHeight
-        );
 
-        // Fortschrittspfeil
-        g.blit(
-                RenderPipelines.GUI_TEXTURED,
-                ARROW,
-                this.leftPos + 54,
-                this.topPos + 31,
-                0, 0,
-                getScaledProgress(),
-                33,
-                54,
-                33
-        );
 
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        RenderSystem.disableBlend();
         colorblindMode = Config.trainer_cb.get();
     }
-
 
     @Override
     public void render(@NotNull GuiGraphics ms, int mouseX, int mouseY, float partialTicks) {
@@ -209,36 +189,37 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerHandler> {
         this.renderTooltip(ms, mouseX, mouseY);
     }
 
-
     @Override
-    protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         Component label = Component.translatable("roost_chicken.interface.level");
 
-        // Statt Skalierung: Position direkt anpassen
         int x = 122;
         int y = -21;
 
-        g.drawString(
+        float scale = 1.5f;
+
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().scale(scale, scale, 1.0f);
+
+        guiGraphics.drawString(
                 this.font,
                 label,
-                x,
-                y,
-                0xFFFFFF,
+                (int)(x / scale),
+                (int)(y / scale),
+                0xffffff,
                 false
         );
+
+        guiGraphics.pose().popPose();
     }
-
-
 
     public boolean isNameFieldFocused() {
         return this.nameField != null && this.nameField.isFocused();
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-
-        // ESC → Fokus lösen
-        if (event.isEscape()) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == InputConstants.KEY_ESCAPE) {
             if (this.nameField != null && this.nameField.isFocused()) {
                 this.nameField.setFocused(false);
                 return true;
@@ -249,92 +230,72 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerHandler> {
             }
         }
 
-        // ENTER → bestätigen
-        if (event.isConfirmation()) {
+        if (keyCode == InputConstants.KEY_RETURN || keyCode == 257 || keyCode == 335) {
 
             if (this.nameField != null && this.nameField.isFocused()) {
                 this.enteredName = this.nameField.getValue().trim();
                 if (!this.enteredName.isEmpty()) {
-                    Minecraft.getInstance()
-                            .getConnection()
-                            .send(new SetNamePayload(
-                                    this.menu.getBlockEntity().getBlockPos(),
-                                    this.enteredName
-                            ));
+                    PacketDistributor.sendToServer(
+                            new SetNamePayload(this.menu.getBlockEntity().getBlockPos(), this.enteredName)
+                    );
                 }
                 this.nameField.setFocused(false);
                 return true;
             }
 
+
             if (this.levelField != null && this.levelField.isFocused()) {
                 String txt = this.levelField.getValue().trim();
                 int lvl = txt.isEmpty() ? 0 : Integer.parseInt(txt);
-
                 this.menu.blockEntity.setAutoOutputLevelClient(lvl);
-
-                Minecraft.getInstance()
-                        .getConnection()
-                        .send(new SetTrainerLevelPayload(
-                                this.menu.getBlockEntity().getBlockPos(),
-                                lvl
-                        ));
+                PacketDistributor.sendToServer(
+                        new SetTrainerLevelPayload(
+                                this.menu.getBlockEntity().getBlockPos(), lvl
+                        )
+                );
 
                 this.levelField.setFocused(false);
                 return true;
             }
         }
 
-        // Weitergabe an aktive EditBox
+
         if (this.nameField != null && this.nameField.isFocused()) {
-            this.nameField.keyPressed(event);
-            return true;
-        }
-
-        if (this.levelField != null && this.levelField.isFocused()) {
-            this.levelField.keyPressed(event);
-            return true;
-        }
-
-        return super.keyPressed(event);
-    }
-
-
-    @Override
-    public boolean charTyped(CharacterEvent codePoint) {
-        if (this.nameField != null && this.nameField.isFocused()) {
-            if (this.nameField.charTyped(codePoint)) return true;
+            if (this.nameField.keyPressed(keyCode, scanCode, modifiers)) return true;
             return true;
         }
         if (this.levelField != null && this.levelField.isFocused()) {
-            if (this.levelField.charTyped(codePoint)) return true;
+            if (this.levelField.keyPressed(keyCode, scanCode, modifiers)) return true;
             return true;
         }
-        return super.charTyped(codePoint);
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (this.nameField != null && this.nameField.isFocused()) {
+            if (this.nameField.charTyped(codePoint, modifiers)) return true;
+            return true;
+        }
+        if (this.levelField != null && this.levelField.isFocused()) {
+            if (this.levelField.charTyped(codePoint, modifiers)) return true;
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
+    }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        double mouseX = event.x();
-        double mouseY = event.y();
-
-        if (this.nameField != null
-                && this.nameField.isFocused()
-                && !this.nameField.isMouseOver(mouseX, mouseY)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.nameField != null && this.nameField.isFocused() && !this.nameField.isMouseOver(mouseX, mouseY)) {
             this.nameField.setFocused(false);
             return true;
         }
-
-        if (this.levelField != null
-                && this.levelField.isFocused()
-                && !this.levelField.isMouseOver(mouseX, mouseY)) {
+        if (this.levelField != null && this.levelField.isFocused() && !this.levelField.isMouseOver(mouseX, mouseY)) {
             this.levelField.setFocused(false);
             return true;
         }
-
-        return super.mouseClicked(event, isDoubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
-
 
 }

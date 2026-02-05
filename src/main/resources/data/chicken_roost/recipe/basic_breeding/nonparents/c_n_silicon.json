@@ -1,8 +1,14 @@
 {
   "type": "chicken_roost:basic_breeding",
-  "food": "#c:seeds/tier1orup",
-  "left-chicken": "chicken_roost:c_clay",
-  "right-chicken": "chicken_roost:c_sand",
+  "food": {
+    "tag": "c:seeds/tier1orup"
+  },
+  "left-chicken": {
+    "item": "chicken_roost:c_clay"
+  },
+  "right-chicken": {
+    "item": "chicken_roost:c_sand"
+  },
   "time": 20,
   "output": {
     "item": "chicken_roost:c_silicon"

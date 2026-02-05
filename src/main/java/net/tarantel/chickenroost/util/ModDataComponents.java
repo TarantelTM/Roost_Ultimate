@@ -19,10 +19,7 @@ public class ModDataComponents {
 
     public static final DeferredRegister<DataComponentType<?>> COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, ChickenRoostMod.MODID);
     public static final DeferredRegister.DataComponents DATA_COMPONENTS =
-            DeferredRegister.createDataComponents(
-                    Registries.DATA_COMPONENT_TYPE,
-                    ChickenRoostMod.MODID
-            );
+            DeferredRegister.createDataComponents(ChickenRoostMod.MODID);
 
     public static void register(IEventBus bus) {
         COMPONENTS.register(bus);
@@ -30,7 +27,7 @@ public class ModDataComponents {
     }
 
     public static final Supplier<DataComponentType<ChickenStats>> CHICKEN_STATS =
-            COMPONENTS.register("chicken_stats",
+            DATA_COMPONENTS.register("chicken_stats",
                     () -> DataComponentType.<ChickenStats>builder()
                             .persistent(ChickenStats.CODEC)
                             .build()

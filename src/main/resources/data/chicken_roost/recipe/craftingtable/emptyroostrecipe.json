@@ -1,13 +1,35 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "000",
-    "0 0",
-    "111"
+    "012",
+    "3 5",
+    "678"
   ],
   "key": {
-    "0": "#minecraft:planks",
-    "1": "minecraft:composter"
+    "0": {
+      "tag": "minecraft:planks"
+    },
+    "1": {
+      "tag": "minecraft:planks"
+    },
+    "2": {
+      "tag": "minecraft:planks"
+    },
+    "3": {
+      "tag": "minecraft:planks"
+    },
+    "5": {
+      "tag": "minecraft:planks"
+    },
+    "6": {
+      "item": "minecraft:composter"
+    },
+    "7": {
+      "item": "minecraft:composter"
+    },
+    "8": {
+      "item": "minecraft:composter"
+    }
   },
   "result": {
     "id": "chicken_roost:roost",

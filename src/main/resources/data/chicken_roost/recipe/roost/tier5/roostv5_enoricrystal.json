@@ -6,8 +6,12 @@
     }
   ],
   "type": "chicken_roost:roost_output",
-  "food": "#c:seeds/tier5orup",
-  "chicken": "chicken_roost:c_enoricrystal",
+  "food": { 
+    "tag": "c:seeds/tier5orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_enoricrystal"
+  },
   "time": 20,
   "output": {
     "item": "actuallyadditions:enori_crystal"

@@ -43,8 +43,8 @@ public class ChickenBlockItem extends BlockItem {
     public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
         InteractionResult interactionresult = this.place(new BlockPlaceContext(context));
         if (!interactionresult.consumesAction() && context.getItemInHand().has(DataComponents.FOOD)) {
-            InteractionResult interactionresult1 = super.use(context.getLevel(), Objects.requireNonNull(context.getPlayer()), context.getHand());
-            return interactionresult1 == InteractionResult.CONSUME ? InteractionResult.CONSUME : interactionresult1;
+            InteractionResult interactionresult1 = super.use(context.getLevel(), Objects.requireNonNull(context.getPlayer()), context.getHand()).getResult();
+            return interactionresult1 == InteractionResult.CONSUME ? InteractionResult.CONSUME_PARTIAL : interactionresult1;
         } else {
             return interactionresult;
         }
@@ -85,7 +85,7 @@ public class ChickenBlockItem extends BlockItem {
                     level.playSound(player, blockpos, this.getPlaceSound(blockstate1, level, blockpos, Objects.requireNonNull(context.getPlayer())), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                     level.gameEvent(GameEvent.BLOCK_PLACE, blockpos, Context.of(player, blockstate1));
                     itemstack.consume(1, player);
-                    return InteractionResult.SUCCESS;
+                    return InteractionResult.sidedSuccess(level.isClientSide);
                 }
             }
         }
@@ -143,7 +143,7 @@ public class ChickenBlockItem extends BlockItem {
         return (!this.mustSurvive() || state.canSurvive(context.getLevel(), context.getClickedPos())) && context.getLevel().isUnobstructed(state, context.getClickedPos(), collisioncontext);
     }
 
-    /*public static boolean updateCustomBlockEntityTag(Level level, @Nullable Player player, @NotNull BlockPos pos, @NotNull ItemStack stack) {
+    public static boolean updateCustomBlockEntityTag(Level level, @Nullable Player player, @NotNull BlockPos pos, @NotNull ItemStack stack) {
         MinecraftServer minecraftserver = level.getServer();
         if (minecraftserver == null) {
             return false;
@@ -152,7 +152,7 @@ public class ChickenBlockItem extends BlockItem {
             if (!customdata.isEmpty()) {
                 BlockEntity blockentity = level.getBlockEntity(pos);
                 if (blockentity != null) {
-                    if (!level.isClientSide() && blockentity.onlyOpCanSetNbt() && (player == null || !player.canUseGameMasterBlocks())) {
+                    if (!level.isClientSide && blockentity.onlyOpCanSetNbt() && (player == null || !player.canUseGameMasterBlocks())) {
                         return false;
                     }
 
@@ -162,16 +162,16 @@ public class ChickenBlockItem extends BlockItem {
 
             return false;
         }
-    }*/
+    }
 
-    /*public @NotNull String getDescriptionId() {
+    public @NotNull String getDescriptionId() {
         return this.getBlock().getDescriptionId();
-    }*/
+    }
 
-    /*public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
         this.getBlock().appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-    }*/
+    }
 
     public @NotNull Block getBlock() {
         return this.block;

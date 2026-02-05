@@ -1,15 +1,33 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-      "chicken_roost:chicken_essence_tier_6",
-      "chicken_roost:chicken_essence_tier_6",
-      "chicken_roost:chicken_essence_tier_6",
-      "chicken_roost:chicken_food_tier_5",
-      "chicken_roost:chicken_food_tier_5",
-      "chicken_roost:chicken_food_tier_5",
-      "chicken_roost:chicken_food_tier_5",
-      "chicken_roost:chicken_food_tier_5",
-      "chicken_roost:chicken_food_tier_5"
+    {
+      "item": "chicken_roost:chicken_essence_tier_6"
+    },
+    {
+      "item": "chicken_roost:chicken_essence_tier_6"
+    },
+    {
+      "item": "chicken_roost:chicken_essence_tier_6"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_5"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_5"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_5"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_5"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_5"
+    },
+    {
+      "item": "chicken_roost:chicken_food_tier_5"
+    }
   ],
   "result": {
     "id": "chicken_roost:chicken_food_tier_6",

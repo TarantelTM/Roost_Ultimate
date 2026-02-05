@@ -1,21 +1,17 @@
 package net.tarantel.chickenroost.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.handler.BreederHandler;
 import net.tarantel.chickenroost.networking.SetAutoOutputPayload;
@@ -24,119 +20,104 @@ import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
 
 public class BreederScreen extends AbstractContainerScreen<BreederHandler> {
-
-    private static final Identifier GUI =
-            ChickenRoostMod.ownresource("textures/screens/breeder.png");
-    private static final Identifier GUI_VANILLA =
-            ChickenRoostMod.ownresource("textures/screens/breeder_vanilla.png");
-    private static final Identifier ARROW =
-            ChickenRoostMod.ownresource("textures/screens/newarrow.png");
-
-    private EditBox nameField;
-    private Button outputButton;
-
-    private boolean colorblindMode = Config.breeder_cb.get();
-
-    public BreederScreen(BreederHandler menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
+    public BreederScreen(BreederHandler menu, Inventory inventory, Component component) {
+        super(menu, inventory, component);
         this.imageWidth = 176;
         this.imageHeight = 166;
     }
 
-    /* ------------------------------------------------------------ */
+    private boolean colorblindMode = Config.breeder_cb.get();
+
+
+    private static final ResourceLocation GUI = ChickenRoostMod.ownresource("textures/screens/breeder.png");
+
+    private static final ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/newarrow.png");
+    private static final ResourceLocation ARROW_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrow.png");
+    private static final ResourceLocation GUI_VANILLA = ChickenRoostMod.ownresource("textures/screens/breeder_vanilla.png");
+    private static final ResourceLocation ARROWBACK_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
+    private EditBox nameField;
+    private String enteredName = "BREEDER";
+    private Button nameButton;
+    private Button output;
+
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+
+        if (output != null) {
+            output.setMessage(makeOutputText());
+        }
+    }
 
     @Override
     protected void init() {
         super.init();
 
-        this.leftPos = (this.width - this.imageWidth) / 2;
-        this.topPos = (this.height - this.imageHeight) / 2;
-
-        /* ---------- Auto Output Toggle ---------- */
-        this.outputButton = Button.builder(
+        int x = this.leftPos;
+        int y = this.topPos - 17;
+        this.output = Button.builder(
                         makeOutputText(),
-                        btn -> {
-                            boolean newValue = !menu.getBlockEntity().isAutoOutputEnabled();
-
-                            // ✅ SEND PAYLOAD (server authoritative)
-                            ClientPacketDistributor.sendToServer(
-                                    new SetAutoOutputPayload(
-                                            menu.getBlockEntity().getBlockPos(),
-                                            newValue
-                                    )
+                        button -> {
+                            boolean newValue = !this.menu.blockEntity.isAutoOutputEnabled();
+                            this.menu.blockEntity.setAutoOutputEnabled(newValue);
+                            button.setMessage(makeOutputText());
+                            PacketDistributor.sendToServer(
+                                    new SetAutoOutputPayload(this.menu.blockEntity.getBlockPos(), newValue)
                             );
-
-                            // Optimistic UI update (actual state comes back via SyncAutoOutputPayload)
-                            btn.setMessage(makeOutputText());
                         }
                 )
                 .pos(this.leftPos + 13, this.topPos - 17)
                 .size(70, 13)
-                .tooltip(Tooltip.create(
-                        Component.translatable("roost_chicken.interface.output.info")))
                 .build();
 
-        this.addRenderableWidget(this.outputButton);
+        this.addRenderableWidget(this.output);
+        this.output.setTooltip(Tooltip.create(Component.translatable("roost_chicken.interface.output.info")));
 
-        /* ---------- Colorblind Toggle ---------- */
-        this.addRenderableWidget(
-                Button.builder(Component.literal("V"), btn -> {
-                            colorblindMode = !colorblindMode;
-                            Config.breeder_cb.set(colorblindMode);
-                            Config.breeder_cb.save();
-                        })
-                        .pos(this.leftPos, this.topPos - 17)
-                        .size(13, 13)
-                        .tooltip(Tooltip.create(
-                                Component.translatable("roost_chicken.interface.uiswitch.info")))
-                        .build()
-        );
 
-        /* ---------- Name Button ---------- */
+        Button b = Button.builder(Component.literal("V"), button -> {
+            if(colorblindMode){
+                Config.breeder_cb.set(false);
+                Config.breeder_cb.save();
+            }
+            else {
+                Config.breeder_cb.set(true);
+                Config.breeder_cb.save();
+            }
+        }).pos(this.leftPos, this.topPos - 17).size(13, 13).build();
+        b.setTooltip(Tooltip.create(Component.translatable("roost_chicken.interface.uiswitch.info")));
+
+        this.addRenderableWidget(b);
+
         int nameBtnX = this.leftPos + 20 + 2 + 61;
         int nameBtnY = this.topPos - 17;
+        this.nameButton = Button.builder(Component.translatable("roost_chicken.interface.name"), btn -> {
 
-        this.addRenderableWidget(
-                Button.builder(
-                                Component.translatable("roost_chicken.interface.name"),
-                                btn -> openNameField(nameBtnX)
-                        )
-                        .pos(nameBtnX, nameBtnY)
-                        .size(40, 13)
-                        .tooltip(Tooltip.create(
-                                Component.translatable("roost_chicken.interface.setname")))
-                        .build()
-        );
+            int fieldX = nameBtnX + 40 + 2;
+            int fieldY = this.topPos - 21;
+            if (this.nameField == null) {
+                this.nameField = new EditBox(
+                        this.font,
+                        fieldX, fieldY,
+                        60, 20,
+                        Component.translatable("roost_chicken.interface.name")
+                                .withStyle(style -> style.withColor(0xFFFFFF))
+                );
+                this.nameField.setMaxLength(32);
+                String currentname = this.menu.blockEntity.getCustomName();
+                this.nameField.setValue(currentname);
+                this.nameField.setFocused(true);
+                this.addRenderableWidget(this.nameField);
+            } else {
+                this.nameField.setFocused(true);
+            }
+        }).pos(nameBtnX, nameBtnY).size(40, 13).build();
+        this.nameButton.setTooltip(Tooltip.create(Component.translatable("roost_chicken.interface.setname")));
+        this.addRenderableWidget(this.nameButton);
     }
-
-    /* ------------------------------------------------------------ */
-
-    private void openNameField(int nameBtnX) {
-        if (this.nameField != null) {
-            this.nameField.setFocused(true);
-            return;
-        }
-
-        this.nameField = new EditBox(
-                this.font,
-                nameBtnX + 42,
-                this.topPos - 21,
-                60,
-                20,
-                Component.translatable("roost_chicken.interface.name")
-        );
-
-        this.nameField.setMaxLength(32);
-        this.nameField.setValue(menu.getBlockEntity().getCustomName());
-        this.nameField.setFocused(true);
-
-        this.addRenderableWidget(this.nameField);
-    }
-
-    /* ------------------------------------------------------------ */
 
     private Component makeOutputText() {
-        boolean enabled = menu.getBlockEntity().isAutoOutputEnabled();
+        boolean enabled = this.menu.blockEntity.isAutoOutputEnabled();
 
         Component state = Component.translatable(
                 enabled
@@ -150,101 +131,100 @@ public class BreederScreen extends AbstractContainerScreen<BreederHandler> {
         );
     }
 
-    /* ------------------------------------------------------------ */
-
     @Override
-    protected void containerTick() {
-        super.containerTick();
-        if (outputButton != null) {
-            outputButton.setMessage(makeOutputText());
-        }
-    }
-
-    /* ------------------------------------------------------------ */
-
-    @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean dbl) {
-        if (nameField != null && nameField.isFocused()) {
-            if (!nameField.isMouseOver(event.x(), event.y())) {
-                nameField.setFocused(false);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.nameField != null && this.nameField.isFocused()) {
+            if (!this.nameField.isMouseOver(mouseX, mouseY)) {
+                this.nameField.setFocused(false);
                 return true;
             }
         }
-        return super.mouseClicked(event, dbl);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        if (nameField != null && nameField.isFocused()) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.nameField != null && this.nameField.isFocused()) {
 
-            if (event.isEscape()) {
-                nameField.setFocused(false);
+            if (keyCode == InputConstants.KEY_ESCAPE) {
+                this.nameField.setFocused(false);
                 return true;
             }
 
-            if (event.isConfirmation()) {
-                String name = nameField.getValue().trim();
-                if (!name.isEmpty()) {
-                    ClientPacketDistributor.sendToServer(
-                            new SetNamePayload(
-                                    menu.getBlockEntity().getBlockPos(),
-                                    name
-                            )
+
+            if (keyCode == InputConstants.KEY_RETURN || keyCode == 257 || keyCode == 335) {
+                this.enteredName = this.nameField.getValue().trim();
+                if (!this.enteredName.isEmpty()) {
+                    PacketDistributor.sendToServer(
+                            new SetNamePayload(this.menu.getBlockEntity().getBlockPos(), this.enteredName)
                     );
                 }
-                nameField.setFocused(false);
+                this.nameField.setFocused(false);
                 return true;
             }
 
-            nameField.keyPressed(event);
+
+            if (this.nameField.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+
+
             return true;
         }
 
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public boolean charTyped(CharacterEvent event) {
-        if (nameField != null && nameField.isFocused()) {
-            nameField.charTyped(event);
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (this.nameField != null && this.nameField.isFocused()) {
+
+            if (this.nameField.charTyped(codePoint, modifiers)) {
+                return true;
+            }
             return true;
         }
-        return super.charTyped(event);
+        return super.charTyped(codePoint, modifiers);
     }
 
-    /* ------------------------------------------------------------ */
 
+    private int getScaledProgress() {
+        boolean colorblindMode = Config.breeder_cb.get();
+        int arrowWidth = 54;
+        return this.menu.getScaledProgress(arrowWidth);
+    }
     @Override
-    protected void renderBg(@NotNull GuiGraphics g, float partial, int mx, int my) {
-        Identifier bg = colorblindMode ? GUI_VANILLA : GUI;
+    protected void renderBg(@NotNull GuiGraphics ms, float partialTicks, int gx, int gy) {
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        if (colorblindMode) {
+            RenderSystem.setShaderTexture(0, GUI_VANILLA);
+            ms.blit(GUI_VANILLA, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            ms.blit(ARROW, this.leftPos + 46, this.topPos + 35, 0, 0, getScaledProgress(), 33, 54, 33);
 
-        g.blit(RenderPipelines.GUI_TEXTURED,
-                bg,
-                leftPos,
-                topPos,
-                0, 0,
-                imageWidth,
-                imageHeight,
-                imageWidth,
-                imageHeight
-        );
+        } else {
+            RenderSystem.setShaderTexture(0, GUI);
+            ms.blit(GUI, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            ms.blit(ARROW, this.leftPos + 46, this.topPos + 35, 0, 0, getScaledProgress(), 33, 54, 33);
+        }
 
-        g.blit(RenderPipelines.GUI_TEXTURED,
-                ARROW,
-                leftPos + 46,
-                topPos + 35,
-                0, 0,
-                menu.getScaledProgress(54),
-                33,
-                54,
-                33
-        );
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        RenderSystem.disableBlend();
+        colorblindMode = Config.breeder_cb.get();
     }
-
     @Override
-    public void render(@NotNull GuiGraphics g, int mx, int my, float partial) {
-        renderBackground(g, mx, my, partial);
-        super.render(g, mx, my, partial);
-        renderTooltip(g, mx, my);
+    public void render(@NotNull GuiGraphics  ms, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(ms, mouseX, mouseY, partialTicks);
+        super.render(ms, mouseX, mouseY, partialTicks);
+        this.renderTooltip(ms, mouseX, mouseY);
     }
+    @Override
+    protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    }
+
+    public boolean isNameFieldFocused() {
+        return this.nameField != null && this.nameField.isFocused();
+    }
+
 }

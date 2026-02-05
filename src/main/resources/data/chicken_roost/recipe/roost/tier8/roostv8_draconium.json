@@ -6,8 +6,12 @@
     }
   ],
   "type": "chicken_roost:roost_output",
-  "food": "#c:seeds/tier8orup",
-  "chicken": "chicken_roost:c_draconium",
+  "food": { 
+    "tag": "c:seeds/tier8orup"
+  },
+  "chicken": {
+      "item": "chicken_roost:c_draconium"
+    },
   "time": 20,
   "output": {
     "item": "draconicevolution:draconium_ingot"

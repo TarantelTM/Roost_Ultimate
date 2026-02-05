@@ -3,33 +3,26 @@ package net.tarantel.chickenroost.item.base;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
 import net.tarantel.chickenroost.util.Config;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class CropBlockItem extends ChickenSeedBase {
+    private final int currentmaxxpp;
 
-        private final Supplier<Block> blockSupplier;
-        private final int currentmaxxpp;
+    public CropBlockItem(Block p_41579_, Properties p_41580_, int currentmaxxp) {
+        super(p_41579_, p_41580_, currentmaxxp);
+        currentmaxxpp = currentmaxxp;
+    }
 
-        public CropBlockItem(Supplier<Block> blockSupplier, Properties properties, int currentmaxxp) {
-            super(blockSupplier.get(), properties, currentmaxxp);
-            this.blockSupplier = blockSupplier;
-            this.currentmaxxpp = currentmaxxp;
-        }
 
-    /*@Override
     public @NotNull String getDescriptionId() {
-        return this.getDescriptionId();
-    }*/
-
+        return this.getOrCreateDescriptionId();
+    }
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay tooltipDisplay, Consumer<Component> components, TooltipFlag tooltipFlag) {
+    public void appendHoverText(@NotNull ItemStack itemstack, @NotNull TooltipContext world, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
         int maxLevel = switch (currentmaxxpp) {
             case 1 -> Config.food_xp_tier_2.get();
             case 2 -> Config.food_xp_tier_3.get();
@@ -42,9 +35,9 @@ public class CropBlockItem extends ChickenSeedBase {
             default -> Config.food_xp_tier_1.get();
         };
 
-        super.appendHoverText(pStack, pContext,tooltipDisplay, components, tooltipFlag);
-        components.accept(Component.nullToEmpty((("§a") + "XP: " + "§9" + maxLevel)));
-        components.accept(Component.nullToEmpty("§1 Roost Ultimate"));
+        super.appendHoverText(itemstack, world, list, flag);
+        list.add(Component.nullToEmpty((("§a") + "XP: " + "§9" + maxLevel)));
+        list.add(Component.nullToEmpty("§1 Roost Ultimate"));
     }
 
     public int getCurrentMaxXp() {

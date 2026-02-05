@@ -7,18 +7,17 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
-
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.item.ModItems;
 import net.tarantel.chickenroost.recipes.*;
-import net.tarantel.chickenroost.screen.BreederScreen;
-import net.tarantel.chickenroost.screen.RoostScreen;
-import net.tarantel.chickenroost.screen.SoulExtractorScreen;
-import net.tarantel.chickenroost.screen.TrainerScreen;
+import net.tarantel.chickenroost.screen.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -26,11 +25,7 @@ import java.util.List;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
-
-
-    public static RecipeMap recipeMap = null;
-
-    /*public static mezz.jei.api.recipe.RecipeType<ThrowEggRecipe> EGG_TYPE =
+    public static mezz.jei.api.recipe.RecipeType<ThrowEggRecipe> EGG_TYPE =
             new mezz.jei.api.recipe.RecipeType<>(EggRecipeCategory.UID, ThrowEggRecipe.class);
     public static mezz.jei.api.recipe.RecipeType<BreederRecipe> BASIC_BREEDING_TYPE =
             new mezz.jei.api.recipe.RecipeType<>(BreederRecipeCategory.UID, BreederRecipe.class);
@@ -41,95 +36,79 @@ public class JEIPlugin implements IModPlugin {
             new mezz.jei.api.recipe.RecipeType<>(RoostRecipeCategory.UID, RoostRecipe.class);
 
     public static mezz.jei.api.recipe.RecipeType<TrainerRecipe> TRAINER_TYPE =
-            new mezz.jei.api.recipe.RecipeType<>(TrainerRecipeCategory.UID, TrainerRecipe.class);*/
+            new mezz.jei.api.recipe.RecipeType<>(TrainerRecipeCategory.UID, TrainerRecipe.class);
 
 
     @Override
-    public Identifier getPluginUid() {
+    public ResourceLocation getPluginUid() {
         return ChickenRoostMod.ownresource("jei_plugin");
     }
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
     	var jeiHelpers = registration.getJeiHelpers();
+        registration.addRecipeCategories(new EggRecipeCategory(jeiHelpers.getGuiHelper()));
+        registration.addRecipeCategories(new BreederRecipeCategory(jeiHelpers.getGuiHelper()));
+        registration.addRecipeCategories(new SoulExtractionRecipeCategory(jeiHelpers.getGuiHelper()));
 
-        registration.addRecipeCategories(
-                new EggRecipeCategory(jeiHelpers.getGuiHelper()),
-                new BreederRecipeCategory(jeiHelpers.getGuiHelper()),
-                new SoulExtractionRecipeCategory(jeiHelpers.getGuiHelper()),
-                new RoostRecipeCategory(jeiHelpers.getGuiHelper()),
-                new TrainerRecipeCategory(jeiHelpers.getGuiHelper()));
+        registration.addRecipeCategories(new RoostRecipeCategory(jeiHelpers.getGuiHelper()));
+        registration.addRecipeCategories(new TrainerRecipeCategory(jeiHelpers.getGuiHelper()));
 
     }
 
 
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
-        if(recipeMap != null) {
-            registration.addRecipes(EggRecipeCategory.TYPE, new ArrayList<>(recipeMap.byType(ModRecipes.THROW_EGG_TYPE.get())));
-            registration.addRecipes(BreederRecipeCategory.TYPE, new ArrayList<>(recipeMap.byType(ModRecipes.BASIC_BREEDING_TYPE.get())));
-            registration.addRecipes(SoulExtractionRecipeCategory.TYPE, new ArrayList<>(recipeMap.byType(ModRecipes.SOUL_EXTRACTION_TYPE.get())));
-            registration.addRecipes(RoostRecipeCategory.TYPE, new ArrayList<>(recipeMap.byType(ModRecipes.ROOST_TYPE.get())));
-            registration.addRecipes(TrainerRecipeCategory.TYPE, new ArrayList<>(recipeMap.byType(ModRecipes.TRAINER_TYPE.get())));
-            /*var manager = world.level.getServer().getRecipeManager();
+        var world = Minecraft.getInstance().level;
+        if (world != null) {
+            var manager = world.getRecipeManager();
             registration.addRecipes(EggRecipeCategory.RECIPE_TYPE,
-                    getRecipesOfType(manager, ModRecipes.THROW_EGG_TYPE.get()));
+                    getRecipe(manager, ModRecipes.THROW_EGG_TYPE.get()));
             registration.addRecipes(BreederRecipeCategory.RECIPE_TYPE,
-                    getRecipesOfType(manager, ModRecipes.BASIC_BREEDING_TYPE.get()));
+                    getRecipe(manager, ModRecipes.BASIC_BREEDING_TYPE.get()));
             registration.addRecipes(SoulExtractionRecipeCategory.RECIPE_TYPE,
-                    getRecipesOfType(manager, ModRecipes.SOUL_EXTRACTION_TYPE.get()));
+                    getRecipe(manager, ModRecipes.SOUL_EXTRACTION_TYPE.get()));
             registration.addRecipes(RoostRecipeCategory.RECIPE_TYPE,
-                    getRecipesOfType(manager, ModRecipes.ROOST_TYPE.get()));
+                    getRecipe(manager, ModRecipes.ROOST_TYPE.get()));
             registration.addRecipes(TrainerRecipeCategory.RECIPE_TYPE,
-                    getRecipesOfType(manager, ModRecipes.TRAINER_TYPE.get()));*/
+                    getRecipe(manager, ModRecipes.TRAINER_TYPE.get()));
 
         }
 
     }
 
-    @SuppressWarnings("unchecked")
-    public static <C extends RecipeInput, T extends Recipe<C>>
-    List<T> getRecipesOfType(RecipeManager manager, RecipeType<T> type) {
-
-        return manager.getRecipes().stream()                 // Collection<RecipeHolder<?>>
-                .map(h -> (RecipeHolder<?>) h)
-                .map(RecipeHolder::value)                    // Recipe<?>
-                .filter(r -> r.getType() == type)            // nur dein Typ
-                .map(r -> (T) r)                             // cast, weil wir gefiltert haben
-                .toList();
+    public <C extends RecipeInput, T extends Recipe<C>> List<T> getRecipe(RecipeManager manager, RecipeType<T> recipeType){
+        List<T> list = new ArrayList<>();
+        manager.getAllRecipesFor(recipeType).forEach(tRecipeHolder -> {
+            list.add(tRecipeHolder.value());
+        });
+        return list;
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration){
-
-
-        registration.addCraftingStation(BreederRecipeCategory.TYPE, new ItemStack(ModItems.BREEDER.get()));
-        registration.addCraftingStation(RoostRecipeCategory.TYPE, new ItemStack(ModItems.ROOST.get()));
-        registration.addCraftingStation(SoulExtractionRecipeCategory.TYPE, new ItemStack(ModItems.EXTRACTOR.get()));
-        registration.addCraftingStation(TrainerRecipeCategory.TYPE, new ItemStack(ModItems.TRAINER.get()));
-
-        /*var egg = new ItemStack(ModItems.CHICKEN_STICK.get());
+        var egg = new ItemStack(ModItems.CHICKEN_STICK.get());
         registration.addRecipeCatalyst(egg, EggRecipeCategory.RECIPE_TYPE);
-    	var basicbreeder = new ItemStack(ModBlocks.BREEDER);
+    	var basicbreeder = new ItemStack(ModBlocks.BREEDER.get());
     	registration.addRecipeCatalyst(basicbreeder, BreederRecipeCategory.RECIPE_TYPE);
-    	var soulextractor = new ItemStack(ModBlocks.SOUL_EXTRACTOR);
+    	var soulextractor = new ItemStack(ModBlocks.SOUL_EXTRACTOR.get());
     	registration.addRecipeCatalyst(soulextractor, SoulExtractionRecipeCategory.RECIPE_TYPE);
 
-        var roostyv1 = new ItemStack(ModBlocks.ROOST);
+        var roostyv1 = new ItemStack(ModBlocks.ROOST.get());
         registration.addRecipeCatalyst(roostyv1, RoostRecipeCategory.RECIPE_TYPE);
 
-        var trainer = new ItemStack(ModBlocks.TRAINER);
-        registration.addRecipeCatalyst(trainer, TrainerRecipeCategory.RECIPE_TYPE);*/
+        var trainer = new ItemStack(ModBlocks.TRAINER.get());
+        registration.addRecipeCatalyst(trainer, TrainerRecipeCategory.RECIPE_TYPE);
 
     }
 
     @Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration)
 	{
-        registration.addRecipeClickArea(BreederScreen.class, 53, 41, 40, 10, BreederRecipeCategory.TYPE);
-        registration.addRecipeClickArea(SoulExtractorScreen.class, 59, 41, 40, 10, SoulExtractionRecipeCategory.TYPE);
-        registration.addRecipeClickArea(TrainerScreen.class, 59, 41, 40, 10, TrainerRecipeCategory.TYPE);
-        registration.addRecipeClickArea(RoostScreen.class, 59, 25, 40, 10, RoostRecipeCategory.TYPE);
+        registration.addRecipeClickArea(BreederScreen.class, 53, 41, 40, 10, JEIPlugin.BASIC_BREEDING_TYPE);
+        registration.addRecipeClickArea(SoulExtractorScreen.class, 59, 41, 40, 10, JEIPlugin.SOUL_EXTRACTION_TYPE);
+        registration.addRecipeClickArea(TrainerScreen.class, 59, 41, 40, 10, JEIPlugin.TRAINER_TYPE);
+        registration.addRecipeClickArea(RoostScreen.class, 59, 25, 40, 10, JEIPlugin.ROOST_TYPE);
 
 	}
 }

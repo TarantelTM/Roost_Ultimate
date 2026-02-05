@@ -5,17 +5,15 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.AmethystClusterBlock;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,9 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.tarantel.chickenroost.block.tile.ModBlockEntities;
-import net.tarantel.chickenroost.block.tile.TrainerTile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,8 +41,8 @@ public class PipeBlock extends BaseEntityBlock {
     private final PipeTier tier;
     private final Supplier<Item> chickenStick;
 
-    public PipeBlock(Properties properties, PipeTier tier, Supplier<Item> chickenStick) {
-        super(properties);
+    public PipeBlock(Properties props, PipeTier tier, Supplier<Item> chickenStick) {
+        super(props);
         this.tier = tier;
         this.chickenStick = chickenStick;
 
@@ -56,50 +52,6 @@ public class PipeBlock extends BaseEntityBlock {
                 .setValue(EAST, false).setValue(WEST, false)
         );
     }
-
-
-    @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        dropFromTile(level, pos);
-        return super.playerWillDestroy(level, pos, state, player);
-    }
-
-    @Override
-    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-        // Wird von destroyBlock(...) benutzt
-        if (level instanceof Level l && !l.isClientSide()) {
-            dropFromTile(l, pos);
-        }
-        super.destroy(level, pos, state);
-    }
-
-    @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state,
-                              @Nullable BlockEntity be, ItemStack tool) {
-        dropFromTile(level, pos);
-        super.playerDestroy(level, player, pos, state, be, tool);
-    }
-
-    private void dropFromTile(Level level, BlockPos pos) {
-        if (level.isClientSide()) return;
-
-        BlockEntity be = level.getBlockEntity(pos);
-        if (!(be instanceof PipeBlockEntity tile)) return;
-
-        // 🔥 zentraler Schutz gegen Mehrfach-Drops
-        if (tile.hasDropped()) return;
-        tile.markDropped();
-
-        // Der Block weiß sein Tier → droppt sich selbst
-        Containers.dropItemStack(
-                level,
-                pos.getX() + 0.5,
-                pos.getY() + 0.5,
-                pos.getZ() + 0.5,
-                new ItemStack(this)
-        );
-    }
-
 
     public PipeTier getTier() {
         return tier;
@@ -140,7 +92,7 @@ public class PipeBlock extends BaseEntityBlock {
         }
 
         return level.getCapability(
-                Capabilities.Item.BLOCK,
+                net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK,
                 npos,
                 neighborState,
                 level.getBlockEntity(npos),
@@ -171,12 +123,14 @@ public class PipeBlock extends BaseEntityBlock {
     }
 
     @Override
-    public BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess scheduledTickAccess, BlockPos blockPos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
-        if (level instanceof Level levell) {
-            invalidateCache(levell, blockPos);
-            return computeConnections(levell, blockPos, blockState);
+    public BlockState updateShape(BlockState state, Direction dir, BlockState neighborState,
+                                  net.minecraft.world.level.LevelAccessor levelAccessor,
+                                  BlockPos pos, BlockPos neighborPos) {
+        if (levelAccessor instanceof Level level) {
+            invalidateCache(level, pos);
+            return computeConnections(level, pos, state);
         }
-        return blockState;
+        return state;
     }
 
 
@@ -191,7 +145,7 @@ public class PipeBlock extends BaseEntityBlock {
                         BlockState oldState, boolean movedByPiston) {
         super.onPlace(state, level, pos, oldState, movedByPiston);
 
-        if (!level.isClientSide()) {
+        if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof PipeBlockEntity pipe) {
                 pipe.invalidateNetwork(level);
@@ -201,13 +155,13 @@ public class PipeBlock extends BaseEntityBlock {
 
 
     @Override
-    protected void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, boolean movedByPiston) {
-        super.affectNeighborsAfterRemoval(blockState, serverLevel, blockPos, movedByPiston);
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        super.onRemove(state, level, pos, newState, movedByPiston);
 
-        if (!serverLevel.isClientSide()) {
-            BlockEntity be = serverLevel.getBlockEntity(blockPos);
+        if (!level.isClientSide) {
+            BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof PipeBlockEntity pipe) {
-                pipe.invalidateNetwork(serverLevel);
+                pipe.invalidateNetwork(level);
             }
 
         }
@@ -217,16 +171,16 @@ public class PipeBlock extends BaseEntityBlock {
 
 
     @Override
-    protected InteractionResult  useItemOn(ItemStack stack, BlockState state, Level level,
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level,
                                               BlockPos pos, Player player, InteractionHand hand,
                                               BlockHitResult hit) {
 
         if (stack.getItem() != chickenStick.get()) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        if (level.isClientSide()) {
-            return InteractionResult.SUCCESS;
+        if (level.isClientSide) {
+            return ItemInteractionResult.SUCCESS;
         }
 
         BlockEntity be = level.getBlockEntity(pos);
@@ -253,10 +207,10 @@ public class PipeBlock extends BaseEntityBlock {
                         true
                 );
             }
-            return InteractionResult.CONSUME;
+            return ItemInteractionResult.CONSUME;
         }
 
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
 
@@ -284,7 +238,7 @@ public class PipeBlock extends BaseEntityBlock {
         if (be == null) return false;
 
         return level.getCapability(
-                Capabilities.Item.BLOCK,
+                net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK,
                 pos,
                 level.getBlockState(pos),
                 be,

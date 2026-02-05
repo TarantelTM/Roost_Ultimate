@@ -11,47 +11,52 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeHolderType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.tarantel.chickenroost.ChickenRoostMod;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
-import net.tarantel.chickenroost.item.ModItems;
 import net.tarantel.chickenroost.recipes.BreederRecipe;
-import net.tarantel.chickenroost.recipes.ModRecipes;
-import net.tarantel.chickenroost.recipes.ThrowEggRecipe;
 import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("ALL")
-public class BreederRecipeCategory implements IRecipeCategory<RecipeHolder<BreederRecipe>> {
-    public final static Identifier ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
-    public final static Identifier ARROW = ChickenRoostMod.ownresource( "textures/screens/arrow.png");
-    public static final IRecipeHolderType<BreederRecipe> TYPE = IRecipeHolderType.create(ModRecipes.BASIC_BREEDING_TYPE.get());
+public class BreederRecipeCategory implements IRecipeCategory<BreederRecipe> {
+    public final static ResourceLocation UID = ChickenRoostMod.ownresource("basic_breeding");
+    public final static ResourceLocation ARROWBACK = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
+    public final static ResourceLocation SLOT = ChickenRoostMod.ownresource("textures/screens/slot.png");
+    public static final RecipeType<BreederRecipe> RECIPE_TYPE = RecipeType.create(ChickenRoostMod.MODID, "basic_breeding", BreederRecipe.class);
     private final IDrawable background;
     private final IDrawable icon;
-    private final IDrawableAnimated progressArrow;
-    private final IGuiHelper guiHelper;
+    private final IDrawableAnimated progress;
+
+    private final IDrawableStatic slot_1;
+    private final IDrawableStatic slot_2;
+    private final IDrawableStatic slot_3;
+    private final IDrawableStatic slot_4;
     private final IDrawableStatic arrowbacki;
 
-
     public BreederRecipeCategory(IGuiHelper helper) {
-        this.guiHelper = helper;
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.BREEDER));
+        ResourceLocation ARROW = ChickenRoostMod.ownresource( "textures/screens/arrow.png");
+        this.background = helper.createBlankDrawable(130, 20);
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.BREEDER.get()));
+
         IDrawableStatic progressDrawable = helper.drawableBuilder(ARROW, 0, 10, 38, 10).setTextureSize(38, 10).addPadding(4,0,60,0).build();
+        this.slot_1 = helper.drawableBuilder(SLOT, 0, 18, 18, 18).setTextureSize(18, 18).addPadding(0,0,20,0).build();
+        this.slot_2 = helper.drawableBuilder(SLOT, 0, 18, 18, 18).setTextureSize(18, 18).addPadding(0,0,0,0).build();
+        this.slot_3 = helper.drawableBuilder(SLOT, 0, 18, 18, 18).setTextureSize(18, 18).addPadding(0,0,40,0).build();
+        this.slot_4 = helper.drawableBuilder(SLOT, 0, 18, 18, 18).setTextureSize(18, 18).addPadding(0,0,100,0).build();
         this.arrowbacki = helper.drawableBuilder(ARROWBACK, 0, 10, 38, 10).setTextureSize(38, 10).addPadding(4,0,60,0).build();
-        this.progressArrow = helper.createAnimatedDrawable(progressDrawable, 100, IDrawableAnimated.StartDirection.LEFT,
+
+        this.progress = helper.createAnimatedDrawable(progressDrawable, 100, IDrawableAnimated.StartDirection.LEFT,
                 false);
-        this.background = helper.createBlankDrawable(140, 16);
 
 
     }
 
     @Override
-    public IRecipeHolderType<BreederRecipe> getRecipeType() {
-        return TYPE;
+    public RecipeType<BreederRecipe> getRecipeType() {
+        return JEIPlugin.BASIC_BREEDING_TYPE;
     }
 
     @Override
@@ -60,40 +65,35 @@ public class BreederRecipeCategory implements IRecipeCategory<RecipeHolder<Breed
     }
 
     @Override
-    public int getWidth() {
-        return this.background.getWidth();
+    public IDrawable getBackground() {
+        return this.background;
     }
 
     @Override
-    public int getHeight() {
-        return this.background.getHeight();
-    }
+    public void draw(BreederRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX,
+                     double mouseY) {
 
+        this.slot_1.draw(guiGraphics);
+        this.slot_2.draw(guiGraphics);
+        this.slot_3.draw(guiGraphics);
+        this.slot_4.draw(guiGraphics);
+        this.arrowbacki.draw(guiGraphics);
+        this.progress.draw(guiGraphics);
+    }
     @Override
     public IDrawable getIcon() {
-        return icon;
+        return this.icon;
     }
 
     @Override
-    public void draw(RecipeHolder<BreederRecipe> recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        arrowbacki.draw(guiGraphics, 60, 4);
-        progressArrow.draw(guiGraphics, 60, 4);
-    }
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, BreederRecipe recipe, @NotNull IFocusGroup focuses) {
+        builder.addSlot(RecipeIngredientRole.INPUT, 21, 1)
+                .addIngredients(recipe.getIngredients().get(0));
+        builder.addSlot(RecipeIngredientRole.INPUT, 0, 1)
+                .addIngredients(recipe.getIngredients().get(1));
+        builder.addSlot(RecipeIngredientRole.INPUT, 41, 1)
+                .addIngredients(recipe.getIngredients().get(2));
 
-
-    @Override
-    public void setRecipe(IRecipeLayoutBuilder iRecipeLayoutBuilder, RecipeHolder<BreederRecipe> recipe, IFocusGroup iFocusGroup) {
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT, 21, 1)
-                .setBackground(guiHelper.getSlotDrawable(), -1, -1)
-                .add(recipe.value().getIngredients().get(0));
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT, 0, 1)
-                .setBackground(guiHelper.getSlotDrawable(), -1, -1)
-                .add(recipe.value().getIngredients().get(1));
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.INPUT, 41, 1)
-                .setBackground(guiHelper.getSlotDrawable(), -1, -1)
-                .add(recipe.value().getIngredients().get(2));
-
-        iRecipeLayoutBuilder.addSlot(RecipeIngredientRole.OUTPUT, 101, 1)
-                .setBackground(guiHelper.getSlotDrawable(), -1, -1).add(recipe.value().getResultItem(null));
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 101, 1).addItemStack(recipe.output());
     }
 }

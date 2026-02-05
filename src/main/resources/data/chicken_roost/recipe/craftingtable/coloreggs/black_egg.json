@@ -4,8 +4,12 @@
     "01 "
   ],
   "key": {
-    "0": "minecraft:egg",
-    "1": "minecraft:black_dye"
+    "0": {
+      "item": "minecraft:egg"
+    },
+    "1": {
+      "item": "minecraft:black_dye"
+    }
   },
   "result": {
     "id": "chicken_roost:black_egg",

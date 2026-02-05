@@ -2,17 +2,12 @@ package net.tarantel.chickenroost.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.tarantel.chickenroost.ChickenRoostMod;
@@ -36,11 +31,11 @@ public class RoostScreen extends AbstractContainerScreen<RoostHandler> {
     private String enteredName = "ROOST";
     private Button nameButton;
 
-    private static final Identifier GUI = ChickenRoostMod.ownresource("textures/screens/roostgui.png");
-    private static final Identifier ARROW = ChickenRoostMod.ownresource("textures/screens/newarrow.png");
-    private static final Identifier ARROW_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrow.png");
-    private static final Identifier GUI_VANILLA = ChickenRoostMod.ownresource("textures/screens/roost_vanilla.png");
-    private static final Identifier ARROWBACK_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
+    private static final ResourceLocation GUI = ChickenRoostMod.ownresource("textures/screens/roostgui.png");
+    private static final ResourceLocation ARROW = ChickenRoostMod.ownresource("textures/screens/newarrow.png");
+    private static final ResourceLocation ARROW_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrow.png");
+    private static final ResourceLocation GUI_VANILLA = ChickenRoostMod.ownresource("textures/screens/roost_vanilla.png");
+    private static final ResourceLocation ARROWBACK_VANILLA = ChickenRoostMod.ownresource("textures/screens/arrowback.png");
 
 
     private Button output;
@@ -57,19 +52,17 @@ public class RoostScreen extends AbstractContainerScreen<RoostHandler> {
     @Override
     protected void init() {
         super.init();
-        this.leftPos = (this.width - this.imageWidth) / 2;
-        this.topPos = (this.height - this.imageHeight) / 2;
+
         int x = this.leftPos;
         int y = this.topPos - 17;
         this.output = Button.builder(
                         makeOutputText(),
                         button -> {
                             boolean newValue = !this.menu.blockEntity.isAutoOutputEnabled();
-                            this.menu.blockEntity.setAutoOutputFromGui(newValue);
+                            this.menu.blockEntity.setAutoOutputEnabled(newValue);
                             button.setMessage(makeOutputText());
-                            Minecraft.getInstance()
-                                    .getConnection()
-                                    .send(new SetAutoOutputPayload(this.menu.blockEntity.getBlockPos(), newValue)
+                            PacketDistributor.sendToServer(
+                                    new SetAutoOutputPayload(this.menu.blockEntity.getBlockPos(), newValue)
                             );
                         }
                 )
@@ -135,81 +128,71 @@ public class RoostScreen extends AbstractContainerScreen<RoostHandler> {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.nameField != null && this.nameField.isFocused()) {
 
-            if (event.isEscape()) {
+            if (keyCode == InputConstants.KEY_ESCAPE) {
                 this.nameField.setFocused(false);
                 return true;
             }
 
-            if (event.isConfirmation()) {
+
+            if (keyCode == InputConstants.KEY_RETURN || keyCode == 257 || keyCode == 335) {
                 this.enteredName = this.nameField.getValue().trim();
                 if (!this.enteredName.isEmpty()) {
-                    Minecraft.getInstance()
-                            .getConnection()
-                            .send(new SetNamePayload(
-                                    this.menu.getBlockEntity().getBlockPos(),
-                                    this.enteredName
-                            ));
+                     PacketDistributor.sendToServer(
+                         new SetNamePayload(this.menu.getBlockEntity().getBlockPos(), this.enteredName)
+                     );
                 }
                 this.nameField.setFocused(false);
                 return true;
             }
 
-            this.nameField.keyPressed(event);
+
+            if (this.nameField.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+
+
             return true;
         }
 
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-
     @Override
-    public boolean charTyped(CharacterEvent codePoint) {
+    public boolean charTyped(char codePoint, int modifiers) {
         if (this.nameField != null && this.nameField.isFocused()) {
-            this.nameField.charTyped(codePoint);
+
+            if (this.nameField.charTyped(codePoint, modifiers)) {
+                return true;
+            }
             return true;
         }
-        return super.charTyped(codePoint);
+        return super.charTyped(codePoint, modifiers);
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics g, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull GuiGraphics ms, float partialTicks, int gx, int gy) {
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        if (colorblindMode) {
+            RenderSystem.setShaderTexture(0, GUI_VANILLA);
+            ms.blit(GUI_VANILLA, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            ms.blit(ARROW, this.leftPos + 63, this.topPos + 11, 0, 0, getScaledProgress(), 33, 54, 33);
 
-        Identifier bg = colorblindMode ? GUI_VANILLA : GUI;
 
-        // Hintergrund
-        g.blit(
-                RenderPipelines.GUI_TEXTURED,
-                bg,
-                this.leftPos,
-                this.topPos,
-                0, 0,
-                this.imageWidth,
-                this.imageHeight,
-                this.imageWidth,
-                this.imageHeight
-        );
+        } else {
+            RenderSystem.setShaderTexture(0, GUI);
+            ms.blit(GUI, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            ms.blit(ARROW, this.leftPos + 63, this.topPos + 11, 0, 0, getScaledProgress(), 33, 54, 33);
+        }
 
-        // Fortschrittspfeil
-        g.blit(
-                RenderPipelines.GUI_TEXTURED,
-                ARROW,
-                this.leftPos + 63,
-                this.topPos + 11,
-                0, 0,
-                getScaledProgress(),
-                33,
-                54,
-                33
-        );
-
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        RenderSystem.disableBlend();
         colorblindMode = Config.roost_cb.get();
     }
-
-
     @Override
     public void render(@NotNull GuiGraphics ms, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(ms, mouseX, mouseY, partialTicks);
@@ -221,21 +204,15 @@ public class RoostScreen extends AbstractContainerScreen<RoostHandler> {
 
     }
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        double mouseX = event.x();
-        double mouseY = event.y();
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.nameField != null && this.nameField.isFocused()) {
             if (!this.nameField.isMouseOver(mouseX, mouseY)) {
                 this.nameField.setFocused(false);
                 return true;
             }
         }
-
-        return super.mouseClicked(event, isDoubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
-
-
     public boolean isNameFieldFocused() {
         return this.nameField != null && this.nameField.isFocused();
     }

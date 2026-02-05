@@ -18,7 +18,7 @@ public class ChickenTagGenerator {
         List<ChickenData> chickens = ChickenRoostMod.chickens;
         if (chickens == null || chickens.isEmpty()) return;
 
-        Path root = FMLPaths.GAMEDIR.get().resolve("crlib/resources_server");
+        Path root = FMLPaths.GAMEDIR.get().resolve("crlib/resources");
 
         try {
             generateTierTags(chickens, root);
