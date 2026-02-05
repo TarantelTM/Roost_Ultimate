@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_cobble",
   "right-chicken": "chicken_roost:c_cobble",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_cobble"
-  }
+  "output": "chicken_roost:c_cobble"
 }

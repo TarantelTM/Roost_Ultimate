@@ -446,7 +446,7 @@ public class SoulExtractorTile extends BlockEntity implements MenuProvider, ICol
             return;
         }
 
-        ItemStack result = recipe.get().value().output().copy();
+        ItemStack result = recipe.get().value().output().value().getDefaultInstance();
         if (result.isEmpty()) {
             e.resetProgress();
             return;
@@ -514,7 +514,7 @@ public class SoulExtractorTile extends BlockEntity implements MenuProvider, ICol
         recipe.ifPresent(r -> e.maxProgress = Config.extractor_speedtimer.get() * r.value().time());
 
         ItemStack outSlot = inv.getItem(OUTPUT_SLOT);
-        ItemStack result = recipe.get().value().output().copy();
+        ItemStack result = recipe.get().value().output().value().getDefaultInstance();
 
         // Output Slot: leer oder gleicher Item+Components und noch Platz
         return outSlot.isEmpty()

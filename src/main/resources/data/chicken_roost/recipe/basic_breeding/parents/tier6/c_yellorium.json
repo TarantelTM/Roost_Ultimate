@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_yellorium",
   "right-chicken": "chicken_roost:c_yellorium",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_yellorium"
-  }
+  "output": "chicken_roost:c_yellorium"
 }

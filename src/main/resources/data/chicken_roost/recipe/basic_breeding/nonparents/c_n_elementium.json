@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_manasteel",
   "right-chicken": "chicken_roost:c_terrasteel",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_elementium"
-  }
+  "output": "chicken_roost:c_elementium"
 }

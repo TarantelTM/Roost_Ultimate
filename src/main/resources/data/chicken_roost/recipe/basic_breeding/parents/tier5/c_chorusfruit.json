@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_chorusfruit",
   "right-chicken": "chicken_roost:c_chorusfruit",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_chorusfruit"
-  }
+  "output": "chicken_roost:c_chorusfruit"
 }

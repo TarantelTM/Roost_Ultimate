@@ -28,8 +28,8 @@ public class SoulExtractorScreen extends AbstractContainerScreen<SoulExtractorHa
 
     public SoulExtractorScreen(SoulExtractorHandler menu, Inventory inventory, Component component) {
         super(menu, inventory, component);
-        this.imageWidth = 176;
-        this.imageHeight = 166;
+        //this.imageWidth = 176;
+        //this.imageHeight = 166;
 
 
     }

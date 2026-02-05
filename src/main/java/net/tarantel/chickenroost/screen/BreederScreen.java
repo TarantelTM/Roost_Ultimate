@@ -39,8 +39,8 @@ public class BreederScreen extends AbstractContainerScreen<BreederHandler> {
 
     public BreederScreen(BreederHandler menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        this.imageWidth = 176;
-        this.imageHeight = 166;
+        //this.imageWidth = 176;
+        //this.imageHeight = 166;
     }
 
     /* ------------------------------------------------------------ */

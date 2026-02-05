@@ -3,7 +3,5 @@
   "chicken": {
       "tag": "c:roost/tiered"
   },
-  "output": {
-    "item": "chicken_roost:chicken_food_tier_6"
-  }
+  "output": "chicken_roost:chicken_food_tier_6"
 }

@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_water",
   "right-chicken": "chicken_roost:c_emerald",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_prismarinecrystal"
-  }
+  "output": "chicken_roost:c_prismarinecrystal"
 }

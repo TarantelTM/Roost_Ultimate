@@ -33,8 +33,8 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerHandler> {
 
     public TrainerScreen(TrainerHandler menu, Inventory inventory, Component component) {
         super(menu, inventory, component);
-        this.imageWidth = 176;
-        this.imageHeight = 166;
+        //this.imageWidth = 176;
+        //this.imageHeight = 166;
     }
     private boolean colorblindMode = Config.trainer_cb.get();
     private static final Identifier GUI = ChickenRoostMod.ownresource("textures/screens/trainer.png");

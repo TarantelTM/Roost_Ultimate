@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier4orup",
   "chicken": "chicken_roost:c_rotten",
   "time": 20,
-  "output": {
-    "item": "minecraft:rotten_flesh"
-  }
+  "output": "minecraft:rotten_flesh"
 }

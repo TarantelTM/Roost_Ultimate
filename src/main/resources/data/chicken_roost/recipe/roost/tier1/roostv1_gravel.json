@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier1orup",
   "chicken": "chicken_roost:c_gravel",
   "time": 20,
-  "output": {
-    "item": "minecraft:gravel"
-  }
+  "output": "minecraft:gravel"
 }

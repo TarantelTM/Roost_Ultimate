@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_blutonium",
   "right-chicken": "chicken_roost:c_blutonium",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_blutonium"
-  }
+  "output": "chicken_roost:c_blutonium"
 }

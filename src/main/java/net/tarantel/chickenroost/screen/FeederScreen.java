@@ -41,8 +41,8 @@ public class FeederScreen extends AbstractContainerScreen<FeederHandler> {
 
     public FeederScreen(FeederHandler menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        imageWidth = 176;
-        imageHeight = 222;
+        //imageWidth = 176;
+        //imageHeight = 222;
     }
 
     @Override

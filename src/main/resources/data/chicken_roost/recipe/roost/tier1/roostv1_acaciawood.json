@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier1orup",
   "chicken":  "chicken_roost:c_acaciawood",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:wood_essence"
-  }
+  "output": "chicken_roost:wood_essence"
 }

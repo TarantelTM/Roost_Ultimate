@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier4orup",
   "chicken": "chicken_roost:c_obsidian",
   "time": 20,
-  "output": {
-    "item": "minecraft:obsidian"
-  }
+  "output": "minecraft:obsidian"
 }

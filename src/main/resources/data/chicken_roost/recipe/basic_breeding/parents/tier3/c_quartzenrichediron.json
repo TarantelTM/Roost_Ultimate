@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_quartzenrichediron",
   "right-chicken": "chicken_roost:c_quartzenrichediron",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_quartzenrichediron"
-  }
+  "output": "chicken_roost:c_quartzenrichediron"
 }

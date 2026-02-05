@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_redstone",
   "right-chicken": "chicken_roost:c_iron",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_conductiveiron"
-  }
+  "output": "chicken_roost:c_conductiveiron"
 }

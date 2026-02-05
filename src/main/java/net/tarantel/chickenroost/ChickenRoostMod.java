@@ -28,7 +28,7 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.tarantel.chickenroost.api.jei.JEIPlugin;
+//import net.tarantel.chickenroost.api.jei.JEIPlugin;
 import net.tarantel.chickenroost.block.blocks.ModBlocks;
 import net.tarantel.chickenroost.block.tile.*;
 //import net.tarantel.chickenroost.client.ClientRoostCache;
@@ -59,7 +59,7 @@ public class ChickenRoostMod {
         bus.addListener(ModNetworking::register);
         chickens = GsonChickenReader.readItemsFromFile();
         CONFIG = CustomConfigReader.load();
-        ModCreativeModeTabs.register(bus);
+
         ModDataComponents.register(bus);
         ModEntities.register(bus);
         ModItems.register(bus);
@@ -76,7 +76,8 @@ public class ChickenRoostMod {
         bus.addListener(this::addCreative);
         ChickenRecipeGenerator.generate(chickens);
         ChickenTagGenerator.onServerStarting();
-        if(JEIUtils.isJEIAvailable()) {
+        ModCreativeModeTabs.register(bus);
+        /*if(JEIUtils.isJEIAvailable()) {
             NeoForge.EVENT_BUS.addListener(false, OnDatapackSyncEvent.class, e -> e.sendRecipes(
                     BreederRecipe.Type.INSTANCE,
                     RoostRecipe.Type.INSTANCE,
@@ -84,7 +85,7 @@ public class ChickenRoostMod {
                     ThrowEggRecipe.Type.INSTANCE,
                     SoulExtractorRecipe.Type.INSTANCE
             ));
-        }
+        }*/
         //bus.addListener(this::onGatherTooltip);
 
     }
@@ -117,16 +118,16 @@ public class ChickenRoostMod {
     }
 
 
-    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
+   /* @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
     public static class ClientGameEvents {
         @SubscribeEvent
         public static void onRecipesReceived(RecipesReceivedEvent event) {
-            if(JEIUtils.isJEIAvailable()) {
-                JEIPlugin.recipeMap = event.getRecipeMap();
-                System.out.println("RecipeMap: Filled");
-            }
+            //if(JEIUtils.isJEIAvailable()) {
+                //JEIPlugin.recipeMap = event.getRecipeMap();
+            //    System.out.println("RecipeMap: Filled");
+           // }
         }
-    }
+    }*/
 
     /*@SubscribeEvent
     public void onGatherTooltip(RenderTooltipEvent.GatherComponents e) {

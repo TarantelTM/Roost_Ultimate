@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier1orup",
   "chicken": "chicken_roost:c_blue",
   "time": 20,
-  "output": {
-    "item": "minecraft:blue_dye"
-  }
+  "output": "minecraft:blue_dye"
 }

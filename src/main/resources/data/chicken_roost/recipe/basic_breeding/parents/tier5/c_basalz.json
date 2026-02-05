@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_basalz",
   "right-chicken": "chicken_roost:c_basalz",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_basalz"
-  }
+  "output": "chicken_roost:c_basalz"
 }

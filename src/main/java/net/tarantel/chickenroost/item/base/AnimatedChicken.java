@@ -111,7 +111,7 @@ public class AnimatedChicken extends ChickenItemBase implements GeoItem {
         if (item instanceof ChickenItemBase && !isVanillaChickenItem(item)) {
             Identifier id = Identifier.parse(
                     item.getDefaultInstance()
-                            .getItemHolder()
+                            .typeHolder()
                             .getRegisteredName()
             );
 
@@ -304,14 +304,14 @@ public class AnimatedChicken extends ChickenItemBase implements GeoItem {
         return line.withStyle(ChatFormatting.GRAY);
     }
 
-    private static void addIngredientLine(List<Component> list, Ingredient ingredient) {
+    /*private static void addIngredientLine(List<Component> list, Ingredient ingredient) {
         SlotDisplay display = ingredient.display();
 
         Component text = switch (display) {
             case SlotDisplay.ItemSlotDisplay item ->
                     item.item().value().getName();
             case SlotDisplay.ItemStackSlotDisplay stack ->
-                    stack.stack().getHoverName();
+                    stack.stack();
             case SlotDisplay.TagSlotDisplay tag ->
                     Component.literal("#").append(
                             Component.literal(tag.tag().location().toString())
@@ -321,7 +321,7 @@ public class AnimatedChicken extends ChickenItemBase implements GeoItem {
         };
 
         list.add(Component.literal("   - ").append(text));
-    }
+    }*/
 
 
 

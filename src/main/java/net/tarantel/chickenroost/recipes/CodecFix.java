@@ -16,7 +16,7 @@ public final class CodecFix {
                     // item id (Holder<Item>)
                     Item.CODEC
                             .fieldOf("item")
-                            .forGetter(ItemStack::getItemHolder),
+                            .forGetter(ItemStack::typeHolder),
 
                     // count
                     ExtraCodecs.POSITIVE_INT

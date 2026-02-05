@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_clay",
   "right-chicken": "chicken_roost:c_sand",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_silicon"
-  }
+  "output": "chicken_roost:c_silicon"
 }

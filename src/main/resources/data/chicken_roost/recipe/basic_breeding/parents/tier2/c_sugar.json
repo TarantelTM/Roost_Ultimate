@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_sugar",
   "right-chicken": "chicken_roost:c_sugar",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_sugar"
-  }
+  "output": "chicken_roost:c_sugar"
 }

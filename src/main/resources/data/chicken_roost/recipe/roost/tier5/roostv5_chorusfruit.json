@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier5orup",
   "chicken": "chicken_roost:c_chorusfruit",
   "time": 20,
-  "output": {
-    "item": "minecraft:chorus_fruit"
-  }
+  "output": "minecraft:chorus_fruit"
 }

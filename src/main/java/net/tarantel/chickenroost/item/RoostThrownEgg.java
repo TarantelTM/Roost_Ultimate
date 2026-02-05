@@ -39,7 +39,7 @@ public class RoostThrownEgg extends ThrowableItemProjectile {
         );
     }
 
-    @Override
+    /*@Override
     public void handleEntityEvent(byte id) {
         if (id == 3) {
             for(int i = 0; i < 8; ++i) {
@@ -47,7 +47,7 @@ public class RoostThrownEgg extends ThrowableItemProjectile {
             }
         }
 
-    }
+    }*/
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);

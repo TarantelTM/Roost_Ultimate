@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_vibrantalloy",
   "right-chicken": "chicken_roost:c_vibrantalloy",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_vibrantalloy"
-  }
+  "output": "chicken_roost:c_vibrantalloy"
 }

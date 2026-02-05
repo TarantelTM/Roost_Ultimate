@@ -9,8 +9,7 @@
   "food": "#c:seeds/tier5orup",
   "chicken": "chicken_roost:c_blood",
   "time": 20,
-  "output": {
-    "item": "bloodmagic:weakbloodshard"
+  "output": "bloodmagic:weakbloodshard"
   }
 
 }

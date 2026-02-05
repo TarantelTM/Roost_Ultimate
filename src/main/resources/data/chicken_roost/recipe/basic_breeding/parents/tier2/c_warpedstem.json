@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_warpedstem",
   "right-chicken": "chicken_roost:c_warpedstem",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_warpedstem"
-  }
+  "output": "chicken_roost:c_warpedstem"
 }

@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_conductiveiron",
   "right-chicken": "chicken_roost:c_conductiveiron",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_conductiveiron"
-  }
+  "output": "chicken_roost:c_conductiveiron"
 }

@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_endereye",
   "right-chicken": "chicken_roost:c_endereye",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_endereye"
-  }
+  "output": "chicken_roost:c_endereye"
 }

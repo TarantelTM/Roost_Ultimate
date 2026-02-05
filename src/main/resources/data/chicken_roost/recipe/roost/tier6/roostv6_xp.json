@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier6orup",
   "chicken": "chicken_roost:c_xp",
   "time": 20,
-  "output": {
-    "item": "minecraft:experience_bottle"
-  }
+  "output": "minecraft:experience_bottle"
 }

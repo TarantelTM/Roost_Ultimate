@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_netherite",
   "right-chicken": "chicken_roost:c_netherite",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_netherite"
-  }
+  "output": "chicken_roost:c_netherite"
 }

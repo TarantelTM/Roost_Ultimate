@@ -407,7 +407,7 @@ public class RoostTile extends BlockEntity implements MenuProvider, ICollectorTa
         if (recipe.isEmpty()) return false;
 
         ItemStack out = inv.getItem(OUTPUT_SLOT);
-        ItemStack planned = recipe.get().value().output().copy();
+        ItemStack planned = recipe.get().value().output().value().getDefaultInstance();
 
         return out.isEmpty()
                 || (ItemStack.isSameItemSameComponents(out, planned)

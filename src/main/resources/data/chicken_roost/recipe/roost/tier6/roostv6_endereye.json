@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier6orup",
   "chicken": "chicken_roost:c_endereye",
   "time": 20,
-  "output": {
-    "item": "minecraft:ender_eye"
-  }
+  "output": "minecraft:ender_eye"
 }

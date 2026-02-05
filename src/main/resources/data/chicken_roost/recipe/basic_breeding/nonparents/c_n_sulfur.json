@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_tnt",
   "right-chicken": "chicken_roost:c_flint",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_sulfur"
-  }
+  "output": "chicken_roost:c_sulfur"
 }

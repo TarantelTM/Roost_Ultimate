@@ -60,8 +60,8 @@ public class CollectorScreen extends AbstractContainerScreen<CollectorHandler> {
 
     public CollectorScreen(CollectorHandler menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        this.imageWidth = 176;
-        this.imageHeight = 222;
+        //this.imageWidth = 176;
+        //this.imageHeight = 222;
     }
 
     @Override

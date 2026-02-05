@@ -4,11 +4,16 @@ package net.tarantel.chickenroost.recipes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
@@ -18,13 +23,19 @@ import org.jetbrains.annotations.NotNull;
 
 
 @SuppressWarnings("deprecation")
-public record RoostRecipe(ItemStack output, Ingredient ingredient0, Ingredient ingredient1,
+public record RoostRecipe(Holder<Item> output, Ingredient ingredient0, Ingredient ingredient1,
                           int time) implements RoostBaseRecipe<RecipeInput> {
 
+
+    public @NotNull ItemStack assemble(@NotNull RecipeInput container, HolderLookup.Provider registries) {
+        ItemStack itemStack = this.output.value().getDefaultInstance();
+        itemStack.applyComponents(this.output.value().getDefaultInstance().getComponentsPatch());
+        return itemStack;
+    }
     @Override
-    public @NotNull ItemStack assemble(@NotNull RecipeInput container,@NotNull HolderLookup.Provider registries) {
-        ItemStack itemStack = this.output.getItem().getDefaultInstance();
-        itemStack.applyComponents(this.output.getComponentsPatch());
+    public ItemStack assemble(RecipeInput recipeInput) {
+        ItemStack itemStack = this.output.value().getDefaultInstance();
+        itemStack.applyComponents(this.output.value().getDefaultInstance().getComponentsPatch());
         return itemStack;
     }
 
@@ -34,11 +45,11 @@ public record RoostRecipe(ItemStack output, Ingredient ingredient0, Ingredient i
 
 
     public @NotNull ItemStack getResultItem(HolderLookup.Provider registries) {
-        return this.output;
+        return this.output.value().getDefaultInstance();
     }
 
     public ItemStack getResultEmi() {
-        return output.copy();
+        return output.value().getDefaultInstance();
     }
 
     @Override
@@ -74,7 +85,7 @@ public record RoostRecipe(ItemStack output, Ingredient ingredient0, Ingredient i
 
     @Override
     public boolean isResult(ItemStack itemStack) {
-        return ItemStack.isSameItemSameComponents(output, itemStack);
+        return itemStack.is(output.value());
     }
 
 
@@ -125,7 +136,7 @@ public record RoostRecipe(ItemStack output, Ingredient ingredient0, Ingredient i
                 ChickenRoostMod.ownresource("roost_output");
 
         private final MapCodec<RoostRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) ->
-                instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> recipe.output),
+                instance.group(BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("output").forGetter((recipe) -> recipe.output),
                         Ingredient.CODEC.fieldOf("food").forGetter((recipe) -> recipe.ingredient0),
                         Ingredient.CODEC.fieldOf("chicken").forGetter((recipe) -> recipe.ingredient1),
                         Codec.INT.fieldOf("time").orElse(20).forGetter((recipe) -> recipe.time)).apply(instance,
@@ -145,17 +156,18 @@ public record RoostRecipe(ItemStack output, Ingredient ingredient0, Ingredient i
         }
 
         private static RoostRecipe read(RegistryFriendlyByteBuf buffer) {
+            Holder<Item> output = ByteBufCodecs.holderRegistry(Registries.ITEM).decode(buffer);
             Ingredient input0 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
             Ingredient input1 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-            ItemStack output = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
+
             int time = buffer.readVarInt();
             return new RoostRecipe(output, input0, input1, time);
         }
 
         private static void write(RegistryFriendlyByteBuf buffer, RoostRecipe recipe) {
+            ByteBufCodecs.holderRegistry(Registries.ITEM).encode(buffer, recipe.output());
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient0);
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient1);
-            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.output);
             buffer.writeVarInt(recipe.time);
         }
     }

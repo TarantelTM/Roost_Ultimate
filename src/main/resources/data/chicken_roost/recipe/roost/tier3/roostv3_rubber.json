@@ -9,7 +9,5 @@
   "food": "#c:seeds/tier3orup",
   "chicken": "chicken_roost:c_rubber",
   "time": 20,
-  "output": {
-    "item": "thermal:rubber"
-  }
+  "output": "thermal:rubber"
 }

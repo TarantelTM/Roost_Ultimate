@@ -2,11 +2,16 @@ package net.tarantel.chickenroost.recipes;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
@@ -15,11 +20,15 @@ import net.tarantel.chickenroost.RoostBaseRecipe;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
-public record ThrowEggRecipe(ItemStack output, Ingredient ingredient0) implements RoostBaseRecipe<RecipeInput> {
+public record ThrowEggRecipe(Holder<Item> output, Ingredient ingredient0) implements RoostBaseRecipe<RecipeInput> {
 
+
+    public @NotNull ItemStack assemble(@NotNull RecipeInput container, HolderLookup.Provider registries) {
+        return output.value().getDefaultInstance();
+    }
     @Override
-    public @NotNull ItemStack assemble(@NotNull RecipeInput container,@NotNull HolderLookup.Provider registries) {
-        return output;
+    public ItemStack assemble(RecipeInput recipeInput) {
+        return output.value().getDefaultInstance();
     }
 
     public Identifier getId() {
@@ -28,11 +37,11 @@ public record ThrowEggRecipe(ItemStack output, Ingredient ingredient0) implement
 
 
     public @NotNull ItemStack getResultItem(HolderLookup.Provider registries) {
-        return output.copy();
+        return output.value().getDefaultInstance();
     }
 
     public ItemStack getResultEmi() {
-        return output.copy();
+        return output.value().getDefaultInstance();
     }
 
     @Override
@@ -62,7 +71,7 @@ public record ThrowEggRecipe(ItemStack output, Ingredient ingredient0) implement
 
     @Override
     public boolean isResult(ItemStack itemStack) {
-        return ItemStack.isSameItemSameComponents(output, itemStack);
+        return itemStack.is(output.value());
     }
 
 
@@ -111,7 +120,7 @@ public record ThrowEggRecipe(ItemStack output, Ingredient ingredient0) implement
         public static final Identifier ID =
                 ChickenRoostMod.ownresource("throwegg");
 
-        private final MapCodec<ThrowEggRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> recipe.output), Ingredient.CODEC.fieldOf("egg").forGetter((recipe) -> recipe.ingredient0)).apply(instance, ThrowEggRecipe::new));
+        private final MapCodec<ThrowEggRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("output").forGetter((recipe) -> recipe.output), Ingredient.CODEC.fieldOf("egg").forGetter((recipe) -> recipe.ingredient0)).apply(instance, ThrowEggRecipe::new));
 
         private final StreamCodec<RegistryFriendlyByteBuf, ThrowEggRecipe> STREAM_CODEC = StreamCodec.of(
                 Serializer::write, Serializer::read);
@@ -127,14 +136,16 @@ public record ThrowEggRecipe(ItemStack output, Ingredient ingredient0) implement
         }
 
         private static ThrowEggRecipe read(RegistryFriendlyByteBuf buffer) {
+            Holder<Item> output = ByteBufCodecs.holderRegistry(Registries.ITEM).decode(buffer);
             Ingredient input0 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-            ItemStack output = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
+
             return new ThrowEggRecipe(output, input0);
         }
 
         private static void write(RegistryFriendlyByteBuf buffer, ThrowEggRecipe recipe) {
+            ByteBufCodecs.holderRegistry(Registries.ITEM).encode(buffer, recipe.output());
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient0);
-            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.output);
+
         }
     }
 }

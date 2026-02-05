@@ -3,7 +3,5 @@
   "egg": {
     "item": "chicken_roost:brown_egg"
   },
-  "output": {
-    "item": "chicken_roost:c_brown"
-  }
+  "output": "chicken_roost:c_brown"
 }

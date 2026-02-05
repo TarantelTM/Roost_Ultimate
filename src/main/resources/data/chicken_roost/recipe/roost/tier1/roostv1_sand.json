@@ -3,7 +3,5 @@
   "food": "#c:seeds/tier1orup",
   "chicken": "chicken_roost:c_sand",
   "time": 20,
-  "output": {
-    "item": "minecraft:sand"
-  }
+  "output": "minecraft:sand"
 }

@@ -463,7 +463,7 @@ public class BreederTile extends BlockEntity implements MenuProvider, ICollector
         Random ran = new Random();
         int randomIndex = ran.nextInt(recipes.size());
         RecipeHolder<BreederRecipe> randomRecipe = recipes.get(randomIndex);
-        return new ItemStack(randomRecipe.value().output().getItem());
+        return new ItemStack(randomRecipe.value().output().value());
     }
 
     private static void craftItem(BreederTile e) {

@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_quartz",
   "right-chicken": "chicken_roost:c_yellow",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_glowstone"
-  }
+  "output": "chicken_roost:c_glowstone"
 }

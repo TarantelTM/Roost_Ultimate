@@ -9,7 +9,5 @@
   "food": "#c:seeds/tier7orup",
   "chicken": "chicken_roost:c_cyanite",
   "time": 20,
-  "output": {
-    "item": "bigreactors:cyanite_ingot"
-  }
+  "output": "bigreactors:cyanite_ingot"
 }

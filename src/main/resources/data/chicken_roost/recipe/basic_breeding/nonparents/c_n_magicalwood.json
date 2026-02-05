@@ -4,7 +4,5 @@
   "left-chicken": "#c:chickens/wood",
   "right-chicken": "chicken_roost:c_xp",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_magicalwood"
-  }
+  "output": "chicken_roost:c_magicalwood"
 }

@@ -4,7 +4,5 @@
   "left-chicken": "chicken_roost:c_apatite",
   "right-chicken": "chicken_roost:c_apatite",
   "time": 20,
-  "output": {
-    "item": "chicken_roost:c_apatite"
-  }
+  "output": "chicken_roost:c_apatite"
 }

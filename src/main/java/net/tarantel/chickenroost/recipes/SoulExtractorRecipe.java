@@ -3,11 +3,16 @@ package net.tarantel.chickenroost.recipes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
@@ -16,11 +21,14 @@ import net.tarantel.chickenroost.RoostBaseRecipe;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
-public record SoulExtractorRecipe(ItemStack output, Ingredient ingredient0, int time) implements RoostBaseRecipe<RecipeInput> {
+public record SoulExtractorRecipe(Holder<Item> output, Ingredient ingredient0, int time) implements RoostBaseRecipe<RecipeInput> {
 
+    public @NotNull ItemStack assemble(@NotNull RecipeInput container, HolderLookup.Provider registries) {
+        return output.value().getDefaultInstance();
+    }
     @Override
-    public @NotNull ItemStack assemble(@NotNull RecipeInput container, HolderLookup.@NotNull Provider registries) {
-        return output;
+    public ItemStack assemble(RecipeInput recipeInput) {
+        return output.value().getDefaultInstance();
     }
 
     public Identifier getId() {
@@ -29,11 +37,11 @@ public record SoulExtractorRecipe(ItemStack output, Ingredient ingredient0, int 
 
 
     public @NotNull ItemStack getResultItem(HolderLookup.Provider registries) {
-        return output.copy();
+        return output.value().getDefaultInstance();
     }
 
     public ItemStack getResultEmi() {
-        return output.copy();
+        return output.value().getDefaultInstance();
     }
 
     @Override
@@ -63,7 +71,7 @@ public record SoulExtractorRecipe(ItemStack output, Ingredient ingredient0, int 
 
     @Override
     public boolean isResult(ItemStack itemStack) {
-        return ItemStack.isSameItemSameComponents(output, itemStack);
+        return itemStack.is(output.value());
     }
 
 
@@ -112,7 +120,7 @@ public record SoulExtractorRecipe(ItemStack output, Ingredient ingredient0, int 
         public static final Identifier ID =
                 ChickenRoostMod.ownresource("soul_extraction");
 
-        private final MapCodec<SoulExtractorRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(CodecFix.ITEM_STACK_CODEC.fieldOf("output").forGetter((recipe) -> recipe.output),
+        private final MapCodec<SoulExtractorRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("output").forGetter((recipe) -> recipe.output),
                 Ingredient.CODEC.fieldOf("chicken").forGetter((recipe) -> recipe.ingredient0), Codec.INT.fieldOf("time").orElse(20).forGetter((recipe) -> recipe.time)).apply(instance, SoulExtractorRecipe::new));
 
         private final StreamCodec<RegistryFriendlyByteBuf, SoulExtractorRecipe> STREAM_CODEC = StreamCodec.of(
@@ -130,16 +138,18 @@ public record SoulExtractorRecipe(ItemStack output, Ingredient ingredient0, int 
 
 
         private static SoulExtractorRecipe read(RegistryFriendlyByteBuf buffer) {
+            Holder<Item> output = ByteBufCodecs.holderRegistry(Registries.ITEM).decode(buffer);
             Ingredient input0 = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-            ItemStack output = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
+
             int time = buffer.readVarInt();
             return new SoulExtractorRecipe(output, input0, time);
         }
 
 
         private static void write(RegistryFriendlyByteBuf buffer, SoulExtractorRecipe recipe) {
+            ByteBufCodecs.holderRegistry(Registries.ITEM).encode(buffer, recipe.output());
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.ingredient0);
-            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, recipe.output);
+
             buffer.writeVarInt(recipe.time);
         }
     }

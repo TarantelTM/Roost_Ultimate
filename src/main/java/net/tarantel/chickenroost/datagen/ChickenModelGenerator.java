@@ -40,13 +40,21 @@ public class ChickenModelGenerator {
         try {
             if (!Files.exists(packMeta)) {
                 Files.writeString(packMeta, """
-    {
-      "pack": {
-        "pack_format": 75,
-        "description": {
-         "text": "ChickenRoost Generated Resources"
-      }
-    }
+                    {
+                      "pack": {
+                        "description": {
+                          "translate": "CRLib Client Resources"
+                        },
+                        "max_format": [
+                          78,
+                          1
+                        ],
+                        "min_format": [
+                          78,
+                          1
+                        ]
+                      }
+                    }
     """);
             }
             Files.createDirectories(modelDir);
