@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "chicken_roost:block/pipe",
+    "up": "chicken_roost:block/pipe",
+    "north": "chicken_roost:block/pipe",
+    "south": "chicken_roost:block/pipe",
+    "west": "chicken_roost:block/pipe",
+    "east": "chicken_roost:block/pipe",
+    "particle": "chicken_roost:block/pipe"
+  },
+  "elements": [
+    {
+      "from": [4, 4, 4],
+      "to":   [12,12,12],
+      "faces": {
+        "down":  { "texture": "#down"  },
+        "up":    { "texture": "#up"    },
+        "north": { "texture": "#north" },
+        "south": { "texture": "#south" },
+        "west":  { "texture": "#west"  },
+        "east":  { "texture": "#east"  }
+      }
+    }
+  ]
+}

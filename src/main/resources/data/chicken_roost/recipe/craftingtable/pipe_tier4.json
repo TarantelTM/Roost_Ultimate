@@ -1,0 +1,20 @@
+{
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "000",
+          "010",
+          "000"
+        ],
+        "key": {
+          "0": {
+            "item": "chicken_roost:pipe_tier3"
+          },
+          "1": {
+            "item": "minecraft:diamond_block"
+          }
+        },
+        "result": {
+          "id": "chicken_roost:pipe_tier4",
+          "count": 8
+        }
+}

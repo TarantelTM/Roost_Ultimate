@@ -1,0 +1,22 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"parent": "chicken_roost:block/pipe_center_2",
+	"textures": {
+		"5": "chicken_roost:block/south_2",
+		"particle": "chicken_roost:block/south_2"
+	},
+	"elements": [
+		{
+			"from": [6, 6, 12],
+			"to": [10, 10, 16],
+			"faces": {
+				"east": {"uv": [0, 0, 4, 4], "texture": "#5"},
+				"south": {"uv": [0, 4, 4, 8], "texture": "#5"},
+				"west": {"uv": [4, 0, 8, 4], "texture": "#5"},
+				"up": {"uv": [8, 8, 4, 4], "texture": "#5"},
+				"down": {"uv": [4, 8, 0, 12], "texture": "#5"}
+			}
+		}
+	]
+}

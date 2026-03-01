@@ -1,12 +1,11 @@
 package net.tarantel.chickenroost.item.renderer;
 
+import net.tarantel.chickenroost.item.base.AnimatedIngotItem;
+import net.tarantel.chickenroost.item.model.AnimatedIngotModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import net.tarantel.chickenroost.item.base.*;
-import net.tarantel.chickenroost.item.model.*;
 
 public class AnimatedIngotRenderer extends GeoItemRenderer<AnimatedIngotItem> {
-    public AnimatedIngotRenderer() {
-        super(new AnimatedIngotModel());
-    }
+   public AnimatedIngotRenderer() {
+      super(new AnimatedIngotModel());
+   }
 }
-
