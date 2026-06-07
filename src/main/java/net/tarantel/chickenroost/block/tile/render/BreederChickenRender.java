@@ -5,9 +5,10 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.tarantel.chickenroost.block.blocks.BreederBlock;
@@ -15,116 +16,110 @@ import net.tarantel.chickenroost.block.tile.BreederTile;
 import org.jetbrains.annotations.NotNull;
 
 public class BreederChickenRender implements BlockEntityRenderer<BreederTile> {
-    public BreederChickenRender(BlockEntityRendererProvider.Context context) {
+   public BreederChickenRender(Context context) {
+   }
 
-    }
+   public void render(
+      BreederTile pBlockEntity,
+      float pPartialTick,
+      @NotNull PoseStack pPoseStack,
+      @NotNull MultiBufferSource pBufferSource,
+      int pPackedLight,
+      int pPackedOverlay
+   ) {
+      ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+      ItemStack itemStack1 = pBlockEntity.getRenderStack1();
+      ItemStack itemStack2 = pBlockEntity.getRenderStack2();
+      ItemStack itemStack3 = pBlockEntity.getRenderStack3();
+      pPoseStack.pushPose();
+      pPoseStack.scale(0.7F, 0.7F, 0.7F);
+      pPoseStack.mulPose(Axis.XP.rotationDegrees(0.0F));
+      switch ((Direction)pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
+         case NORTH:
+            pPoseStack.translate(0.37F, 0.6F, 0.88F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(0.0F));
+            break;
+         case EAST:
+            pPoseStack.translate(0.55F, 0.6F, 0.366F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
+            break;
+         case SOUTH:
+            pPoseStack.translate(1.062F, 0.6F, 0.465F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(-180.0F));
+            break;
+         case WEST:
+            pPoseStack.translate(0.963F, 0.6F, 1.06F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.XP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
+      }
 
-    @Override
-    public void render(BreederTile pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack,
-                       @NotNull MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
-        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        ItemStack itemStack1 = pBlockEntity.getRenderStack1();
-        ItemStack itemStack2 = pBlockEntity.getRenderStack2();
-        ItemStack itemStack3 = pBlockEntity.getRenderStack3();
-        PoseStack poseStack1 = pPoseStack;
-        PoseStack poseStack2 = pPoseStack;
-        PoseStack poseStack3 = pPoseStack;
+      itemRenderer.renderStatic(
+         itemStack2, ItemDisplayContext.FIXED, pPackedLight, OverlayTexture.NO_OVERLAY, pPoseStack, pBufferSource, pBlockEntity.getLevel(), 0
+      );
+      pPoseStack.popPose();
+      pPoseStack.pushPose();
+      pPoseStack.scale(0.7F, 0.7F, 0.7F);
+      pPoseStack.mulPose(Axis.XP.rotationDegrees(0.0F));
+      switch ((Direction)pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
+         case NORTH:
+            pPoseStack.translate(1.06F, 0.6F, 0.88F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(0.0F));
+            break;
+         case EAST:
+            pPoseStack.translate(0.55F, 0.6F, 1.06F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
+            break;
+         case SOUTH:
+            pPoseStack.translate(0.362F, 0.6F, 0.465F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(-180.0F));
+            break;
+         case WEST:
+            pPoseStack.translate(0.963F, 0.6F, 0.365F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.XP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
+      }
 
-        poseStack2.pushPose();
+      itemRenderer.renderStatic(
+         itemStack1, ItemDisplayContext.FIXED, pPackedLight, OverlayTexture.NO_OVERLAY, pPoseStack, pBufferSource, pBlockEntity.getLevel(), 0
+      );
+      pPoseStack.popPose();
+      pPoseStack.pushPose();
+      pPoseStack.scale(0.5F, 0.5F, 0.5F);
+      pPoseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+      switch ((Direction)pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
+         case NORTH:
+            pPoseStack.translate(1.0F, 0.5F, -0.4F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(0.0F));
+            break;
+         case EAST:
+            pPoseStack.translate(1.5F, 1.0F, -0.4F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(0.0F));
+            break;
+         case SOUTH:
+            pPoseStack.translate(1.0F, 1.5F, -0.4F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(-180.0F));
+            break;
+         case WEST:
+            pPoseStack.translate(0.5F, 1.0F, -0.4F);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.XP.rotationDegrees(0.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(0.0F));
+      }
 
-        poseStack2.scale(0.7f, 0.7f, 0.7f);
-        poseStack2.mulPose(Axis.XP.rotationDegrees(0));
-
-        switch (pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
-            case NORTH -> {
-                poseStack2.translate(0.37f, 0.6f, 0.88f);
-                poseStack2.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack2.mulPose(Axis.YP.rotationDegrees(0));
-            }
-            case EAST -> {
-                poseStack2.translate(0.55f, 0.6f, 0.366f);
-                poseStack2.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack2.mulPose(Axis.YP.rotationDegrees(-90));
-            }
-            case SOUTH -> {
-                poseStack2.translate(1.062f, 0.6f, 0.465f);
-                poseStack2.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack2.mulPose(Axis.YP.rotationDegrees(-180));
-            }
-            case WEST -> {
-                poseStack2.translate(0.963f, 0.6f, 1.06f);
-                poseStack2.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack2.mulPose(Axis.XP.rotationDegrees(0));
-                poseStack2.mulPose(Axis.YP.rotationDegrees(+90));
-            }
-        }
-
-        itemRenderer.renderStatic(itemStack2, ItemDisplayContext.FIXED, pPackedLight,
-                OverlayTexture.NO_OVERLAY, poseStack2, pBufferSource, pBlockEntity.getLevel(), 0);
-        poseStack2.popPose();
-
-        poseStack1.pushPose();
-        poseStack1.scale(0.7f, 0.7f, 0.7f);
-        poseStack1.mulPose(Axis.XP.rotationDegrees(0));
-
-        switch (pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
-            case NORTH -> {
-                poseStack1.translate(1.06f, 0.6f, 0.88f);
-                poseStack1.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack1.mulPose(Axis.YP.rotationDegrees(0));
-            }
-            case EAST -> {
-                poseStack1.translate(0.55f, 0.6f, 1.06f);
-                poseStack1.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack1.mulPose(Axis.YP.rotationDegrees(-90));
-            }
-            case SOUTH -> {
-                poseStack1.translate(0.362f, 0.6f, 0.465f);
-                poseStack1.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack1.mulPose(Axis.YP.rotationDegrees(-180));
-            }
-            case WEST -> {
-                poseStack1.translate(0.963f, 0.6f, 0.365f);
-                poseStack1.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack1.mulPose(Axis.XP.rotationDegrees(0));
-                poseStack1.mulPose(Axis.YP.rotationDegrees(+90));
-            }
-        }
-
-        itemRenderer.renderStatic(itemStack1, ItemDisplayContext.FIXED, pPackedLight,
-                OverlayTexture.NO_OVERLAY, poseStack1, pBufferSource, pBlockEntity.getLevel(), 0);
-        poseStack1.popPose();
-
-        poseStack3.pushPose();
-        poseStack3.scale(0.5f, 0.5f, 0.5f);
-        poseStack3.mulPose(Axis.XP.rotationDegrees(90));
-
-        switch (pBlockEntity.getBlockState().getValue(BreederBlock.FACING)) {
-            case NORTH -> {
-                poseStack3.translate(1.0f, 0.5f, -0.4f);
-                poseStack3.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack3.mulPose(Axis.YP.rotationDegrees(0));
-            }
-            case EAST -> {
-                poseStack3.translate(1.5f, 1.0f, -0.4f);
-                poseStack3.mulPose(Axis.ZP.rotationDegrees(90));
-                poseStack3.mulPose(Axis.YP.rotationDegrees(0));
-            }
-            case SOUTH -> {
-                poseStack3.translate(1.0f, 1.5f, -0.4f);
-                poseStack3.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack3.mulPose(Axis.YP.rotationDegrees(-180));
-            }
-            case WEST -> {
-                poseStack3.translate(0.5f, 1.0f, -0.4f);
-                poseStack3.mulPose(Axis.ZP.rotationDegrees(0));
-                poseStack3.mulPose(Axis.XP.rotationDegrees(0));
-                poseStack3.mulPose(Axis.YP.rotationDegrees(0));
-            }
-        }
-
-        itemRenderer.renderStatic(itemStack3, ItemDisplayContext.FIXED, pPackedLight,
-                OverlayTexture.NO_OVERLAY, poseStack3, pBufferSource, pBlockEntity.getLevel(), 0);
-        poseStack3.popPose();
-    }
+      itemRenderer.renderStatic(
+         itemStack3, ItemDisplayContext.FIXED, pPackedLight, OverlayTexture.NO_OVERLAY, pPoseStack, pBufferSource, pBlockEntity.getLevel(), 0
+      );
+      pPoseStack.popPose();
+   }
 }
