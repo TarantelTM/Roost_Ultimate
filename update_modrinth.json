@@ -24,6 +24,10 @@
     "1.21.11-latest": "4.0.0",
     "1.21.11-recommended": "4.0.0",
     "26.1.2-latest": "4.2.3b",
-    "26.1.2-recommended": "4.2.3b"
+    "26.1.2-recommended": "4.2.3b",
+    "26.2-latest": "4.2.3b",
+    "26.2-recommended": "4.2.3b",
+    "26.3-latest": "4.2.3b",
+    "26.3-recommended": "4.2.3b"
   }
 }
