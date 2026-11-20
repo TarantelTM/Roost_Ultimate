@@ -16,7 +16,6 @@
 
 - Redesigned the Feeder and Collector inventory screens to match Minecraft's inventory layout. Both show the machine name and switch between storage and settings in the same window, with the player inventory visible in both views.
 - Added readable target names, selection checkboxes, scrolling, range controls, and coordinate tooltips. The Feeder groups Round Robin, send amount, and per-target seed selection in its settings. Seed assignments now save and sync correctly.
-- Restored the animated Trainer model and removed the broken model reference that produced a missing-texture cube.
 - Fixed the Trainer's training and idle animations so they play continuously between state changes.
 - Empty-hand right-click and Jade show the mode of the targeted pipe face. Item tooltips show throughput and range, Jade shows throughput, and pipe hitboxes include the visible connections.
 - Item and fluid pipes show a gold ring on Input faces and two green stripes on Output faces. The markings update as you configure each face.
